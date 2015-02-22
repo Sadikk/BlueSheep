@@ -39,7 +39,7 @@ namespace BlueSheep.Engine.Treatment
             {
                 Message message = (Message)Activator.CreateInstance(instance.MessageType);
                 MethodInfo method = instance.Method;
-                //account.Log(new BotTextInformation("RCV " + packetID + " -> " + method.Name.Remove(method.Name.IndexOf("Treatment"))),0); 
+                account.Log(new BotTextInformation("RCV " + packetID + " -> " + method.Name.Remove(method.Name.IndexOf("Treatment"))),0); 
 
                 if (method == null)
                     return;

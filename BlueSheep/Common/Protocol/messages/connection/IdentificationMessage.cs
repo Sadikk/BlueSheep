@@ -60,7 +60,8 @@ namespace BlueSheep.Common.Protocol.Messages
             writer.WriteByte(flag1);
             version.Serialize(writer);
             writer.WriteUTF(lang);
-            writer.WriteUShort((ushort)credentials.Length);
+            //writer.WriteUShort((ushort)credentials.Length);
+            writer.WriteVarInt(credentials.Length);
             foreach (var entry in credentials)
             {
                  writer.WriteSByte(entry);

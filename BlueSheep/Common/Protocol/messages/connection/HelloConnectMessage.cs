@@ -52,7 +52,7 @@ namespace BlueSheep.Common.Protocol.Messages
         public override void Deserialize(BigEndianReader reader)
         {
             salt = reader.ReadUTF();
-            var limit = reader.ReadUShort();
+            var limit = reader.ReadVarInt();
             key = new sbyte[limit];
             for (int i = 0; i < limit; i++)
             {
