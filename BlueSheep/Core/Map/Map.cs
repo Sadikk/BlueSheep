@@ -36,7 +36,7 @@ namespace BlueSheep.Core.Map
         public List<BlueSheep.Common.Types.MonsterGroup> List;
         #endregion
 
-#region Properties
+        #region Properties
         public AccountUC m_Account { get; set; }
         public bool AutoTimeout { get; private set; }
 
@@ -508,7 +508,7 @@ namespace BlueSheep.Core.Map
         }
         #endregion
 
-        #region Methodes privées
+        #region Private methods
         private List<MapPoint> GetListPointAtGoodDistance(MapPoint characterPoint, MapPoint elementPoint, int weaponRange)
         {
             List<MapPoint> list = new List<MapPoint>();

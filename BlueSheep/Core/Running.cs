@@ -14,7 +14,7 @@ namespace BlueSheep.Core
     {
         #region Fields
         private int m_CurrentPetIndex;
-        private Openning m_Openning;
+        private Opening m_Openning;
         private Leaving m_Leaving;
         private Getting m_Getting;
         private Feeding m_Feeding;
@@ -109,7 +109,7 @@ namespace BlueSheep.Core
                     if (!m_OnSafe)
                     {
                         m_OnSafe = true;
-                        m_Openning = new Openning();
+                        m_Openning = new Opening();
                         m_Openning.Init(account);
                         return;
                     }

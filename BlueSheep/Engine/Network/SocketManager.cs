@@ -20,7 +20,6 @@ namespace BlueSheep.Engine.Network
         private Thread m_ReceptionThread;
         private Thread m_DofReceptionThread;
         private Thread m_RawReceptionThread;
-        //private Timer m_TimerInactivity;
         private MessageInformations m_MessageInformations;
         private bool m_IsChangingServer;
         private bool m_ForcedDisconnect;
@@ -28,6 +27,7 @@ namespace BlueSheep.Engine.Network
         public Dictionary<int, Socket> MITMClients;
         public int i = 0;
         #endregion
+
         #region Properties
         public Socket Socket
         {
@@ -40,6 +40,7 @@ namespace BlueSheep.Engine.Network
             set { m_IsChangingServer = value; }
         }
         #endregion
+
         #region Constructeurs
         public SocketManager(AccountUC accountform)
         {
@@ -48,6 +49,7 @@ namespace BlueSheep.Engine.Network
                 account.LatencyFrame = new LatencyFrame(accountform);
         }
         #endregion
+
         #region Public methods
         public void DisconnectFromGUI()
         {
@@ -167,6 +169,7 @@ namespace BlueSheep.Engine.Network
                 m_DofSocket.Send(buffer);
         }
         #endregion
+
         #region Private methods
         private void SocketReception()
         {

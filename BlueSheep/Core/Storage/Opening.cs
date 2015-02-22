@@ -6,7 +6,7 @@ using BlueSheep.Interface;
 
 namespace BlueSheep.Core.Storage
 {
-    class Openning
+    class Opening
     {
         #region Public methods
         public void Init(AccountUC account)

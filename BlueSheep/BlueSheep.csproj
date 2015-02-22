@@ -1362,7 +1362,7 @@
     <Compile Include="Core\Storage\Getting.cs" />
     <Compile Include="Core\Storage\Leaving.cs" />
     <Compile Include="Core\Storage\LeavingDialog.cs" />
-    <Compile Include="Core\Storage\Openning.cs" />
+    <Compile Include="Core\Storage\Opening.cs" />
     <Compile Include="Engine\Constants\DLLInjector.cs" />
     <Compile Include="Engine\Constants\GameConstants.cs" />
     <Compile Include="Engine\Constants\HumanCheck.cs" />

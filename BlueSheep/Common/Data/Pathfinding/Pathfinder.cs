@@ -4,13 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BlueSheep.Core.Fight;
-//using RebirthAPI.Game.Map;
 using BlueSheep.Common.Protocol.Types;
-//using BlueSheep.Data.D2p;
 using BlueSheep.Core.Map;
 using BlueSheep.Engine.Types;
 using BlueSheep.Common.Types;
-//using RebirthAPI.Game.Entity;
 
 namespace BlueSheep.Data.Pathfinding
 {
@@ -38,8 +35,6 @@ namespace BlueSheep.Data.Pathfinding
             return FindPath(FromCell, ToCell, true, true);
         }
 
-        //INSTANT C# NOTE: Overloaded method(s) are created above to convert the following method having optional parameters:
-        //ORIGINAL LINE: Public Function FindPath(ByVal FromCell As Integer, ByVal ToCell As Integer, Optional ByVal ate As Boolean = true, Optional ByVal adc As Boolean = true) As MovementPath
         public MovementPath FindPath(int FromCell, int ToCell, bool ate, bool adc)
         {
             MovPath = new MovementPath();
@@ -340,8 +335,6 @@ namespace BlueSheep.Data.Pathfinding
             return PointMov(x, y, -1, true);
         }
 
-        //INSTANT C# NOTE: Overloaded method(s) are created above to convert the following method having optional parameters:
-        //ORIGINAL LINE: Public Function PointMov(ByVal x As Integer, ByVal y As Integer, Optional ByVal cellId As Integer = -1, Optional ByVal troughtEntities As Boolean = true) As Boolean
         public bool PointMov(int x, int y, int cellId, bool troughtEntities)
         {
             bool isNewSystem = ((Map)Map).IsUsingNewMovementSystem;
@@ -531,15 +524,6 @@ namespace BlueSheep.Data.Pathfinding
 
         public void SetFight(List<BFighter> Fighters, int MovementPoints)
         {
-            //INSTANT C# NOTE: Commented this declaration since looping variables in 'foreach' loops are declared in the 'foreach' header in C#:
-            //			GameFightFighterInformations informations = null;
-            //foreach (GameFightFighterInformations informations in Fighters)
-            //{
-            //    if (informations.alive)
-            //    {
-            //        this.ListCellIdFighters.Add(informations.disposition.cellId);
-            //    }
-            //}
             foreach (BFighter fighter in Fighters)
             {
                 if (fighter.IsAlive)

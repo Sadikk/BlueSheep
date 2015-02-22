@@ -14,6 +14,7 @@ namespace BlueSheep.Core.Storage
         #region Fields
         public AccountUC account;
         #endregion
+
         #region Public methods
 
         public Getting(AccountUC accountform)
