@@ -2,7 +2,7 @@
 {
     public class Pods
     {
-        #region Propriétés
+        #region Properties
         public int Weight { get; set; }
 
         public int WeightMax { get; set; }

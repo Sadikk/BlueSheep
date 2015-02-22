@@ -102,7 +102,7 @@
     <Compile Include="Common\Constants\Effects.cs" />
     <Compile Include="Common\Constants\Foods.cs" />
     <Compile Include="Common\Constants\MealIntervals.cs" />
-    <Compile Include="Common\Cryptography\CryptageFDT.cs" />
+    <Compile Include="Common\Cryptography\CryptageBS.cs" />
     <Compile Include="Common\Cryptography\RSAKey.cs" />
     <Compile Include="Common\Data\D2o\Class16.cs" />
     <Compile Include="Common\Data\D2o\Class17.cs" />

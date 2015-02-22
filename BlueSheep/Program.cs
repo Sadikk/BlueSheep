@@ -14,7 +14,6 @@ namespace BlueSheep
         [STAThread]
         static void Main(string[] args)
         {
-            //Application.Exit();
             if (args[0] == "ok")
             {
                 try
@@ -32,8 +31,8 @@ namespace BlueSheep
                         System.Threading.Thread.Sleep(1000);
                     }
                     reg.SetValue("Version", 0.8);
-                    reg.SetValue("Minor", 6);
-                    Application.Run(new MainForm(0, "0.8.6"));
+                    reg.SetValue("Minor", 7);
+                    Application.Run(new MainForm("0.8.7"));
                 }
                 catch (Exception ex)
                 { MessageBox.Show(ex.Message + ex.StackTrace); }

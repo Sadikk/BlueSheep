@@ -16,14 +16,19 @@ namespace BlueSheep.Interface
 {
     public partial class GroupForm : Form
     {
+        /// <summary>
+        /// Container for multiple accountUC.
+        /// </summary>
+
+        #region Fields
         public List<AccountUC> listAccounts;
         public List<Account> list;
-        public GroupForm()
-        {
-            InitializeComponent();
-        }
+        #endregion
+
+        #region Constructors
         public GroupForm(List<AccountUC> accounts)
         {
+            // TODO : Redo all this shit !
             InitializeComponent();
             list = new List<Account>();
             MasterChoice.SelectedIndex = 0;
@@ -41,6 +46,9 @@ namespace BlueSheep.Interface
                 account.Init();
             }
         }
+        #endregion
+
+        #region Interface methods
         private void MasterChoice_SelectedIndexChanged(object sender, EventArgs e)
         {
             for (int i = 0; i < MasterChoice.Items.Count; i++)
@@ -79,6 +87,9 @@ namespace BlueSheep.Interface
                 }
             }
         }
+        #endregion
+
+        #region Dofus group methods
         private void Invite(string name, AccountUC account)
         {
             PartyInvitationRequestMessage msg = new PartyInvitationRequestMessage(name);
@@ -89,5 +100,6 @@ namespace BlueSheep.Interface
             PartyLeaveRequestMessage msg = new PartyLeaveRequestMessage(partyid);
             account.SocketManager.Send(msg);
         }
+        #endregion
     }
 }

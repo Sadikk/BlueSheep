@@ -10,7 +10,7 @@ namespace BlueSheep.Common.Cryptography
 {
     class RSAKey // Class de MoonLight <33
     {
-        #region Attributs
+        #region Fields
         
         private const string m_PublicKey = "MIIBUzANBgkqhkiG9w0BAQEFAAOCAUAAMIIBOwKCATIAq8EYkkGCUg86Bf2CHaM1z1Q2ahQgVXkx"
 + "49I0igwTVCIqG86jsgNb22na1DThZ+IP7DfyBszIecVSP8nwbYPbx6Z7dwq4pnMVx/lx5lyMZUO1"
@@ -21,7 +21,7 @@ namespace BlueSheep.Common.Cryptography
 + "AQ==";
         #endregion
 
-        #region Méthodes publiques
+        #region Public methods
         public static sbyte[] Encrypt(sbyte[] helloConnectMessageKey, string accountName, string accountPassword, string salt)
         {
             List<byte> credentialsList = new List<byte>();
@@ -48,7 +48,7 @@ namespace BlueSheep.Common.Cryptography
         }
         #endregion
 
-        #region Méthodes privées
+        #region Private methods
         private static RSACryptoServiceProvider DecodeX509PublicKey(byte[] X509Key) // Méthode de M4xou
         {
             RSACryptoServiceProvider provider2;

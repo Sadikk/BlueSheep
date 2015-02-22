@@ -20,7 +20,7 @@ namespace BlueSheep.Engine.Handlers.Context
 {
     class ContextHandler
     {
-        #region Méthodes publiques
+        #region Public methods
         [MessageHandler(typeof(MapComplementaryInformationsDataInHouseMessage))]
         public static void MapComplementaryInformationsDataInHouseMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {

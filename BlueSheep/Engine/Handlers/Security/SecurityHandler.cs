@@ -11,7 +11,7 @@ namespace BlueSheep.Engine.Handlers.Security
 {
     class SecurityHandler
     {
-        #region Méthodes publiques
+        #region Public methods
         [MessageHandler(typeof (RawDataMessage))]
         public static void RawDataMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {

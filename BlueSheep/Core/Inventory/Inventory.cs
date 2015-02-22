@@ -15,6 +15,7 @@ namespace BlueSheep.Core.Inventory
 {
     public class Inventory
     {
+        #region Fields
         public int kamas;
         public int maxWeight;
         public int weight;
@@ -29,7 +30,9 @@ namespace BlueSheep.Core.Inventory
             }
 
         }
+        #endregion
 
+        #region Constructors
         public Inventory(AccountUC account)
         {
             Account = account;
@@ -39,6 +42,7 @@ namespace BlueSheep.Core.Inventory
             maxWeight = 0;
             weight = 0;
         }
+        #endregion
 
         #region Public Methods
         public bool HasFishingRod
@@ -153,6 +157,7 @@ namespace BlueSheep.Core.Inventory
             
         }
 #endregion
+
         #region Private Methods 
         private bool ItemExists(int uid)
         {

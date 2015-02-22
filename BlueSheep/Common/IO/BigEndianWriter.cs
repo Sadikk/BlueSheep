@@ -8,11 +8,11 @@ namespace BlueSheep.Common.IO
     [Serializable]
     public class BigEndianWriter : IDisposable
     {
-        #region Attributs
+        #region Fields
         private BinaryWriter m_BinaryWriter;
         #endregion
 
-        #region Propriétés
+        #region Properties
         public byte[] Content
         {
             get
@@ -39,7 +39,7 @@ namespace BlueSheep.Common.IO
         }
         #endregion
 
-        #region Méthodes publiques
+        #region Public methods
         public void WriteByte(byte byteToWrite)
         {
             m_BinaryWriter.Write(byteToWrite);
@@ -297,7 +297,7 @@ namespace BlueSheep.Common.IO
         }
         #endregion
 
-        #region Méthodes privées
+        #region Private methods
         private void WriteInBigEndian(byte[] contentToConvert)
         {
             for (int index = contentToConvert.Length - 1; index >= 0; index--)

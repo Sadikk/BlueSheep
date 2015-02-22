@@ -2,7 +2,7 @@
 {
     public class ConnectionInformations
     {
-        #region Propriétés
+        #region Properties
         public string Address { get; set; }
 
         public int Port { get; set; }

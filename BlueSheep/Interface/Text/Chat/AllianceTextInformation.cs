@@ -9,11 +9,11 @@ namespace BlueSheep.Interface.Text.Chat
 {
     class AllianceTextInformation : TextInformation
     {
-        #region Attributs
+        #region Fields
             private string m_Text;
-            #endregion
+        #endregion
 
-            #region Propriétés
+        #region Properties
             public override string Text
             {
                 get { return m_Text; }
@@ -36,9 +36,9 @@ namespace BlueSheep.Interface.Text.Chat
                 get { return "Alliance"; }
                 set { throw new NotImplementedException(); }
             }
-            #endregion
+       #endregion
 
-            #region Constructeurs
+        #region Constructeurs
             public AllianceTextInformation(string text)
             {
                 m_Text = text;

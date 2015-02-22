@@ -5,7 +5,7 @@ namespace BlueSheep.Common.Types
 {
     public class Food
     {
-        #region Propriétés
+        #region Properties
         public Core.Inventory.Item Informations { get; set; }
 
         public DataClass Datas { get; set; }

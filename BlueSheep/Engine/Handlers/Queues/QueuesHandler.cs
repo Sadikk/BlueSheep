@@ -8,7 +8,7 @@ namespace BlueSheep.Engine.Handlers.Queues
 {
     class QueuesHandler
     {
-        #region Méthodes publiques
+        #region Public methods
         [MessageHandler(typeof(LoginQueueStatusMessage))]
         public static void LoginQueueStatusTreatment(Message message, byte[] packetDatas, AccountUC account)
         {

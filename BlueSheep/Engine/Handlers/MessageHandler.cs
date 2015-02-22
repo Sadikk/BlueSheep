@@ -4,7 +4,7 @@ namespace BlueSheep.Engine.Handlers
 {
     class MessageHandler : Attribute
     {
-        #region Propriétés
+        #region Properties
         public Type MessageType { get; set; }
         #endregion
 

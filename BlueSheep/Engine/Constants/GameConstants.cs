@@ -2,7 +2,7 @@
 {
     static class GameConstants
     {
-        #region Attributs
+        #region Fields
         public const sbyte Major = 2;
         public const sbyte Minor = 27;
         public const sbyte Release = 0;

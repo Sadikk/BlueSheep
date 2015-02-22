@@ -38,7 +38,11 @@ namespace BlueSheep.Interface
 {
     public partial class AccountUC : UserControl
     {
-        #region Attributs
+        /// <summary>
+        /// Main UC. TODO : Split this hugggge thing into multiple UC.
+        /// </summary>
+
+        #region Fields
         public string AccountName;
         public string AccountPassword;
         private Running m_Running;
@@ -71,7 +75,7 @@ namespace BlueSheep.Interface
         public bool IsMITM;
         #endregion
 
-        #region Propriétés
+        #region Properties
         public bool IsBegun { get; set; }
         public SocketManager SocketManager { get; set; }
         public DateTime NextMeal { get; set; }
@@ -329,6 +333,70 @@ namespace BlueSheep.Interface
                 LogConsole.SelectionStart = startIndex;
                 LogConsole.SelectionLength = text.Text.Length;
                 LogConsole.SelectionColor = text.Color;
+            }
+        }
+
+        private void DeleteItem_Click(object sender, EventArgs e)
+        {
+            //Delete an item from inventory
+            if (StatusLb.Text == "Combat" && StatusLb.Text == "Fighting")
+            {
+                Log(new ErrorTextInformation("Impossible de supprimer un objet en combat ^^"), 0);
+            }
+            for (int i = 0; i < LVItems.Items.Count; i++)
+            {
+                if (LVItems.Items[i].Selected)
+                {
+                    Inventory.DeleteItem(Convert.ToInt32(LVItems.Items[i].SubItems[1].Text), Convert.ToInt32(LVItems.Items[i].SubItems[3].Text));
+                }
+            }
+        }
+
+        private void DropItems_Click(object sender, EventArgs e)
+        {
+            //Drop an item from inventory
+            if (StatusLb.Text == "Combat" && StatusLb.Text == "Fighting")
+            {
+                Log(new ErrorTextInformation("Impossible de jeter un objet en combat ^^"), 0);
+            }
+            for (int i = 0; i < LVItems.Items.Count; i++)
+            {
+                if (LVItems.Items[i].Selected)
+                {
+                    Inventory.DropItem(Convert.ToInt32(LVItems.Items[i].SubItems[1].Text), Convert.ToInt32(LVItems.Items[i].SubItems[3].Text));
+                }
+            }
+        }
+
+        private void sadikButton1_Click(object sender, EventArgs e)
+        {
+            //Use an item from inventory
+            if (StatusLb.Text == "Combat" && StatusLb.Text == "Fighting")
+            {
+                Log(new ErrorTextInformation("Impossible d'utiliser un objet en combat ^^"), 0);
+            }
+            for (int i = 0; i < LVItems.Items.Count; i++)
+            {
+                if (LVItems.Items[i].Selected)
+                {
+                    Inventory.UseItem(Convert.ToInt32(LVItems.Items[i].SubItems[1].Text));
+                }
+            }
+        }
+
+        private void sadikButton2_Click(object sender, EventArgs e)
+        {
+            //Equip an item from inventory
+            if (StatusLb.Text == "Combat" && StatusLb.Text == "Fighting")
+            {
+                Log(new ErrorTextInformation("Impossible d'équiper un item en combat ^^"), 0);
+            }
+            for (int i = 0; i < LVItems.Items.Count; i++)
+            {
+                if (LVItems.Items[i].Selected)
+                {
+                    Inventory.EquipItem(Convert.ToInt32(LVItems.Items[i].SubItems[1].Text));
+                }
             }
         }
 
@@ -1095,69 +1163,7 @@ namespace BlueSheep.Interface
         }
         #endregion
 
-        private void DeleteItem_Click(object sender, EventArgs e)
-        {
-            //Delete an item from inventory
-            if (StatusLb.Text == "Combat" && StatusLb.Text == "Fighting")
-            {
-                Log(new ErrorTextInformation("Impossible de supprimer un objet en combat ^^"), 0);
-            }
-            for (int i = 0; i < LVItems.Items.Count; i++)
-            {
-                if (LVItems.Items[i].Selected)
-                {
-                    Inventory.DeleteItem(Convert.ToInt32(LVItems.Items[i].SubItems[1].Text), Convert.ToInt32(LVItems.Items[i].SubItems[3].Text));
-                }
-            }
-        }
-
-        private void DropItems_Click(object sender, EventArgs e)
-        {
-            //Drop an item from inventory
-            if (StatusLb.Text == "Combat" && StatusLb.Text == "Fighting")
-            {
-                Log(new ErrorTextInformation("Impossible de jeter un objet en combat ^^"),0);
-            }
-            for (int i = 0; i < LVItems.Items.Count; i++)
-            {
-                if (LVItems.Items[i].Selected)
-                {
-                    Inventory.DropItem(Convert.ToInt32(LVItems.Items[i].SubItems[1].Text), Convert.ToInt32(LVItems.Items[i].SubItems[3].Text));
-                }
-            }
-        }
-
-        private void sadikButton1_Click(object sender, EventArgs e)
-        {
-            //Use an item from inventory
-            if (StatusLb.Text == "Combat" && StatusLb.Text == "Fighting")
-            {
-                Log(new ErrorTextInformation("Impossible d'utiliser un objet en combat ^^"), 0);
-            }
-            for (int i = 0; i < LVItems.Items.Count; i++)
-            {
-                if (LVItems.Items[i].Selected)
-                {
-                    Inventory.UseItem(Convert.ToInt32(LVItems.Items[i].SubItems[1].Text));
-                }
-            }
-        }
-
-        private void sadikButton2_Click(object sender, EventArgs e)
-        {
-            //Equip an item from inventory
-            if (StatusLb.Text == "Combat" && StatusLb.Text == "Fighting")
-            {
-                Log(new ErrorTextInformation("Impossible d'équiper un item en combat ^^"), 0);
-            }
-            for (int i = 0; i < LVItems.Items.Count; i++)
-            {
-                if (LVItems.Items[i].Selected)
-                {
-                    Inventory.EquipItem(Convert.ToInt32(LVItems.Items[i].SubItems[1].Text));
-                }
-            }
-        }
+        
 
         
 

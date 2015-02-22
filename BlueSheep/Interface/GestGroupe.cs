@@ -15,7 +15,15 @@ namespace BlueSheep.Interface
 {
     public partial class GestGroupe : Form
     {
+        /// <summary>
+        /// Group manager.
+        /// </summary>
+
+        #region Fields
         List<Group> groups = new List<Group>();
+        #endregion
+
+        #region Constructors
         public GestGroupe()
         {
             InitializeComponent();
@@ -23,6 +31,7 @@ namespace BlueSheep.Interface
             LoadAccounts();
             listViewAccounts.HideSelection = true;
             listViewGroups.HideSelection = true;
+
             switch (MainForm.ActualMainForm.Lang)
             {
                 case "FR":
@@ -55,7 +64,9 @@ namespace BlueSheep.Interface
             }
             
         }
+        #endregion
 
+        #region Interface methods
         private void LaunchGroupsSelecBt_Click(object sender, EventArgs e)
         {
             foreach (ListViewItem item in listViewGroups.SelectedItems)
@@ -77,44 +88,10 @@ namespace BlueSheep.Interface
             this.Close();
         }
 
-        private Group SearchGroups(string groupname)
-        {
-            foreach (Group group in groups)
-            {
-                if (group.name == groupname)
-                    return group;
-            }
-            return null;
-        }
-
-        private void LoadGroups()
-        {
-            //if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\groups.bs"))
-            //{
-            //    StreamReader reader = new StreamReader(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\groups.bs");
-            //    while (reader.Peek() > 0)
-            //    {
-            //        string line = reader.ReadLine();
-            //    }
-
-                AccountsFileInteractions accountsFileInteractions = new AccountsFileInteractions();
-
-                accountsFileInteractions.RecoverGroups();
-
-                foreach (Group Groupobject in accountsFileInteractions.Groups)
-                {
-                    string[] row1 = { Groupobject.name };
-                    ListViewItem li = new ListViewItem(row1);
-                    listViewGroups.Items.Add(li);
-                    groups.Add(Groupobject);
-                }
-            //}
-        }
-
         private void DelBt_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < listViewGroups.SelectedItems.Count; i++)
-            //parcours des comtpes sélectionnés
+            //parcours des comptes sélectionnés
             {
                 ListViewItem listViewItem2 = listViewAccounts.SelectedItems[i];
                 File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Groups\" + listViewItem2.Text + ".bs");
@@ -149,6 +126,44 @@ namespace BlueSheep.Interface
                 }
             }
         }
+        #endregion
+
+        #region Private methods
+        private Group SearchGroups(string groupname)
+        {
+            foreach (Group group in groups)
+            {
+                if (group.name == groupname)
+                    return group;
+            }
+            return null;
+        }
+
+        private void LoadGroups()
+        {
+            //if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\groups.bs"))
+            //{
+            //    StreamReader reader = new StreamReader(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\groups.bs");
+            //    while (reader.Peek() > 0)
+            //    {
+            //        string line = reader.ReadLine();
+            //    }
+
+                AccountsFileInteractions accountsFileInteractions = new AccountsFileInteractions();
+
+                accountsFileInteractions.RecoverGroups();
+
+                foreach (Group Groupobject in accountsFileInteractions.Groups)
+                {
+                    string[] row1 = { Groupobject.name };
+                    ListViewItem li = new ListViewItem(row1);
+                    listViewGroups.Items.Add(li);
+                    groups.Add(Groupobject);
+                }
+            //}
+        }
+
+        
 
         private void LoadAccounts()
         {
@@ -162,38 +177,6 @@ namespace BlueSheep.Interface
             }
         }
 
-        //private void listViewAccounts_SelectedIndexChanged(object sender, EventArgs e)
-        //{
-        //    foreach (ListViewItem item in listViewAccounts.Items)
-        //    {
-        //        if (item.Selected == true)
-        //        {
-        //            item.BackColor = Color.DeepSkyBlue;
-        //            item.SubItems[0].BackColor = Color.DeepSkyBlue;
-        //        }
-        //        else
-        //        {
-        //            item.BackColor = Color.White;
-        //            item.SubItems[0].BackColor = Color.White;
-        //        }
-        //    }
-        //}
-
-        //private void listViewGroups_SelectedIndexChanged(object sender, EventArgs e)
-        //{
-        //    foreach (ListViewItem item in listViewGroups.Items)
-        //    {
-        //        if (item.Selected == true)
-        //        {
-        //            item.BackColor = Color.DeepSkyBlue;
-        //            item.SubItems[0].BackColor = Color.DeepSkyBlue;
-        //        }
-        //        else
-        //        {
-        //            item.BackColor = Color.White;
-        //            item.SubItems[0].BackColor = Color.White;
-        //        }
-        //    }
-        //}
+        #endregion
     }
 }

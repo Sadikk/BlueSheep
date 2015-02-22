@@ -8,7 +8,7 @@ namespace BlueSheep.Engine.Types
 {
     class MessageInformations
     {
-        #region Attributs
+        #region Fields
         private readonly BigEndianReader m_Reader = new BigEndianReader();
         private int? m_Header;
         private int? m_Length;
@@ -18,7 +18,8 @@ namespace BlueSheep.Engine.Types
         private AccountUC account;
         private List<int> ForbiddenHeaders = new List<int>() { 42, 6469 };
         #endregion
-        #region Méthodes publiques
+
+        #region Public methods
         public MessageInformations(AccountUC accountform)
         {
             account = accountform;
@@ -73,7 +74,8 @@ namespace BlueSheep.Engine.Types
             }
         }
         #endregion
-        #region Méthodes privées
+
+        #region Private methods
         private bool Build()
         {
             if ((m_Header.HasValue) && (m_Length.HasValue) && (m_Length == m_Data.Length))
@@ -121,5 +123,3 @@ namespace BlueSheep.Engine.Types
         #endregion
     }
 }
-
-if 

@@ -14,8 +14,15 @@ namespace BlueSheep.Interface
 {
     public partial class PathChoiceForm : Form
     {
-        private AccountUC Account;
+        /// <summary>
+        /// Bot's path choose form.
+        /// </summary>
 
+        #region Fields
+        private AccountUC Account;
+        #endregion
+
+        #region Constructors
         public PathChoiceForm(AccountUC account)
         {
             InitializeComponent();
@@ -32,12 +39,48 @@ namespace BlueSheep.Interface
                     break;
             }
         }
+        #endregion
 
+        #region Interface methods
         private void PathChoiceForm_Load(object sender, EventArgs e)
         {
             Init();
         }
 
+        private void AddBt_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (!File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Paths\" + openFileDialog1.SafeFileName))
+                {
+                    File.Copy(openFileDialog1.FileName, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Paths\" + openFileDialog1.SafeFileName);
+                    FilesList.Items.Clear();
+                    Init();
+                }
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("Le trajet a déjà été ajouté !");
+                }
+            }
+        }
+
+        private void LoadBt_Click(object sender, EventArgs e)
+        {
+            LaunchPath(null, null);
+        }
+
+        private void DelBt_Click(object sender, EventArgs e)
+        {
+            if (FilesList.SelectedItems.Count > 0)
+            {
+                string path = FilesList.SelectedItems[0].SubItems[5].Text;
+                File.Delete(path);
+                FilesList.Items.Remove(FilesList.SelectedItems[0]);
+            }
+        }
+        #endregion
+
+        #region Private methods
         private void Init()
         {
             //FilesList.Clear();
@@ -112,38 +155,9 @@ namespace BlueSheep.Interface
                 this.Close();
             }
         }
+        #endregion
 
 
-        private void AddBt_Click(object sender, EventArgs e)
-        {
-            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                if (!File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Paths\" + openFileDialog1.SafeFileName))
-                {
-                    File.Copy(openFileDialog1.FileName, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Paths\" + openFileDialog1.SafeFileName);
-                    FilesList.Items.Clear();
-                    Init();
-                }
-                else
-                {
-                    System.Windows.Forms.MessageBox.Show("Le trajet a déjà été ajouté !");
-                }
-            }
-        }
 
-        private void LoadBt_Click(object sender, EventArgs e)
-        {
-            LaunchPath(null, null);
-        }
-
-        private void DelBt_Click(object sender, EventArgs e)
-        {
-            if (FilesList.SelectedItems.Count > 0)
-            {
-                string path = FilesList.SelectedItems[0].SubItems[5].Text;
-                File.Delete(path);
-                FilesList.Items.Remove(FilesList.SelectedItems[0]);
-            }
-        }
     }
 }

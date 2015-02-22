@@ -6,7 +6,7 @@ namespace BlueSheep.Common.Constants
 {
     static class Foods
     {
-        #region Méthodes publiques
+        #region Public methods
         public static List<int> GetFoods(string petName)
         {
             switch (petName)

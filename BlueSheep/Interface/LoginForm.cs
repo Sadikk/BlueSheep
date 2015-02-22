@@ -13,10 +13,16 @@ namespace BlueSheep.Interface
 {
     public partial class LoginForm : Form
     {
+        /// <summary>
+        /// Old login form. WARNING : DEPRECATED.
+        /// </summary>
+
+        #region Fields
         MainForm mainfrm;
         public string version;
+        #endregion
 
-        #region Constructeurs
+        #region Constructors
         public LoginForm(MainForm main)
         {
             InitializeComponent();
@@ -31,7 +37,7 @@ namespace BlueSheep.Interface
         }
         #endregion
 
-        #region Méthodes interface
+        #region Interface methods
         private void linkLabelForgottenPassword_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start("http://bluesheepbot.com");
@@ -39,7 +45,7 @@ namespace BlueSheep.Interface
 
         private void linkLabelCreateAccount_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start("http://bluesheepbot.com/SignIn.php");
+            Process.Start("http://bluesheepbot.com/signup.php");
         }
 
         private void textBoxPassword_GotFocus(object sender, EventArgs e)
@@ -123,7 +129,7 @@ namespace BlueSheep.Interface
                     string[] RegSplit = match.ToString().Split('=');
                     nbPremium = Convert.ToInt32(RegSplit[1]);
                 }
-                mainfrm = new MainForm(nbPremium, version);
+                mainfrm = new MainForm(version);
                 mainfrm.Show();
                 Hide();
                 
@@ -133,9 +139,11 @@ namespace BlueSheep.Interface
                 MessageBox.Show("Echec de connexion. Vérifiez votre connexion :\n" + exception.Message);
             }
         }
+#endregion
 
+        #region Crypt functions
         //MD5
-        public string ConvertMD5(string value)
+        private string ConvertMD5(string value)
         {
             MD5 md = MD5.Create();
             byte[] data = md.ComputeHash(Encoding.Default.GetBytes(value));
@@ -147,7 +155,7 @@ namespace BlueSheep.Interface
             return sb.ToString();
         }
         //SHA1
-        public string ConvertSHA1(string value)
+        private string ConvertSHA1(string value)
         {
             SHA1 sha = SHA1.Create();
             byte[] data = sha.ComputeHash(Encoding.Default.GetBytes(value));
@@ -159,7 +167,7 @@ namespace BlueSheep.Interface
             return sb.ToString();
         }
         //SHA256
-        public string ConvertSHA256(string value)
+        private string ConvertSHA256(string value)
         {
             SHA256 sha = SHA256.Create();
             byte[] data = sha.ComputeHash(Encoding.Default.GetBytes(value));

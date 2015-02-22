@@ -5,7 +5,7 @@ namespace BlueSheep.Engine.Types
 {
     class InstanceInfo
     {
-        #region Propriétés
+        #region Properties
         public uint ProtocolID { get; set; }
 
         public Type MessageType { get; set; }

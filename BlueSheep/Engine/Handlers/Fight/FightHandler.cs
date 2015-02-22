@@ -19,7 +19,7 @@ namespace BlueSheep.Engine.Handlers.Fight
 {
     class FightHandler
     {
-        #region Méthodes publiques
+        #region Public methods
         [MessageHandler(typeof(GameActionFightDeathMessage))]
         public static void GameActionFightDeathMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {

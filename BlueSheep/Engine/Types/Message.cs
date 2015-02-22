@@ -4,11 +4,11 @@ namespace BlueSheep.Engine.Types
 {
     public abstract class Message
     {
-        #region Propriétés
+        #region Properties
         public abstract uint ProtocolID { get; }
         #endregion
 
-        #region Méthodes publiques
+        #region Public methods
         public abstract void Serialize(BigEndianWriter writer);
 
         public abstract void Deserialize(BigEndianReader reader);

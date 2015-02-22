@@ -13,6 +13,10 @@
 
     public class HeroicUC : UserControl
     {
+        /// <summary>
+        /// Represents the heroic mode tab of the main accountUC.
+        /// </summary>
+
         #region Fields
         private IContainer components = null;
         private TextBox AllianceTxtBAgro;
@@ -114,7 +118,7 @@
         }
 #endregion
 
-        #region PrivateMethods
+        #region Private Methods
         private void Agression(int targetid)
         {
             GameRolePlayPlayerFightRequestMessage packet = new GameRolePlayPlayerFightRequestMessage

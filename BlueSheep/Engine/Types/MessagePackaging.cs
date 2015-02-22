@@ -6,12 +6,12 @@ namespace BlueSheep.Engine.Types
 {
     class MessagePackaging
     {
-        #region Attributs
+        #region Fields
         private BigEndianWriter m_Writer;
         private byte[] m_Packet;
         #endregion
 
-        #region Propriétés
+        #region Properties
         public BigEndianWriter Writer
         {
             get { return m_Writer; }
@@ -26,7 +26,7 @@ namespace BlueSheep.Engine.Types
         }
         #endregion
 
-        #region Méthodes publiques
+        #region Public methods
         public void Pack(int protocolID)
         {
             int index = 0;
@@ -74,7 +74,7 @@ namespace BlueSheep.Engine.Types
         }
         #endregion
 
-        #region Méthodes privées
+        #region Private methods
         private int GetLenghtType()
         {
             // Différents types de tailles

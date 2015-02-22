@@ -10,7 +10,7 @@ namespace BlueSheep.Engine.Treatment
 {
     class Treatment
     {
-        #region Attributs
+        #region Fields
         private readonly List<InstanceInfo> m_Instances = new List<InstanceInfo>();
         private AccountUC account;
         #endregion
@@ -23,7 +23,7 @@ namespace BlueSheep.Engine.Treatment
         }
         #endregion
 
-        #region Méthodes publiques
+        #region Public methods
         public void Treat(int packetID, byte[] packetDatas)
         {
             
@@ -51,7 +51,7 @@ namespace BlueSheep.Engine.Treatment
         }
         #endregion
 
-        #region Méthodes privées
+        #region Private methods
         private void GetTypes(string assemblyName)
         {
             Assembly assembly = Assembly.Load(assemblyName);

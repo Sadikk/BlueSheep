@@ -9,7 +9,7 @@ namespace BlueSheep.Common.Types
 {
     public class Pet
     {
-        #region Propriétés
+        #region Properties
         public Core.Inventory.Item Informations { get; set; }
 
         public DataClass Datas { get; set; }
@@ -38,7 +38,7 @@ namespace BlueSheep.Common.Types
         }
         #endregion
 
-        #region Méthodes publiques
+        #region Public methods
         public void Set()
         {
             MealInterval = MealIntervals.GetMealIntervals(Datas.Name);

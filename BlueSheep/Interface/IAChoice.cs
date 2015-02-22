@@ -16,8 +16,15 @@ namespace BlueSheep.Interface
 {
     public partial class IAChoice : Form
     {
-        AccountUC Account;
+        /// <summary>
+        /// AI Choice form.
+        /// </summary>
 
+        #region Fields
+        AccountUC Account;
+        #endregion
+
+        #region Constructors
         public IAChoice(AccountUC account)
         {
             InitializeComponent();
@@ -48,7 +55,9 @@ namespace BlueSheep.Interface
                 }
             }
         }
+        #endregion
 
+        #region Public methods
         public object DeserializeDisp(string file)
         {
             try
@@ -146,8 +155,7 @@ namespace BlueSheep.Interface
             sr.Close();
             return spells;
         }
-
-        
+        #endregion
 
         #region Méthodes d'interface
         private void FilesList_SelectedIndexChanged(object sender, EventArgs e)
@@ -168,7 +176,7 @@ namespace BlueSheep.Interface
                 this.Close();
             }
         }
-        #endregion
+        
 
         private void LoadBt_Click(object sender, EventArgs e)
         {
@@ -196,6 +204,8 @@ namespace BlueSheep.Interface
 
             }
         }
+
+        #endregion
 
     }
 }

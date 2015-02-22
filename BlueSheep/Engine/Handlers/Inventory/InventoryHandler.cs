@@ -13,7 +13,7 @@ namespace BlueSheep.Engine.Handlers.Inventory
 {
     class InventoryHandler
     {
-        #region Méthodes publiques
+        #region Public methods
         [MessageHandler(typeof(InventoryContentMessage))]
         public static void InventoryContentMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {

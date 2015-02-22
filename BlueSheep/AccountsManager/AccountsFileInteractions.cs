@@ -11,7 +11,7 @@ namespace BlueSheep.AccountsManager
 {
     class AccountsFileInteractions
     {
-        #region Attributs
+        #region Fields
         private List<Account> m_Accounts = new List<Account>();
         private List<AccountUC> m_GroupAccounts = new List<AccountUC>();
         public List<Group> Groups = new List<Group>();
@@ -19,13 +19,15 @@ namespace BlueSheep.AccountsManager
         private readonly string m_SavingDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep";
         private readonly string m_SavingGroupDirectoryPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Groups";
         #endregion
-        #region Propriétés
+
+        #region Properties
         public List<Account> Accounts
         {
             get { return m_Accounts; }
         }
         #endregion
-        #region Méthodes publiques
+
+        #region Public methods
         public void SaveAccountsInfos(List<Bot> bots)
         {
             foreach (Bot bot in bots)

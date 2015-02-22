@@ -12,7 +12,7 @@ namespace BlueSheep.Core
 {
     public class Running
     {
-        #region Attributs
+        #region Fields
         private int m_CurrentPetIndex;
         private Openning m_Openning;
         private Leaving m_Leaving;
@@ -23,7 +23,7 @@ namespace BlueSheep.Core
         private AccountUC account;
         #endregion
 
-        #region Propriétés
+        #region Properties
         public Leaving Leaving
         {
             get { return m_Leaving; }
@@ -79,7 +79,7 @@ namespace BlueSheep.Core
         }
         #endregion
 
-        #region Méthodes publiques
+        #region Public methods
         public void Init()
         {
             if (m_CurrentPetIndex == account.petsList.Count)//MainForm.ActualMainForm.MainRunning.CurrentBot.PetsList.Count)
@@ -212,7 +212,7 @@ namespace BlueSheep.Core
         }
         #endregion
 
-        #region Méthodes privées
+        #region Private methods
         private static bool CheckTime(Pet pet)
         {
             DateTime nextMeal = new DateTime(pet.NextMeal.Year, pet.NextMeal.Month, pet.NextMeal.Day, pet.NextMeal.Hour,

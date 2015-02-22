@@ -4,12 +4,12 @@ namespace BlueSheep.Interface.Text
 {
     class CharacterTextInformation : TextInformation
     {
-        #region Attributs
+        #region Fields
         private string m_Text;
         private string m_Category;
         #endregion
 
-        #region Propriétés
+        #region Properties
         public override string Text
         {
             get { return m_Text; }

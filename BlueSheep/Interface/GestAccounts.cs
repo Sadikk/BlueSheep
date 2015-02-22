@@ -17,7 +17,15 @@ namespace BlueSheep.Interface
 {
     public partial class GestAccounts : Form
     {
+        /// <summary>
+        /// Account manager.
+        /// </summary>
+
+        #region Fields
         MainForm m_Form;
+        #endregion
+
+        #region Constructors
         public GestAccounts(MainForm mainfrm)
         {
             InitializeComponent();
@@ -65,9 +73,14 @@ namespace BlueSheep.Interface
                     break;
             }
             listViewAccounts.Columns[1].Width = 0;
+
             LoadAccounts();
             m_Form = mainfrm;
         }
+        #endregion
+
+        #region Interface methods
+
         private void LaunchAccountsSelecBt_Click(object sender, EventArgs e)
         {
             foreach (ListViewItem account in listViewAccounts.SelectedItems)
@@ -80,6 +93,7 @@ namespace BlueSheep.Interface
                 }
                 else
                 {
+                    // TODO : Automate the dll injection
                     Process proc = new Process();
                     proc.StartInfo.FileName = MainForm.ActualMainForm.DofusPath + @"\app\Dofus.exe";
                     proc.Start();
@@ -96,7 +110,7 @@ namespace BlueSheep.Interface
                     // this.Close();
                     // }
                     //}
-                    DllInjector.GetInstance.Inject((uint)proc.Id, @"C:\Users\Valentin\Desktop\Bin\No.Ankama.dll");
+                    //DllInjector.GetInstance.Inject((uint)proc.Id, @"C:\Users\Valentin\Desktop\Bin\No.Ankama.dll");
 
                     AccountFrm frm = new AccountFrm(account.SubItems[0].Text, account.SubItems[1].Text, false);
                     frm.Show();
@@ -192,7 +206,7 @@ namespace BlueSheep.Interface
         private void DelBt_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < listViewAccounts.SelectedItems.Count; i++)
-            //parcours des comtpes sélectionnés
+            //parcours des comptes sélectionnés
             {
                 ListViewItem listViewItem2 = listViewAccounts.SelectedItems[i];
                 // Sauvegarde des comptes
@@ -207,6 +221,15 @@ namespace BlueSheep.Interface
                 listViewAccounts.Items.Remove(listViewItem2);
             }
         }
+
+        private void IsMITM_CheckedChanged(object sender)
+        {
+            MessageBox.Show("La fonction MITM est encore experimental.");
+        }
+
+        #endregion
+
+        #region Private methods
         private void LoadAccounts()
         {
             AccountsFileInteractions accountsFileInteractions = new AccountsFileInteractions();
@@ -218,10 +241,8 @@ namespace BlueSheep.Interface
                 listViewAccounts.Items.Add(li);
             }
         }
+        #endregion
 
-        private void IsMITM_CheckedChanged(object sender)
-        {
-            MessageBox.Show("La fonction MITM est encore experimental.");
-        }
+
     }
 }

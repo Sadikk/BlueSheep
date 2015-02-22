@@ -14,10 +14,17 @@ namespace BlueSheep.Interface
 {
     public partial class JobUC : UserControl
     {
+        /// <summary>
+        /// Represents the Jobs tab of the main accountUC.
+        /// </summary>
+
+        #region Fields
         private AccountUC account;
         private Job job;
         private delegate void DelegGatherPie(Dictionary<string,int> ressources);
+        #endregion
 
+        #region Constructors
         public JobUC(AccountUC Account, Job j)
         {
             InitializeComponent();
@@ -38,7 +45,9 @@ namespace BlueSheep.Interface
             gg.Columns.Add("RecipeId", "Id");
             gg.ReadOnly = true;
         }
+        #endregion
 
+        #region Public Methods
         public void ActualizeStats(Dictionary<string, int> ressourcesGathered)
         {
             if (GatherPie.InvokeRequired)
@@ -72,14 +81,6 @@ namespace BlueSheep.Interface
                 p1.LegendText = pair.Key;
                 i += 1;
             }
-            //series1.Points.Add(70000);
-            //series1.Points.Add(30000);
-            //var p1 = series1.Points[0];
-            //p1.AxisLabel = "70000";
-            //p1.LegendText = "Hiren Khirsaria";
-            //var p2 = series1.Points[1];
-            //p2.AxisLabel = "30000";
-            //p2.LegendText = "ABC XYZ";
             GatherPie.Invalidate();
         }
 
@@ -90,5 +91,6 @@ namespace BlueSheep.Interface
                 account.Log(new ErrorTextInformation("L'outil n'est pas équipé :( "),0);
             return job.HasRightTool();
         }
+        #endregion
     }
 }

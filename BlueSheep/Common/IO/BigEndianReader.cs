@@ -6,11 +6,11 @@ namespace BlueSheep.Common.IO
 {
     public class BigEndianReader : IDisposable
     {
-        #region Attributs
+        #region Fields
         private BinaryReader m_BinaryReader;
         #endregion
 
-        #region Propriétés
+        #region Properties
         public long BytesAvailable
         {
             get { return (m_BinaryReader.BaseStream.Length - m_BinaryReader.BaseStream.Position); }
@@ -44,7 +44,7 @@ namespace BlueSheep.Common.IO
         }
         #endregion
 
-        #region Méthodes publiques
+        #region Public methods
         public byte ReadByte()
         {
             return m_BinaryReader.ReadByte();
@@ -334,7 +334,7 @@ namespace BlueSheep.Common.IO
         }
         #endregion
 
-        #region Méthodes privées
+        #region Private methods
         private byte[] ConvertToBigEndian(int count)
         {
             byte[] convertedContent = new byte[count];

@@ -8,7 +8,7 @@ namespace BlueSheep.Core.Storage
 {
     class Openning
     {
-        #region Méthodes publiques
+        #region Public methods
         public void Init(AccountUC account)
         {
             int skillUID = 0;

@@ -19,7 +19,7 @@ namespace BlueSheep.Core.Map
 {
     public class Map : BlueSheep.Data.D2p.Map
     {
-        #region Attributs
+        #region Fields
         //m_AccountUC m_Account;
         //bool AutoTimeout { get; }
         //Entity Character { get; }
@@ -36,7 +36,7 @@ namespace BlueSheep.Core.Map
         public List<BlueSheep.Common.Types.MonsterGroup> List;
         #endregion
 
-#region Propriétés
+#region Properties
         public AccountUC m_Account { get; set; }
         public bool AutoTimeout { get; private set; }
 
@@ -133,7 +133,7 @@ namespace BlueSheep.Core.Map
 
         #endregion
 
-        #region Méthodes publiques
+        #region Public methods
         public int WorldId
         {
             //get { return ObjectDataManager.Instance.Get<RebirthAPI.Protocol.Data.MapPosition>(Id).worldMap; }

@@ -11,7 +11,7 @@ namespace BlueSheep.Engine.Enums
         private const uint m_Full = 7;
         #endregion
 
-        #region Méthodes publiques
+        #region Public methods
         public static void Test(uint status, AccountUC account)
         {
             switch (status)

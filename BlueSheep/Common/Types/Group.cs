@@ -4,7 +4,7 @@ namespace BlueSheep.Common.Types
 {
     public class Group
     {
-        #region Attributs
+        #region Fields
         public List<AccountUC> accounts;
         public string name;
         #endregion

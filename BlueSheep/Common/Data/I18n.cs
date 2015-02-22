@@ -2,7 +2,7 @@
 {
     class I18N
     {
-        #region Attributs
+        #region Fields
         private static I18NFileAccessor m_I18NFileAccessor;
         #endregion
 
@@ -13,7 +13,7 @@
         }
         #endregion
 
-        #region Méthodes publiques
+        #region Public methods
         public static string GetText(int id)
         {
             string result = m_I18NFileAccessor.GetText(id);

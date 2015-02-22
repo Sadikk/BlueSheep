@@ -9,11 +9,11 @@ namespace BlueSheep.Core.Storage
 {
     public class Leaving
     {
-        #region Attributs
+        #region Fields
         private AccountUC account;
         #endregion
 
-        #region Méthodes publiques
+        #region Public methods
 
         public Leaving(AccountUC accountform)
         {

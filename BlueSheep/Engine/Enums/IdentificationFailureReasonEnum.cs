@@ -5,14 +5,14 @@ namespace BlueSheep.Engine.Enums
 {
     class IdentificationFailureReasonEnum
     {
-        #region Attributs
+        #region Fields
         private const int m_WrongCredentials = 2;
         private const int m_Banned = 3;
         private const int m_Kicked = 4;
         private const int m_InMaintenance = 5;
         #endregion
 
-        #region Méthodes publiques
+        #region Public methods
         public static void Test(int reason, AccountUC account)
         {
             switch (reason)

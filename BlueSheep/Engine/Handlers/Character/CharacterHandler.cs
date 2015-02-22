@@ -13,7 +13,7 @@ namespace BlueSheep.Engine.Handlers.Character
 {
     class CharacterHandler
     {
-        #region Méthodes publiques
+        #region Public methods
         [MessageHandler(typeof(CharactersListMessage))]
         public static void CharactersListMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {

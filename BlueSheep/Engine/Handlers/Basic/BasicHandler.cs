@@ -10,7 +10,7 @@ namespace BlueSheep.Engine.Handlers.Basic
 {
     class BasicHandler
     {
-        #region Méthodes publiques
+        #region Public methods
         [MessageHandler(typeof(SequenceNumberRequestMessage))]
         public static void SequenceNumberRequestMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -172,7 +172,7 @@ namespace BlueSheep.Engine.Handlers.Basic
         
         #endregion
 
-        #region Méthodes privées
+        #region Private methods
         private static int GetRandomTime()
         {
             Random random = new Random();

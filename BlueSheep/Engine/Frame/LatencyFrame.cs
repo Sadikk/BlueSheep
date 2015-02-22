@@ -7,7 +7,7 @@ namespace BlueSheep.Engine.Frame
 {
     public class LatencyFrame
     {
-        #region Attributs
+        #region Fields
         private uint m_LatestSent;
         private readonly List<uint> m_LatencyBuffer;
         private const uint m_LatencyAvgBufferSize = 50;
@@ -26,7 +26,7 @@ namespace BlueSheep.Engine.Frame
         }
         #endregion
 
-        #region Méthodes publiques
+        #region Public methods
         public void LowSend()
         {
             m_LatestSent = (uint)Environment.TickCount;

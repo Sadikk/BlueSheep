@@ -13,7 +13,7 @@ namespace BlueSheep.Engine.Network
 {
     public class SocketManager
     {
-        #region Attributs
+        #region Fields
         private Socket m_Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         private Socket m_RawSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         private Socket m_DofSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -28,7 +28,7 @@ namespace BlueSheep.Engine.Network
         public Dictionary<int, Socket> MITMClients;
         public int i = 0;
         #endregion
-        #region Propriétés
+        #region Properties
         public Socket Socket
         {
             get { return m_Socket; }
@@ -48,7 +48,7 @@ namespace BlueSheep.Engine.Network
                 account.LatencyFrame = new LatencyFrame(accountform);
         }
         #endregion
-        #region Méthodes publiques
+        #region Public methods
         public void DisconnectFromGUI()
         {
             if (m_ReceptionThread != null)
@@ -167,7 +167,7 @@ namespace BlueSheep.Engine.Network
                 m_DofSocket.Send(buffer);
         }
         #endregion
-        #region Méthodes privées
+        #region Private methods
         private void SocketReception()
         {
             m_MessageInformations = new MessageInformations(account);

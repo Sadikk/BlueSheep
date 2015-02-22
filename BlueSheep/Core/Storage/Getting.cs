@@ -11,10 +11,10 @@ namespace BlueSheep.Core.Storage
 {
     class Getting
     {
-        #region Attributs
+        #region Fields
         public AccountUC account;
         #endregion
-        #region Méthodes publiques
+        #region Public methods
 
         public Getting(AccountUC accountform)
         {

@@ -9,11 +9,11 @@ namespace BlueSheep.Interface.Text.Chat
 {
     class PrivateTextInformation : TextInformation
     {
-        #region Attributs
+        #region Fields
             private string m_Text;
             #endregion
 
-            #region Propriétés
+        #region Properties
             public override string Text
             {
                 get { return m_Text; }
@@ -38,7 +38,7 @@ namespace BlueSheep.Interface.Text.Chat
             }
             #endregion
 
-            #region Constructeurs
+        #region Constructeurs
             public PrivateTextInformation(string text)
             {
                 m_Text = text;

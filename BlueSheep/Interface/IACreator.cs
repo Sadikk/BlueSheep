@@ -16,10 +16,18 @@ namespace BlueSheep.Interface
 {
     public partial class IACreator : Form
     {
+        /// <summary>
+        /// AI Creation form.
+        /// </summary>
+
+
         //TODO Traduire en anglais ces vieux noms
+        #region Fields
         AccountUC Account;
         private List<BSpell> SpellsList { get; set; }
+        #endregion
 
+        #region Constructors
         public IACreator(AccountUC account)
         {
             InitializeComponent();
@@ -56,27 +64,9 @@ namespace BlueSheep.Interface
                     break;
             }
         }
+        #endregion
 
-        public void FillSpells()
-        {
-            ChoixSorts.Items.Clear();
-            foreach (Spell spell in Account.Spells)
-            {
-                ChoixSorts.Items.Add(spell.GetName());
-            }
-            SpellsList = new List<BSpell>();
-            ChoixTactique.SelectedIndex = 1;
-            ChoixPlacement.SelectedIndex = 1;
-            ChoixCible.SelectedIndex = 1;
-            //ChoixMonsterName.Hide();
-            //sadikLabel3.Hide();
-            MonsterTextBox.Text = "Nom du monstre";
-            ChoixSorts.SelectedIndex = 1;
-            sadikLabel12.Hide();
-            ChoixFarCells.Hide();
-        }
-
-        #region méthodes d'interface
+        #region Interface Methods
         private void AddBt_Click(object sender, EventArgs e)
         {
             //string CaC = null;
@@ -101,6 +91,38 @@ namespace BlueSheep.Interface
 	spell.Target.ToString(),
 " Vie inférieure à " + spell.TargetLife.ToString() + "% Cible :" + Mob
 });
+        }
+
+        private void SaveIABt_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                dynamic iapath = saveFileDialog1.FileName;
+                Display Disp = new Display(ChoixName.Text, ChoixAuteur.Text, ChoixClasse.Text, ChoixVersion.Value);
+                FightConfig Config = new FightConfig(ChoixTactique.SelectedText, ChoixPlacement.SelectedText, (int)ChoixFarCells.Value);
+                Serialize(Disp, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\disp.xml");
+                Serialize(Config, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\config.xml");
+                Serialize(SpellsList, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\spells.xml");
+                compression(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\", iapath);
+                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\disp.xml");
+                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\config.xml");
+                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\disp.xml");
+                this.Close();
+            }
+        }
+
+        private void ChoixTactique_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ChoixTactique.SelectedText == "Fuyard")
+            {
+                sadikLabel12.Show();
+                ChoixFarCells.Show();
+            }
+            else
+            {
+                sadikLabel12.Hide();
+                ChoixFarCells.Hide();
+            }
         }
 
         private void UpBt_Click(object sender, EventArgs e)
@@ -140,29 +162,6 @@ namespace BlueSheep.Interface
             }
         }
 
-        public void RefreshSpellsList()
-        {
-            ResumeIA.Items.Clear();
-            SpellsList = SpellsList.OrderBy(s => s.Id).ToList();
-
-            if (SpellsList.Count != ResumeIA.Items.Count)
-            {
-                for (int i = 0; i <= SpellsList.Count - 1; i++)
-                {
-                    SpellsList[i].Id = i;
-                }
-            }
-
-            foreach (BSpell spell in SpellsList)
-            {
-                ResumeIA.Items.Add(spell.Id.ToString()).SubItems.AddRange(new string[] {
-			spell.Name,
-			spell.Turns.ToString() + "/" + spell.Relaunch.ToString()
-		});
-            }
-
-        }
-
         private void DelBt_Click(object sender, EventArgs e)
         {
             if (ResumeIA.SelectedItems.Count == 0)
@@ -180,7 +179,8 @@ namespace BlueSheep.Interface
         }
         #endregion
 
-        public void compression(string DirectoryToZip, string TheZipFile)
+        #region Private methods
+        private void compression(string DirectoryToZip, string TheZipFile)
         {
             int i = 0;
             // index des fichiers de filestozip()
@@ -215,7 +215,26 @@ namespace BlueSheep.Interface
             ZipStream.Close();
         }
 
-        public void Serialize<T>(T obj, string sConfigFilePath)
+        private void FillSpells()
+        {
+            ChoixSorts.Items.Clear();
+            foreach (Spell spell in Account.Spells)
+            {
+                ChoixSorts.Items.Add(spell.GetName());
+            }
+            SpellsList = new List<BSpell>();
+            ChoixTactique.SelectedIndex = 1;
+            ChoixPlacement.SelectedIndex = 1;
+            ChoixCible.SelectedIndex = 1;
+            //ChoixMonsterName.Hide();
+            //sadikLabel3.Hide();
+            MonsterTextBox.Text = "Nom du monstre";
+            ChoixSorts.SelectedIndex = 1;
+            sadikLabel12.Hide();
+            ChoixFarCells.Hide();
+        }
+
+        private void Serialize<T>(T obj, string sConfigFilePath)
         {
 
                 System.Xml.Serialization.XmlSerializer XmlBuddy = new System.Xml.Serialization.XmlSerializer(typeof(T));
@@ -230,36 +249,29 @@ namespace BlueSheep.Interface
 
         }
 
-        private void SaveIABt_Click(object sender, EventArgs e)
+        private void RefreshSpellsList()
         {
-            if (saveFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            ResumeIA.Items.Clear();
+            SpellsList = SpellsList.OrderBy(s => s.Id).ToList();
+
+            if (SpellsList.Count != ResumeIA.Items.Count)
             {
-                dynamic iapath = saveFileDialog1.FileName;
-                Display Disp = new Display(ChoixName.Text, ChoixAuteur.Text, ChoixClasse.Text, ChoixVersion.Value);
-                FightConfig Config = new FightConfig(ChoixTactique.SelectedText, ChoixPlacement.SelectedText, (int)ChoixFarCells.Value);
-                Serialize(Disp, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\disp.xml");
-                Serialize(Config, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\config.xml");
-                Serialize(SpellsList, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\spells.xml");
-                compression(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\", iapath);
-                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\disp.xml");
-                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\config.xml");
-                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\disp.xml");
-                this.Close();
+                for (int i = 0; i <= SpellsList.Count - 1; i++)
+                {
+                    SpellsList[i].Id = i;
+                }
             }
+
+            foreach (BSpell spell in SpellsList)
+            {
+                ResumeIA.Items.Add(spell.Id.ToString()).SubItems.AddRange(new string[] {
+			spell.Name,
+			spell.Turns.ToString() + "/" + spell.Relaunch.ToString()
+		});
+            }
+
         }
 
-        private void ChoixTactique_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (ChoixTactique.SelectedText == "Fuyard")
-            {
-                sadikLabel12.Show();
-                ChoixFarCells.Show();
-            }
-            else
-            {
-                sadikLabel12.Hide();
-                ChoixFarCells.Hide();
-            }
-        }
+        #endregion
     }
 }

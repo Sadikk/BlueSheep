@@ -9,11 +9,11 @@ namespace BlueSheep.Interface.Text.Chat
 {
     class RecrutementTextInformation : TextInformation
     {
-            #region Attributs
+            #region Fields
             private string m_Text;
             #endregion
 
-            #region Propriétés
+            #region Properties
             public override string Text
             {
                 get { return m_Text; }

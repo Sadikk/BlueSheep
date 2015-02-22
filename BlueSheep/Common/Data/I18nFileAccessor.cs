@@ -7,7 +7,7 @@ namespace BlueSheep.Common.Data
 {
     class I18NFileAccessor
     {
-        #region Attributs
+        #region Fields
         private BigEndianReader m_Stream;
         private Dictionary<int, int> m_Indexes;
         private Dictionary<int, int> m_UnDiacriticalIndex;
@@ -16,7 +16,7 @@ namespace BlueSheep.Common.Data
         private Dictionary<int, int> m_TextSortIndex;
         #endregion
 
-        #region Méthodes publiques
+        #region Public methods
         public void Init(string filePath)
         {
             FileInfo fileInfo = new FileInfo(filePath);

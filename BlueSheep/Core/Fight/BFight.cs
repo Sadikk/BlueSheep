@@ -21,7 +21,7 @@ namespace BlueSheep.Core.Fight
 {
     public class BFight
     {
-        #region Attributs
+        #region Fields
         public AccountUC m_Account;
         private Object clock = new Object();
         public List<BSpell> m_Spells;

@@ -8,12 +8,12 @@ namespace BlueSheep.Core.Meal
 {
     public class Feeding
     {
-        #region Propriétés
+        #region Properties
         public bool SecondFeeding { get; set; }
         private AccountUC account;
         #endregion
 
-        #region Méthodes publiques
+        #region Public methods
 
         public Feeding(AccountUC accountform)
         {

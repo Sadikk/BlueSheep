@@ -13,14 +13,24 @@ namespace BlueSheep.Interface
 {
     public partial class DofusPathForm : Form
     {
+        /// <summary>
+        /// Selection form of the dofus path.
+        /// </summary>
+
+        #region Fields
         int flag = 0;
         MainForm mainfrm;
+        #endregion
+
+        #region Constructors
         public DofusPathForm(MainForm main)
         {
             InitializeComponent();
             mainfrm = main;
         }
+        #endregion
 
+        #region Interface methods
         private void BtValider_Click(object sender, EventArgs e)
         {
             if (flag == 0)
@@ -50,5 +60,6 @@ namespace BlueSheep.Interface
                 }
             }
         }
+        #endregion
     }
 }

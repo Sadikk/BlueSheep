@@ -4,7 +4,7 @@ namespace BlueSheep.Common.Constants
 {
     static class Effects
     {
-        #region Méthodes publiques
+        #region Public methods
         public static List<int> GetEffects(string petName)
         {
             switch (petName)

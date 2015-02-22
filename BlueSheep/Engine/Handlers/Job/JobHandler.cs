@@ -12,7 +12,7 @@ namespace BlueSheep.Engine.Handlers.Job
 {
     class JobHandler
     {
-         #region Méthodes publiques
+         #region Public methods
         [MessageHandler(typeof(JobDescriptionMessage))]
         public static void JobDescriptionMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {

@@ -7,7 +7,7 @@ namespace BlueSheep.Core.Storage
 {
     public class LeavingDialog
     {
-        #region Méthodes publiques
+        #region Public methods
         public void Init(AccountUC account)
         {
             LeaveDialogRequestMessage leaveDialogRequestMessage = new LeaveDialogRequestMessage();

@@ -2,7 +2,7 @@
 {
     class MealIntervals
     {
-        #region Méthodes publiques
+        #region Public methods
         public static int GetMealIntervals(string petName)
         {
             switch (petName)

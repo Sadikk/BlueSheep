@@ -12,7 +12,7 @@ namespace BlueSheep.Engine.Handlers.Connection
 {
     class ConnectionHandler
     {
-        #region Méthodes publiques
+        #region Public methods
         [MessageHandler(typeof(HelloConnectMessage))]
         public static void HelloConnectMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {

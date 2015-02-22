@@ -2,11 +2,11 @@
 {
     public class Account
     {
-        #region Attributs
+        #region Fields
         private readonly string m_Name;
         #endregion
 
-        #region Propriétés
+        #region Properties
         public string Name
         {
             get { return m_Name; }

@@ -11,11 +11,11 @@ namespace BlueSheep.Common.Types
 {
     public class Bot
     {
-        #region Attributs
+        #region Fields
         private readonly Account m_Account;
         #endregion
 
-        #region Propriétés
+        #region Properties
         public Account Account
         {
             get { return m_Account; }
@@ -70,7 +70,7 @@ namespace BlueSheep.Common.Types
         }
         #endregion
 
-        #region Méthodes publiques
+        #region Public methods
         public void Initialize()
         {
             NextMeal = new DateTime();
