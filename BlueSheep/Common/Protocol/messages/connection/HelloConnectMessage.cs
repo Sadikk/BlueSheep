@@ -42,7 +42,7 @@ namespace BlueSheep.Common.Protocol.Messages
         public override void Serialize(BigEndianWriter writer)
         {
             writer.WriteUTF(salt);
-            writer.WriteUShort((ushort)key.Length);
+            writer.WriteVarInt(key.Length);
             foreach (var entry in key)
             {
                  writer.WriteSByte(entry);

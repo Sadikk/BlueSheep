@@ -1061,6 +1061,12 @@
     <Compile Include="Common\Protocol\messages\web\krosmaster\KrosmasterPlayingStatusMessage.cs" />
     <Compile Include="Common\Protocol\messages\web\krosmaster\KrosmasterTransferMessage.cs" />
     <Compile Include="Common\Protocol\messages\web\krosmaster\KrosmasterTransferRequestMessage.cs" />
+    <Compile Include="Common\Protocol\types\common\basic\StatisticData.cs" />
+    <Compile Include="Common\Protocol\types\common\basic\StatisticDataBoolean.cs" />
+    <Compile Include="Common\Protocol\types\common\basic\StatisticDataByte.cs" />
+    <Compile Include="Common\Protocol\types\common\basic\StatisticDataInt.cs" />
+    <Compile Include="Common\Protocol\types\common\basic\StatisticDataShort.cs" />
+    <Compile Include="Common\Protocol\types\common\basic\StatisticDataString.cs" />
     <Compile Include="Common\Protocol\types\ProtocolTypeManager.cs" />
     <Compile Include="Common\Protocol\types\connection\GameServerInformations.cs" />
     <Compile Include="Common\Protocol\types\game\achievement\Achievement.cs" />
