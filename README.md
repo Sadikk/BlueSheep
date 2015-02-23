@@ -13,6 +13,7 @@ Visual Studio 2013
 TODO
 ----
 Check all the //TODO in order to find what is needed.
+Maj 2.27
 Anti-bot bypass is almost complete but not entirely.
 
 MAINTAINERS
