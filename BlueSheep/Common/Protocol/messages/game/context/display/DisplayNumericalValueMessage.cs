@@ -18,39 +18,39 @@ using BlueSheep.Engine.Types;
 
 namespace BlueSheep.Common.Protocol.Messages
 {
-    public class DisplayNumericalValueMessage : Message
+    public class DisplayNumericalValuePaddockMessage : Message
     {
-        public new const uint ID =5808;
+        public new const uint ID =6563;
         public override uint ProtocolID
         {
             get { return ID; }
         }
         
-        public int entityId;
+        public int rideId;
         public int value;
         public sbyte type;
         
-        public DisplayNumericalValueMessage()
+        public DisplayNumericalValuePaddockMessage()
         {
         }
         
-        public DisplayNumericalValueMessage(int entityId, int value, sbyte type)
+        public DisplayNumericalValuePaddockMessage(int entityId, int value, sbyte type)
         {
-            this.entityId = entityId;
+            this.rideId = entityId;
             this.value = value;
             this.type = type;
         }
         
         public override void Serialize(BigEndianWriter writer)
         {
-            writer.WriteInt(entityId);
+            writer.WriteInt(rideId);
             writer.WriteInt(value);
             writer.WriteSByte(type);
         }
         
         public override void Deserialize(BigEndianReader reader)
         {
-            entityId = reader.ReadInt();
+            rideId = reader.ReadInt();
             value = reader.ReadInt();
             type = reader.ReadSByte();
             if (type < 0)

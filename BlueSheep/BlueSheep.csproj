@@ -372,10 +372,13 @@
     <Compile Include="Common\Protocol\messages\game\context\fight\GameFightOptionToggleMessage.cs" />
     <Compile Include="Common\Protocol\messages\game\context\fight\GameFightPlacementPositionRequestMessage.cs" />
     <Compile Include="Common\Protocol\messages\game\context\fight\GameFightPlacementPossiblePositionsMessage.cs" />
+    <Compile Include="Common\Protocol\messages\game\context\fight\GameFightPlacementSwapPositionsAcceptMessage.cs" />
     <Compile Include="Common\Protocol\messages\game\context\fight\GameFightPlacementSwapPositionsCancelledMessage.cs" />
+    <Compile Include="Common\Protocol\messages\game\context\fight\GameFightPlacementSwapPositionsCancelMessage.cs" />
     <Compile Include="Common\Protocol\messages\game\context\fight\GameFightPlacementSwapPositionsErrorMessage.cs" />
     <Compile Include="Common\Protocol\messages\game\context\fight\GameFightPlacementSwapPositionsMessage.cs" />
     <Compile Include="Common\Protocol\messages\game\context\fight\GameFightPlacementSwapPositionsOfferMessage.cs" />
+    <Compile Include="Common\Protocol\messages\game\context\fight\GameFightPlacementSwapPositionsRequestMessage.cs" />
     <Compile Include="Common\Protocol\messages\game\context\fight\GameFightReadyMessage.cs" />
     <Compile Include="Common\Protocol\messages\game\context\fight\GameFightRemoveTeamMemberMessage.cs" />
     <Compile Include="Common\Protocol\messages\game\context\fight\GameFightResumeMessage.cs" />

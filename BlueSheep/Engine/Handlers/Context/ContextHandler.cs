@@ -752,10 +752,10 @@ namespace BlueSheep.Engine.Handlers.Context
             }
         }
 
-        [MessageHandler(typeof(DisplayNumericalValueMessage))]
+        [MessageHandler(typeof(DisplayNumericalValuePaddockMessage))]
         public static void DisplayNumericalValueMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
-            DisplayNumericalValueMessage msg = (DisplayNumericalValueMessage)message;
+            DisplayNumericalValuePaddockMessage msg = (DisplayNumericalValuePaddockMessage)message;
 
             using (BigEndianReader reader = new BigEndianReader(packetDatas))
             {

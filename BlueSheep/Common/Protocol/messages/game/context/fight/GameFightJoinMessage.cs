@@ -52,7 +52,8 @@ namespace BlueSheep.Common.Protocol.Messages
             flag1 = BooleanByteWrapper.SetFlag(flag1, 1, canSayReady);
             flag1 = BooleanByteWrapper.SetFlag(flag1, 2, isFightStarted);
             writer.WriteByte(flag1);
-            writer.WriteInt(timeMaxBeforeFightStart);
+            //writer.WriteInt(timeMaxBeforeFightStart);
+            writer.WriteShort((short)timeMaxBeforeFightStart);
             writer.WriteSByte(fightType);
         }
         
@@ -62,7 +63,8 @@ namespace BlueSheep.Common.Protocol.Messages
             canBeCancelled = BooleanByteWrapper.GetFlag(flag1, 0);
             canSayReady = BooleanByteWrapper.GetFlag(flag1, 1);
             isFightStarted = BooleanByteWrapper.GetFlag(flag1, 2);
-            timeMaxBeforeFightStart = reader.ReadInt();
+            //timeMaxBeforeFightStart = reader.ReadInt();
+            timeMaxBeforeFightStart = reader.ReadShort();
             if (timeMaxBeforeFightStart < 0)
                 throw new Exception("Forbidden value on timeMaxBeforeFightStart = " + timeMaxBeforeFightStart + ", it doesn't respect the following condition : timeMaxBeforeFightStart < 0");
             fightType = reader.ReadSByte();
