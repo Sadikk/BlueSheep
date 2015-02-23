@@ -66,8 +66,9 @@ public HouseInformationsInside(int houseId, short modelId, int ownerId, string o
 public virtual void Serialize(BigEndianWriter writer)
 {
 
-writer.WriteInt(houseId);
-            writer.WriteVarShort(modelId);
+//writer.WriteInt(houseId);
+    writer.WriteVarInt(houseId);
+    writer.WriteVarShort(modelId);
             writer.WriteInt(ownerId);
             writer.WriteUTF(ownerName);
             writer.WriteShort(worldX);
@@ -81,8 +82,9 @@ writer.WriteInt(houseId);
 public virtual void Deserialize(BigEndianReader reader)
 {
 
-houseId = reader.ReadInt();
-            if (houseId < 0)
+//houseId = reader.ReadInt();
+    houseId = reader.ReadVarInt();
+    if (houseId < 0)
                 throw new Exception("Forbidden value on houseId = " + houseId + ", it doesn't respect the following condition : houseId < 0");
             modelId = reader.ReadVarShort();
             if (modelId < 0)

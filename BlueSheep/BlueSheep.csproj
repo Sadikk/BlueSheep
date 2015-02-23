@@ -81,7 +81,7 @@
   <ItemGroup>
     <Reference Include="DevComponents.DotNetBar2, Version=11.6.0.4, Culture=neutral, PublicKeyToken=7eb7c3a35b91de04, processorArchitecture=MSIL" />
     <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>..\..\Autres\Rebirth\Rebirth\Bin\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>..\..\..\..\AppData\Roaming\BlueSheep\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -1061,6 +1061,7 @@
     <Compile Include="Common\Protocol\messages\web\krosmaster\KrosmasterPlayingStatusMessage.cs" />
     <Compile Include="Common\Protocol\messages\web\krosmaster\KrosmasterTransferMessage.cs" />
     <Compile Include="Common\Protocol\messages\web\krosmaster\KrosmasterTransferRequestMessage.cs" />
+    <Compile Include="Common\Protocol\types\game\context\roleplay\job\DecraftedItemStackInfo.cs" />
     <Compile Include="Common\Protocol\types\ProtocolTypeManager.cs" />
     <Compile Include="Common\Protocol\types\connection\GameServerInformations.cs" />
     <Compile Include="Common\Protocol\types\game\achievement\Achievement.cs" />

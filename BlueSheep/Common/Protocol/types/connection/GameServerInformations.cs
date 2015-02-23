@@ -36,7 +36,7 @@ public virtual short TypeId
     get { return ID; }
 }
 
-public ushort id;
+        public ushort id;
         public sbyte status;
         public sbyte completion;
         public bool isSelectable;
@@ -62,20 +62,19 @@ public GameServerInformations(ushort id, sbyte status, sbyte completion, bool is
 public virtual void Serialize(BigEndianWriter writer)
 {
 
-writer.WriteUShort(id);
-            writer.WriteSByte(status);
-            writer.WriteSByte(completion);
-            writer.WriteBoolean(isSelectable);
-            writer.WriteSByte(charactersCount);
-            writer.WriteDouble(date);
-            
-
+    writer.WriteUShort(id);
+    writer.WriteSByte(status);
+    writer.WriteSByte(completion);
+    writer.WriteBoolean(isSelectable);
+    writer.WriteSByte(charactersCount);
+    writer.WriteDouble(date);
+           
 }
 
 public virtual void Deserialize(BigEndianReader reader)
 {
 
-id = reader.ReadUShort();
+            id = reader.ReadUShort();
             if (id < 0 || id > 65535)
                 throw new Exception("Forbidden value on id = " + id + ", it doesn't respect the following condition : id < 0 || id > 65535");
             status = reader.ReadSByte();

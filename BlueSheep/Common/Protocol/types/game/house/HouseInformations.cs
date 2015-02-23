@@ -61,8 +61,9 @@ public HouseInformations(int houseId, int[] doorsOnMap, string ownerName, short 
 public virtual void Serialize(BigEndianWriter writer)
 {
 
-writer.WriteInt(houseId);
-            writer.WriteUShort((ushort)doorsOnMap.Length);
+//writer.WriteInt(houseId);
+    writer.WriteVarInt(houseId);
+    writer.WriteUShort((ushort)doorsOnMap.Length);
             foreach (var entry in doorsOnMap)
             {
                  writer.WriteInt(entry);
@@ -78,8 +79,9 @@ public virtual void Deserialize(BigEndianReader reader)
              byte b = reader.ReadByte();
          this.isOnSale = BooleanByteWrapper.GetFlag(b,0);
          this.isSaleLocked = BooleanByteWrapper.GetFlag(b,1);
-         this.houseId = reader.ReadInt();
-            if (houseId < 0)
+       //  this.houseId = reader.ReadInt();
+         this.houseId = reader.ReadVarInt();     
+    if (houseId < 0)
                 throw new Exception("Forbidden value on houseId = " + houseId + ", it doesn't respect the following condition : houseId < 0");
             var limit = reader.ReadUShort();
             doorsOnMap = new int[limit];
