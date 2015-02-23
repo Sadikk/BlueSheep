@@ -60,7 +60,6 @@ namespace BlueSheep.Common.Protocol.Messages
             writer.WriteByte(flag1);
             version.Serialize(writer);
             writer.WriteUTF(lang);
-            //writer.WriteUShort((ushort)credentials.Length);
             writer.WriteVarInt(credentials.Length);
             foreach (var entry in credentials)
             {
@@ -79,7 +78,7 @@ namespace BlueSheep.Common.Protocol.Messages
             version = new Types.VersionExtended();
             version.Deserialize(reader);
             lang = reader.ReadUTF();
-            var limit = reader.ReadUShort();
+            var limit = reader.ReadVarInt();
             credentials = new sbyte[limit];
             for (int i = 0; i < limit; i++)
             {

@@ -81,7 +81,7 @@
   <ItemGroup>
     <Reference Include="DevComponents.DotNetBar2, Version=11.6.0.4, Culture=neutral, PublicKeyToken=7eb7c3a35b91de04, processorArchitecture=MSIL" />
     <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>..\..\..\..\AppData\Roaming\BlueSheep\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>..\..\Autres\Rebirth\Rebirth\Bin\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -1061,7 +1061,12 @@
     <Compile Include="Common\Protocol\messages\web\krosmaster\KrosmasterPlayingStatusMessage.cs" />
     <Compile Include="Common\Protocol\messages\web\krosmaster\KrosmasterTransferMessage.cs" />
     <Compile Include="Common\Protocol\messages\web\krosmaster\KrosmasterTransferRequestMessage.cs" />
-    <Compile Include="Common\Protocol\types\game\context\roleplay\job\DecraftedItemStackInfo.cs" />
+    <Compile Include="Common\Protocol\types\common\basic\StatisticData.cs" />
+    <Compile Include="Common\Protocol\types\common\basic\StatisticDataBoolean.cs" />
+    <Compile Include="Common\Protocol\types\common\basic\StatisticDataByte.cs" />
+    <Compile Include="Common\Protocol\types\common\basic\StatisticDataInt.cs" />
+    <Compile Include="Common\Protocol\types\common\basic\StatisticDataShort.cs" />
+    <Compile Include="Common\Protocol\types\common\basic\StatisticDataString.cs" />
     <Compile Include="Common\Protocol\types\ProtocolTypeManager.cs" />
     <Compile Include="Common\Protocol\types\connection\GameServerInformations.cs" />
     <Compile Include="Common\Protocol\types\game\achievement\Achievement.cs" />

@@ -20,6 +20,7 @@ MAINTAINERS
 -----------
 Current maintainers:
 - Sadik
+- MyHand
 
 USEFULL LINKS
 -------------

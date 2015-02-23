@@ -38,6 +38,8 @@ namespace BlueSheep.Common.Protocol.Messages
         
         public override void Deserialize(BigEndianReader reader)
         {
+            var _loc_2 = reader.ReadVarInt();
+            //param1.readBytes(this.content, 0, _loc_2);
         }
         
     }
