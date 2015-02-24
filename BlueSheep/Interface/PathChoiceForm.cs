@@ -51,9 +51,10 @@ namespace BlueSheep.Interface
         {
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                if (!File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Paths\" + openFileDialog1.SafeFileName))
+				string combinedPath = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData), "BlueSheep", "Paths", openFileDialog1.SafeFileName);
+				if (!File.Exists(combinedPath))
                 {
-                    File.Copy(openFileDialog1.FileName, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Paths\" + openFileDialog1.SafeFileName);
+					File.Copy(openFileDialog1.FileName, combinedPath);
                     FilesList.Items.Clear();
                     Init();
                 }
@@ -84,8 +85,9 @@ namespace BlueSheep.Interface
         private void Init()
         {
             //FilesList.Clear();
-            openFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Paths";
-            System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Paths");
+			string combinedPath = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData), "BlueSheep", "Paths");
+			openFileDialog1.InitialDirectory = combinedPath;
+			System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(combinedPath);
             if (di.GetFiles().Count() == 0)
             {
                 System.Windows.Forms.MessageBox.Show("Aucun trajet, veuillez en télécharger sur le forum ou créer le vôtre :) ");

@@ -51,7 +51,7 @@ namespace BlueSheep.Common.Cryptography
         #region Private methods
         private static RSACryptoServiceProvider DecodeX509PublicKey(byte[] X509Key) // Méthode de M4xou
         {
-            RSACryptoServiceProvider provider2;
+            RSACryptoServiceProvider provider2 = null;
             byte[] secondArray = new byte[] { 0x30, 13, 6, 9, 0x2a, 0x86, 0x48, 0x86, 0xf7, 13, 1, 1, 1, 5, 0 };
             byte[] buffer2 = new byte[15];
             MemoryStream input = new MemoryStream(X509Key);

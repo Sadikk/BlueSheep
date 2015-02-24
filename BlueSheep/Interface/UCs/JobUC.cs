@@ -55,8 +55,12 @@ namespace BlueSheep.Interface
                 Invoke(new DelegGatherPie(ActualizeStats), ressourcesGathered);
                 return;
             }
+			#if __MonoCS__
+
+			#else
             if (GatherPie.Titles.Count < 1)
                 GatherPie.Titles.Add("Ressources");
+            #endif
             GatherPie.Series.Clear();        
             GatherPie.ChartAreas[0].BackColor = Color.Transparent;
             Series series1 = new Series

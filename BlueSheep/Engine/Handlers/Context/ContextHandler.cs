@@ -762,7 +762,7 @@ namespace BlueSheep.Engine.Handlers.Context
                 msg.Deserialize(reader);
             }
             
-            if ((int)msg.type == 1 && msg.entityId == account.CharacterBaseInformations.id)
+			if ((int)msg.type == 1 && msg.rideId == account.CharacterBaseInformations.id)
             {
                 if (account.Gather.resourceName == "Unknown")
                     return;
