@@ -8,7 +8,7 @@ using BlueSheep.Engine.Types;
 
 namespace BlueSheep.Common.Protocol.messages.game.context.fight
 {
-    public class GameFightPlacementSwapPositionsRequestMessage
+    public class GameFightPlacementSwapPositionsRequestMessage : Message
     {
         public new const uint ID = 6541;
         public override uint ProtocolID
