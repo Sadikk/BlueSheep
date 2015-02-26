@@ -40,8 +40,8 @@ namespace BlueSheep
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("Veuillez lancer BlueSheep via l'updater !");
-                Application.Exit();
+               System.Windows.Forms.MessageBox.Show("Veuillez lancer BlueSheep via l'updater !");
+               Application.Exit();
             }
 
 
