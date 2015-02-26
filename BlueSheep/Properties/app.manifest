@@ -8,7 +8,7 @@
              Si vous souhaitez modifier le niveau du contrôle de compte d'utilisateur Windows, remplacez le nœud 
              requestedExecutionLevel par l'une des propositions suivantes.
 
-        <requestedExecutionLevel  level="asInvoker" uiAccess="false" />
+        <requestedExecutionLevel  level="requireAdmin" uiAccess="false" />
         <requestedExecutionLevel  level="requireAdministrator" uiAccess="false" />
         <requestedExecutionLevel  level="highestAvailable" uiAccess="false" />
 
@@ -16,7 +16,7 @@
             Si vous souhaitez utiliser la virtualisation de fichiers et du Registre pour la compatibilité 
             descendante, supprimez le noeud requestedExecutionLevel.
         -->
-        <requestedExecutionLevel level="requireAdministrator" uiAccess="false" />
+        <requestedExecutionLevel level="requireAdmin" uiAccess="false" />
       </requestedPrivileges>
       <applicationRequestMinimum>
         <defaultAssemblyRequest permissionSetReference="Custom" />
