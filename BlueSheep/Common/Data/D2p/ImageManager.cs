@@ -16,7 +16,7 @@ namespace BlueSheep.Data.D2p
         public static void Init(string DofusPath)
         {
             mDofusPath = DofusPath;
-			string directoryPath = Path.Combine (DofusPath, "content", "gfx", "items");
+            string directoryPath = Path.Combine (DofusPath, "content", "gfx", "items");
 			foreach (string File in Directory.GetFiles(directoryPath))
             {
                 if (File.Contains("bitmap"))
