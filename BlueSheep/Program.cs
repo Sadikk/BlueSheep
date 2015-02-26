@@ -14,7 +14,6 @@ namespace BlueSheep
         [STAThread]
         static void Main(string[] args)
         {
-			args = new string[] {"ok"};
             if (args[0] == "ok")
             {
                 try
