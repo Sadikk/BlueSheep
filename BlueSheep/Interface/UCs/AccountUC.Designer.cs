@@ -107,7 +107,7 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             #if __MonoCS__
 
-			#else
+            #else
             this.WinLoseFightPie = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.XpBarsChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             #endif
@@ -190,7 +190,7 @@
             this.tabPage4.SuspendLayout();
             #if __MonoCS__
 
-			#else
+            #else
             ((System.ComponentModel.ISupportInitialize)(this.WinLoseFightPie)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.XpBarsChart)).BeginInit();
             #endif
@@ -1027,9 +1027,9 @@
             this.tabPage4.BackColor = System.Drawing.Color.White;
             #if __MonoCS__
 
-			#else
-            	this.tabPage4.Controls.Add(this.WinLoseFightPie);
-            	this.tabPage4.Controls.Add(this.XpBarsChart);
+            #else
+            this.tabPage4.Controls.Add(this.WinLoseFightPie);
+            this.tabPage4.Controls.Add(this.XpBarsChart);
             #endif
             this.tabPage4.Location = new System.Drawing.Point(4, 34);
             this.tabPage4.Name = "tabPage4";
@@ -1039,7 +1039,7 @@
             this.tabPage4.Text = "Statistiques";
             #if __MonoCS__
 
-			#else
+            #else
             // 
             // WinLoseFightPie
             // 

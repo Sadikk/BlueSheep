@@ -17,7 +17,7 @@ namespace BlueSheep.Data.D2p
         {
             mDofusPath = DofusPath;
             string directoryPath = Path.Combine (DofusPath, "content", "gfx", "items");
-			foreach (string File in Directory.GetFiles(directoryPath))
+            foreach (string File in Directory.GetFiles(directoryPath))
             {
                 if (File.Contains("bitmap"))
                 {
@@ -95,8 +95,8 @@ namespace BlueSheep.Data.D2p
                 try
                 {
                     Image GFXItem = null;
-					string directoryPath = Path.Combine ((string)mDofusPath, "content", "gfx", "items", "bitmap" + i + ".d2p");
-					mystream = new FileStream(directoryPath, FileMode.Open, FileAccess.Read);
+                    string directoryPath = Path.Combine ((string)mDofusPath, "content", "gfx", "items", "bitmap" + i + ".d2p");
+                    mystream = new FileStream(directoryPath, FileMode.Open, FileAccess.Read);
                     int[] numArray = DictionnaryItemGFX[IconId.ToString() + ".png"];
                     mystream.Position = numArray[0];
                     byte[] buffer = readBytes(numArray[1]);

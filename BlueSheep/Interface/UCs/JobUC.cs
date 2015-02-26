@@ -55,11 +55,11 @@ namespace BlueSheep.Interface
                 Invoke(new DelegGatherPie(ActualizeStats), ressourcesGathered);
                 return;
             }
-			#if __MonoCS__
+            #if __MonoCS__
 
-			#else
+            #else
             if (GatherPie.Titles.Count < 1)
-                GatherPie.Titles.Add("Ressources");
+            GatherPie.Titles.Add("Ressources");
             #endif
             GatherPie.Series.Clear();        
             GatherPie.ChartAreas[0].BackColor = Color.Transparent;

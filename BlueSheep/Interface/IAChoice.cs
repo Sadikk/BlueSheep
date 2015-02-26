@@ -41,8 +41,8 @@ namespace BlueSheep.Interface
                     FilesList.Columns[2].Text = "Breed";
                     break;
             }
-			string combinedPath = System.IO.Path.Combine (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlueSheep", "IAs");
-			System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(combinedPath);
+            string combinedPath = System.IO.Path.Combine (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlueSheep", "IAs");
+            System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(combinedPath);
             if (di.GetFiles().Count() == 0)
             {
                 System.Windows.Forms.MessageBox.Show("Aucune IA, veuillez en télécharger sur le forum ou créer la vôtre :) ");
@@ -84,11 +84,11 @@ namespace BlueSheep.Interface
 
         public void LoadIA(FileInfo fi)
         {
-			string ApplicationDataPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
-			string combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp");
-			Decompress(combinedPath, fi.FullName);
-			combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "disp.xml");
-			FileInfo file1 = new FileInfo(combinedPath);
+            string ApplicationDataPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
+            string combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp");
+            Decompress(combinedPath, fi.FullName);
+            combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "disp.xml");
+            FileInfo file1 = new FileInfo(combinedPath);
             List<string> infos = (List<string>)DeserializeDisp(file1.FullName);
             FilesList.Items.Add(infos[0]).SubItems.AddRange(new string[] {
 		infos[1],
@@ -97,12 +97,12 @@ namespace BlueSheep.Interface
 		fi.FullName
 	});
 
-			combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "disp.xml");
-			File.Delete(combinedPath);
-			combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "config.xml");
-			File.Delete(combinedPath);
-			combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "spells.xml");
-			File.Delete(combinedPath);
+            combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "disp.xml");
+            File.Delete(combinedPath);
+            combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "config.xml");
+            File.Delete(combinedPath);
+            combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "spells.xml");
+            File.Delete(combinedPath);
         }
 
         // Method to decompress.
@@ -123,8 +123,8 @@ namespace BlueSheep.Interface
                 if (theEntry.IsFile)
                 {
                     // definition du fichier de sortie
-					string directoryPath = System.IO.Path.Combine (destinationDirectory, theEntry.Name);
-					FileInfo myFile = new FileInfo(directoryPath);
+                    string directoryPath = System.IO.Path.Combine (destinationDirectory, theEntry.Name);
+                    FileInfo myFile = new FileInfo(directoryPath);
                     // on crée le(s) répertoire(s) si besoin
                     Directory.CreateDirectory(myFile.DirectoryName);
                     // creation du fichier de sortie
@@ -172,21 +172,21 @@ namespace BlueSheep.Interface
             if (FilesList.SelectedItems.Count > 0)
             {
                 string path = FilesList.SelectedItems[0].SubItems[4].Text;
-				string ApplicationDataPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
-				string combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp");
-				Decompress(combinedPath, path);
-				combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "config.xml");
-				string file1 = combinedPath;
-				combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "spells.xml");
-				string file2 = combinedPath;
+                string ApplicationDataPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
+                string combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp");
+                Decompress(combinedPath, path);
+                combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "config.xml");
+                string file1 = combinedPath;
+                combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "spells.xml");
+                string file2 = combinedPath;
                 FightConfig Conf = (FightConfig)DeserializeConfig(file1);
                 List<BSpell> Spells = (List<BSpell>) DeserializeSpells(file2);
                 Account.Fight = new BFight(Conf, Spells, Account);
                 Account.NomIA.Text = FilesList.SelectedItems[0].SubItems[0].Text;
-				combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "disp.xml");
-				File.Delete(combinedPath);
-				File.Delete(file1);
-				File.Delete(file2);
+                combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "disp.xml");
+                File.Delete(combinedPath);
+                File.Delete(file1);
+                File.Delete(file2);
                 this.Close();
             }
         }

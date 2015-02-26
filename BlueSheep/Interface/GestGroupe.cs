@@ -94,9 +94,9 @@ namespace BlueSheep.Interface
             //parcours des comptes sélectionnés
             {
                 ListViewItem listViewItem2 = listViewAccounts.SelectedItems[i];
-				string ApplicationDataPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
-				string combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Groups", listViewItem2.Text + ".bs");
-				File.Delete(combinedPath);
+                string ApplicationDataPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
+                string combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Groups", listViewItem2.Text + ".bs");
+                File.Delete(combinedPath);
                 // Sauvegarde des comptes
                 listViewAccounts.Items.Remove(listViewItem2);
 
