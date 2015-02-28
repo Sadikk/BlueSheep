@@ -13,7 +13,7 @@ namespace BlueSheep.Common.IO
             return;
         }// end function
 
-        public double toNumber()
+        public long toNumber()
         {
             return this.high * 4294967296 + low;
         }
@@ -32,9 +32,9 @@ namespace BlueSheep.Common.IO
             return;
         }// end function
 
-        public double toNumber()
+        public ulong toNumber()
         {
-            return this.high * 4294967296 + low;
+            return (ulong)(high * 4294967296 + low);
         }
 
         public static Int64 fromNumber(double param1)
