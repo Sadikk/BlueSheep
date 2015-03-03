@@ -128,155 +128,79 @@ namespace BlueSheep.Common.IO
 
         public void WriteVarInt(int value)
         {
-            //byte _loc5_ = 0;
-            //Byte[] _loc2_ = new Byte[1];
-            //if (VarToWrite >= 0 && VarToWrite <= 127)
-            //{
-            //    this.WriteInt(VarToWrite);
-            //    return;
-            //}
-            //int _loc3_ = VarToWrite;
-            //Byte[] _loc4_ = new Byte[1];
-            //while (_loc3_ != 0)
-            //{
-            //    _loc4_[_loc4_.Length -1] = (byte)(_loc3_ & 127);
-            //    _loc5_ = _loc4_[_loc4_.Length - 1];
-            //    _loc3_ = Convert.ToInt32(Convert.ToUInt32(_loc3_) >> 7);
-            //    if (_loc3_ > 0)
-            //    {
-            //        _loc5_ = (byte)(_loc5_ | 128);
-            //    }
-            //    _loc2_[_loc4_.Length - 1] = _loc5_;
-            //}
-            //this.WriteBytes(_loc2_);
-
-            //byte _loc_5 = 0;
-            //List<byte> result = new List<byte>();
-            //if ((VarToWrite >= 0 & VarToWrite <= 127))
-            //{
-            //    this.WriteBytes(new Byte[] {Convert.ToByte(VarToWrite)});
-            //    return;
-            //}
-            //int _loc_3 = VarToWrite & 65535;
-            //List<byte> _loc_4 = new List<byte>();
-            //while ((_loc_3 != 0))
-            //{
-            //    _loc_4.Add(Convert.ToByte(_loc_3 & 127));
-            //    //     _loc_4.BaseStream.Position = _loc_4.BytesToSend.Count - 1
-            //    _loc_5 = _loc_4[_loc_4.Count - 1];
-            //    _loc_4.RemoveAt(_loc_4.Count - 1);
-            //    _loc_3 = _loc_3 >> 7;
-            //    if ((_loc_3 > 0))
-            //    {
-            //        _loc_5 = Convert.ToByte(_loc_5 | 128);
-            //    }
-            //    result.Add(_loc_5);
-            //}
-            //this.WriteBytes(result.ToArray());
-
-            var _loc5_ = 0;
             BigEndianWriter buffer = new BigEndianWriter();
             if (value >= 0 && value <= 127)
             {
-                this.WriteBytes(BitConverter.GetBytes(value));
+                WriteBytes(BitConverter.GetBytes(value));
                 return;
             }
-            int _loc3_ = value;
-            BigEndianWriter subBuffer = new BigEndianWriter();
-            while (_loc3_ != 0)
+            int valueToWrite = value;
+            while (valueToWrite != 0)
             {
-                subBuffer.WriteByte(Convert.ToByte(_loc3_ & 127));
-                subBuffer.m_BinaryWriter.Seek((int)subBuffer.m_BinaryWriter.BaseStream.Length, SeekOrigin.Begin);
-                _loc5_ = subBuffer.m_BinaryWriter.BaseStream.ReadByte();
-                _loc3_ = _loc3_ >> 7;
-                if (_loc3_ > 0)
+                byte desiredValue = Convert.ToByte(valueToWrite & 127);// extract the first 7 bits
+                valueToWrite = valueToWrite >> 7; //get the next 7 bits
+                if (valueToWrite > 0) //we're not finished
                 {
-                    _loc5_ = _loc5_ | 128;
+                    desiredValue = (byte)(desiredValue | 128); //Set the continuation flag
                 }
-                buffer.WriteBytes(BitConverter.GetBytes(_loc5_));
+                buffer.WriteByte(desiredValue);
             }
-            this.WriteBytes(buffer.Content);
-
+            WriteBytes(buffer.Content);
         }
 
         public void WriteVarShort(int value)
         {
-            byte _loc5_ = 0;
             if (value > short.MaxValue || value < short.MinValue)
             {
                 throw new Exception("Forbidden value");
             }
-            else
+
+            BigEndianWriter buffer = new BigEndianWriter();
+            if (value >= 0 && value <= 127)
             {
-                BigEndianWriter buffer = new BigEndianWriter();
-                if (value >= 0 && value <= 127)
-                {
-                    buffer.WriteByte((byte)value);
-                    this.WriteBytes(buffer.Content);
-                    return;
-                }
-                int tampon = value & 65535;
-                BigEndianWriter subBuffer = new BigEndianWriter();
-                while (tampon != 0)
-                {
-                    subBuffer.WriteByte(Convert.ToByte(tampon & 127));
-                    subBuffer.m_BinaryWriter.Seek((int)subBuffer.m_BinaryWriter.BaseStream.Length, SeekOrigin.Begin);
-                    _loc5_ = (byte)subBuffer.m_BinaryWriter.BaseStream.ReadByte();
-                    tampon = tampon >> 7;
-                    if (tampon > 0)
-                    {
-                        _loc5_ = Convert.ToByte(_loc5_ | 128);
-                    }
-                    buffer.WriteByte(_loc5_);
-                }
-                this.WriteBytes(buffer.Content);
+                buffer.WriteByte((byte)value);
+                WriteBytes(buffer.Content);
                 return;
             }
+
+            short valueToWrite = (short)(value & 65535);
+            while (valueToWrite != 0)
+            {
+                byte byteToWrite = Convert.ToByte(valueToWrite & 127);
+                valueToWrite = (short)(valueToWrite >> 7);
+                if (valueToWrite > 0)
+                {
+                    byteToWrite = Convert.ToByte(byteToWrite | 128);
+                }
+                buffer.WriteByte(byteToWrite);
+            }
+            WriteBytes(buffer.Content);
         }
 
         public void WriteVarLong(double param1)
         {
 
             Int64 result = Int64.fromNumber(param1);
-            uint _loc3_ = 0;
             if (result.high == 0)
             {
-                while (true)
-                {
+                WriteInt32(result.low);
+                return;
+            }
 
-                    //if (result.low < 128)
-                    //{
-                    //    this.WriteByte((byte)result.low);
-                    //    return;
-                    //}
-                    //WriteByte((byte)(result.low & 127 | 128));
-                    //result.low = result.low >> 7;
-                    this.WriteInt32(result.low);
-                }
+            for (int i = 0; i < 4; i += 1)
+            {
+                WriteByte((byte)(result.low & 127 | 128));
+                result.low = result.low >> 7;
+            }
+
+            if ((result.high & 268435455 << 3) == 0)
+            {
+                WriteByte((byte)(result.high << 4 | result.low));
             }
             else
             {
-                _loc3_ = 0;
-                while (_loc3_ < 4)
-                {
-                    this.WriteByte((byte)(result.low & 127 | 128));
-                    result.low = result.low >> 7;
-                    _loc3_++;
-                }
-                if ((result.high & 268435455 << 3) == 0)
-                {
-                    this.WriteByte((byte)(result.high << 4 | result.low));
-                }
-                else
-                {
-                    this.WriteByte((byte)((result.high << 4 | result.low) & 127 | 128));
-                    int p = Convert.ToInt32(Convert.ToUInt32(result.high) >> 3);
-                    while (true)
-                    {
-                        this.WriteByte((byte)((result.high << 4 | result.low) & 127 | 128));
-                        this.WriteInt32((uint)(result.high >> 3));
-                    }
-                }
+                WriteByte((byte)((result.high << 4 | result.low) & 127 | 128));
+                WriteInt32((result.high >> 3));
             }
         }
 

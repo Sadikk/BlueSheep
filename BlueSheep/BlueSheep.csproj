@@ -1563,6 +1563,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Common\Protocol\messages\game\approach\ReloginTokenRequestMessage.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

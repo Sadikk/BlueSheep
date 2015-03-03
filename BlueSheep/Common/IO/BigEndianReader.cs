@@ -135,181 +135,101 @@ namespace BlueSheep.Common.IO
 
         public int ReadVarInt()
         {
-            var _loc4_= 0;
-         var result = 0;
-         var i = 0;
-         bool _loc3_ = false;
+            int resultVar = 0;
+            for (int offset = 0; offset < 32; offset += 7)
+            {
+                byte readByte = ReadByte();
+                bool hasContinuationFlag = (readByte & 128) == 128;
+                int extractedValue = (readByte & 127);
 
-         while (i < 32) //Int size
-         {
-             _loc4_ = this.ReadByte();
-             _loc3_ = (_loc4_ & 128) == 128;
+                if (offset > 0) //TODO: not sure if the if statement is needed
+                    extractedValue = extractedValue << offset;
 
-             if (i > 0)
-             {
-                 result = result + ((_loc4_ & 127) << i);
-             }
-             else
-             {
-                 result = result + (_loc4_ & 127);
-             }
-             i = i + 7; //Chunck bit size
-             if (!_loc3_)
-             {
-                 return result;
-             }
-         }
-         throw new Exception("Too much data");
+                resultVar += extractedValue;
+
+                if (hasContinuationFlag == false)
+                    return resultVar;
+            }
+            throw new Exception("Too much data");
         }
 
         public short ReadVarShort()
         {
-            var _loc4_ = 0;
-            var result= 0;
-            var _loc2_ = 0;
-            bool _loc3_ = false;
+            var resultVar = 0;
 
-            while (_loc2_ < 16) //Short size
+            for (int offset = 0; offset < 16; offset += 7)
             {
-                _loc4_ = this.ReadByte();
-                _loc3_ = (_loc4_ & 128) == 128;
-                if (_loc2_ > 0)
+                byte readByte = this.ReadByte();
+                bool hasContinuationFlag = (readByte & 128) == 128;
+                int extractedValue = (readByte & 127);
+                if (offset > 0)
+                    extractedValue = extractedValue << offset;
+
+                resultVar += extractedValue;
+
+                if (hasContinuationFlag == false)
                 {
-                    result= result+ ((_loc4_ & 127) << _loc2_);
-                }
-                else
-                {
-                    result= result+ (_loc4_ & 127);
-                }
-                _loc2_ = _loc2_ + 7;
-                //Chunck Bit size
-                if (!_loc3_)
-                {
-                    if (result> 32767) // Short max value
-                    {
-                        result= result- 65536;
-                        //Unsigned short max value
-                    }
-                    return (short)result;
+                    if (resultVar > 32767)
+                        resultVar -= 65536;
+
+                    return (short)resultVar;
                 }
             }
             throw new Exception("Too much data");
         }
 
-        public double ReadVarLong()
+        public Int64 _ReadVarLong()
         {
-            byte _loc_3 = 0;
+            byte readByte = 0;
             Int64 result = new Int64();
-            uint _loc_4 = 0;
-            while (true)
+            for (int offset = 0; offset != 28; offset += 7)
             {
+                readByte = ReadByte();
+                bool missingContinuationFlag = (readByte < 128);
+                if (missingContinuationFlag)
+                {
+                    result.low = result.low | (uint)(readByte << offset);
+                    return result;
+                }
 
-                _loc_3 = this.ReadByte();
-                if (_loc_4 == 28)
-                {
-                    break;
-                }
-                else if (_loc_3 >= 128)
-                {
-                    result.low = Convert.ToUInt32(result.low | Convert.ToUInt32(_loc_3 & 127) << Convert.ToInt32(_loc_4));
-                }
-                else
-                {
-                    result.low = Convert.ToUInt32(result.low | Convert.ToUInt32(_loc_3) << Convert.ToInt32(_loc_4));
-                    return result.toNumber();
-                }
-                _loc_4 = _loc_4 + 7;
+                result.low = result.low | (uint)((readByte & 127) << offset);
             }
-            if (_loc_3 >= 128)
-            {
-                _loc_3 = (byte)(_loc_3 & 127);
-                result.low = Convert.ToUInt32(result.low | Convert.ToUInt32(_loc_3) << Convert.ToInt32(_loc_4));
-                result.high = Convert.ToUInt32(_loc_3) >> 4;
-            }
-            else
-            {
-                result.low = Convert.ToUInt32(result.low | Convert.ToUInt32(_loc_3) << Convert.ToInt32(_loc_4));
-                result.high = Convert.ToUInt32(_loc_3) >> 4;
-                return result.toNumber();
-            }
-            _loc_4 = 3;
-            while (true)
-            {
 
-                _loc_3 = ReadByte();
-                if (_loc_4 < 32)
-                {
-                    if (_loc_3 >= 128)
-                    {
-                        result.high = result.high | Convert.ToUInt32(_loc_3 & 127) << Convert.ToInt32(_loc_4);
-                    }
-                    else
-                    {
-                        result.high = result.high | Convert.ToUInt32(_loc_3) << Convert.ToInt32(_loc_4);
-                        break;
-                    }
-                }
-                _loc_4 = _loc_4 + 7;
+            readByte = this.ReadByte();
+            if (readByte < 128)
+            {
+                result.low = (uint)(result.low | readByte << 28);
+                result.high = (uint)(readByte >> 4);
+                return result;
             }
-            return result.toNumber();
+
+            readByte = (byte)(readByte & 127);
+            result.low = (uint)(result.low | readByte << 28);
+            result.high = (uint)(readByte >> 4);
+
+            for (int offset = 3; offset < 32; offset += 7)
+            {
+                readByte = ReadByte();
+                bool missingContinuationFlag = (readByte < 128);
+                if (missingContinuationFlag)
+                {
+                    result.high = result.high | (uint)(readByte << offset);
+                    break; //TODO: This MUST be hit otherwise I dont know if this will work
+                }
+                result.high = result.high | (uint)((readByte & 127) << offset);
+            }
+
+            return result;
         }
 
-        public double ReadVarUhLong()
+        public long ReadVarLong()
         {
-            int _loc_3  = 0;
-            UInt64 result = new UInt64();
-            int _loc_4 = 0;
-            while (true)
-            {
-                
-                _loc_3 = ReadByte();
-                if (_loc_4 == 28)
-                {
-                    break;
-                }
-                else if (_loc_3 >= 128)
-                {
-                    result.low = result.low | Convert.ToUInt32(_loc_3 & 127) << Convert.ToInt32(_loc_4);
-                }
-                else
-                {
-                    result.low = result.low | Convert.ToUInt32(_loc_3) << Convert.ToInt32(_loc_4);
-                    return result.toNumber();
-                }
-                _loc_4 = _loc_4 + 7;
-            }
-            if (_loc_3 >= 128)
-            {
-                _loc_3 = _loc_3 & 127;
-                result.low = result.low | Convert.ToUInt32(_loc_3) << Convert.ToInt32(_loc_4);
-                result.high = Convert.ToUInt32(_loc_3) >> 4;
-            }
-            else
-            {
-                result.low = result.low | Convert.ToUInt32(_loc_3) << Convert.ToInt32(_loc_4);
-                result.high = Convert.ToUInt32(_loc_3) >> 4;
-                return result.toNumber();
-            }
-            _loc_4 = 3;
-            while (true)
-            {
-                
-                _loc_3 = ReadByte();
-                if (_loc_4 < 32)
-                {
-                    if (_loc_3 >= 128)
-                    {
-                        result.high = result.high | Convert.ToUInt32(_loc_3 & 127) << Convert.ToInt32(_loc_4);
-                    }
-                    else
-                    {
-                        result.high = result.high | Convert.ToUInt32(_loc_3) << Convert.ToInt32(_loc_4);
-                        break;
-                    }
-                }
-                _loc_4 = _loc_4 + 7;
-            }
-            return result.toNumber();
+            return _ReadVarLong().toNumber();
+        }
+            
+        public ulong ReadVarUhLong()
+        {
+            return (ulong)_ReadVarLong().toNumber();
         }
     
 
