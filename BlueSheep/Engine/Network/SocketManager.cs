@@ -148,7 +148,7 @@ namespace BlueSheep.Engine.Network
             //m_RawSocket.Connect("127.0.0.1", 6666);
             //if (m_RawSocket.Connected)
             //{
-            //    account.Log(new ConnectionTextInformation("Connexion établie au serveur de sécurité"), 0);
+            //    account.Log(new ConnectionTextInformation("Connexion établie au serveur de sécurité."), 0);
             //    m_RawReceptionThread = new Thread(RawReception);
             //    m_RawReceptionThread.Start();
             //}

@@ -99,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountsManager\AccountsFileInteractions.cs" />
+    <Compile Include="Common\CLIParser.cs" />
     <Compile Include="Common\Constants\Effects.cs" />
     <Compile Include="Common\Constants\Foods.cs" />
     <Compile Include="Common\Constants\MealIntervals.cs" />

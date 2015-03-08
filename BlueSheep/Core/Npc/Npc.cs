@@ -65,6 +65,11 @@ namespace BlueSheep.Core.Npc
             }
         }
 
+        public string GetNpcName(int npcId)
+        {
+            return BlueSheep.Common.Data.I18N.GetText((int)GameData.GetDataObject(D2oFileEnum.NpcMessages, npcId).Fields["nameId"]);
+        }
+
         public void TalkToNpc(int npcId)
         {
             npcId = FindContextIdFromNpcId(npcId);
@@ -82,7 +87,7 @@ namespace BlueSheep.Core.Npc
             }
         }
 
-        private int FindContextIdFromNpcId(int npcid)
+        public int FindContextIdFromNpcId(int npcid)
         {
             if (npcid == 0)
                 return Npcs.ToList()[0].Key;

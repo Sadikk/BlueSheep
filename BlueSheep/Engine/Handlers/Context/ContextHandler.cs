@@ -53,6 +53,11 @@ namespace BlueSheep.Engine.Handlers.Context
                     GameRolePlayGroupMonsterInformations a = (GameRolePlayGroupMonsterInformations)actor;
                     account.Map.List.Add(new MonsterGroup(a.staticInfos, a.disposition.cellId, a.contextualId));
                 }
+                else if (actor is GameRolePlayCharacterInformations)
+                {
+                    GameRolePlayCharacterInformations a = (GameRolePlayCharacterInformations)actor;
+                    account.Map.Players.Add(a.contextualId, a);
+                }
 
             }
             account.Map.StatedElements.Clear();

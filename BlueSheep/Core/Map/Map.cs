@@ -20,20 +20,8 @@ namespace BlueSheep.Core.Map
     public class Map : BlueSheep.Data.D2p.Map
     {
         #region Fields
-        //m_AccountUC m_Account;
-        //bool AutoTimeout { get; }
-        //Entity Character { get; }
-        //Dictionary<int, Elements.InteractiveElement> Doors { get; }
-        //int Id { get; }
-        //Dictionary<int, Elements.InteractiveElement> InteractiveElements { get; }
-        //int MapChange { get; }
-        //Dictionary<int, Elements.StatedElement> StatedElements { get; }
-        //int SubAreaId { get; }
-        //Dictionary<int, Elements.UsableElement> UsableElements { get; }
-        //int WorldId { get; }
-        //int X { get; }
-        //int Y { get; }
         public List<BlueSheep.Common.Types.MonsterGroup> List;
+        public Dictionary<int, BlueSheep.Common.Protocol.Types.GameRolePlayCharacterInformations> Players;
         #endregion
 
         #region Properties
@@ -136,11 +124,8 @@ namespace BlueSheep.Core.Map
         #region Public methods
         public int WorldId
         {
-            //get { return ObjectDataManager.Instance.Get<RebirthAPI.Protocol.Data.MapPosition>(Id).worldMap; }
             get 
             {
-                //MapPosition mapp = (MapPosition)m_Account.GameDataFileAccessor.GetObject("MapPositions", Id);
-                //return  mapp.worldMap;
                 DataClass mapp = GameData.GetDataObject(D2oFileEnum.MapPositions, Id);
                 return (int)mapp.Fields["worldMap"];
             }
@@ -150,24 +135,18 @@ namespace BlueSheep.Core.Map
         {
             get
             {
-                //MapPosition mapp = (MapPosition)m_Account.GameDataFileAccessor.GetObject("MapPositions", Id);
-                //return mapp.posX;
                 DataClass mapp = GameData.GetDataObject(D2oFileEnum.MapPositions, Id);
                 return (int)mapp.Fields["posX"];
             }
-            //get { return ObjectDataManager.Instance.Get<RebirthAPI.Protocol.Data.MapPosition>(Id).posX; }
         }
 
         public int Y
         {
             get
             {
-                //MapPosition mapp = (MapPosition)m_Account.GameDataFileAccessor.GetObject("MapPositions", Id);
-                //return mapp.posY;
                 DataClass mapp = GameData.GetDataObject(D2oFileEnum.MapPositions, Id);
                 return (int)mapp.Fields["posY"];
             }
-            //get { return ObjectDataManager.Instance.Get<RebirthAPI.Protocol.Data.MapPosition>(Id).posY; }
         }
 
         public bool CanGatherElement(int id, int distance)
@@ -205,19 +184,19 @@ namespace BlueSheep.Core.Map
             int num2 = -1;
             switch(direction)
             {
-                case "haut":
+                case "up":
                 neighbourId = ((BlueSheep.Data.D2p.Map)Data).TopNeighbourId;
                 num2 = 64;
                     break;
-                case "bas":
+                case "bottom":
                 neighbourId = ((BlueSheep.Data.D2p.Map)Data).BottomNeighbourId;
                 num2 = 4;
                     break;
-                case "droite":
+                case "right":
                 neighbourId = ((BlueSheep.Data.D2p.Map)Data).RightNeighbourId;
                 num2 = 1;
                     break;
-                case "gauche":
+                case "left":
                 neighbourId = ((BlueSheep.Data.D2p.Map)Data).LeftNeighbourId;
                 num2 = 16;
                 break;
@@ -273,9 +252,6 @@ namespace BlueSheep.Core.Map
             {
                 timetowait = serverMovement.Count() * 300;
             }
-            //if (AutoTimeout)
-            //    m_Account.Game.Character.State.SetTimeout(StateEnum.Moving, false, TimeoutMin, TimeoutMax);
-            //m_Account.Network.SendToServer(new GameMapMovementRequestMessage(serverMovement.Select<uint, short>(ui => (short)ui).ToArray(), Id));
             using (BigEndianWriter writer = new BigEndianWriter())
             {
                 GameMapMovementRequestMessage msg = new GameMapMovementRequestMessage(serverMovement.Select<uint, short>(ui => (short)ui).ToArray(), Id);
@@ -505,6 +481,26 @@ namespace BlueSheep.Core.Map
                     m_Account.SocketManager.Send(msg);
                 }
             }
+        }
+
+        public int GetCellFromContextId(int contextId)
+        {
+            foreach (Entity e in Entities)
+            {
+                if (e.Id == contextId)
+                    return e.CellId;
+            }
+            foreach (StatedElement s in StatedElements.Values)
+            {
+                if (s.Id == contextId)
+                    return (int)s.CellId;
+            }
+            foreach (InteractiveElement d in Doors.Values)
+            {
+                if (d.Id == contextId)
+                    return Doors.Keys.ToList()[Doors.Values.ToList().IndexOf(d)];
+            }
+            return 0;
         }
         #endregion
 

@@ -289,7 +289,6 @@ namespace BlueSheep.Interface
 
         #region Methodes d'interfaces
 
-
         private void Form_Closed(object sender, EventArgs e)
         {
             this.SocketManager.DisconnectFromGUI();
@@ -304,6 +303,7 @@ namespace BlueSheep.Interface
             this.SocketManager = new SocketManager(this);
             this.SocketManager.ListenDofus();
         }
+
         public void Log(TextInformation text,int levelVerbose)
         {
             if (this.IsDisposed == true)
@@ -945,35 +945,35 @@ namespace BlueSheep.Interface
                 //case "/invite":
                 //    Invitation(command[1]);
                 //    break;
-                case "/droite":
-                    this.Map.ChangeMap("droite");
-                    break;
-                case "/gauche":
-                    this.Map.ChangeMap("gauche");
-                    break;
-                case "/bas":
-                    this.Map.ChangeMap("bas");
-                    break;
-                case "/haut":
-                    this.Map.ChangeMap("haut");
-                    break;
-                case "/mapid":
-                    Log(new BotTextInformation("L'id de la map est : " + this.Map.Id),0);
-                    break;
-                case "/cellid":
-                    Log(new BotTextInformation("Le joueur se trouve sur la cellule " + this.Map.Character.CellId),0);
-                    break;
-                case "/cell":
-                    try
-                    {
-                        this.Map.MoveToCell(Convert.ToInt32(command[1]));
-                        Log(new BotTextInformation("Déplacement vers la cellid " + command[1]),0);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log(new ErrorTextInformation(ex.Message),0);
-                    }
-                    break;
+                //case "/droite":
+                //    this.Map.ChangeMap("droite");
+                //    break;
+                //case "/gauche":
+                //    this.Map.ChangeMap("gauche");
+                //    break;
+                //case "/bas":
+                //    this.Map.ChangeMap("bas");
+                //    break;
+                //case "/haut":
+                //    this.Map.ChangeMap("haut");
+                //    break;
+                //case "/mapid":
+                //    Log(new BotTextInformation("L'id de la map est : " + this.Map.Id),0);
+                //    break;
+                //case "/cellid":
+                //    Log(new BotTextInformation("Le joueur se trouve sur la cellule " + this.Map.Character.CellId),0);
+                //    break;
+                //case "/cell":
+                //    try
+                //    {
+                //        this.Map.MoveToCell(Convert.ToInt32(command[1]));
+                //        Log(new BotTextInformation("Déplacement vers la cellid " + command[1]),0);
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        Log(new ErrorTextInformation(ex.Message),0);
+                //    }
+                //    break;
                 case "/g":
                     Flood.SendMessage(2, command[1]);
                     break;
@@ -1127,10 +1127,11 @@ namespace BlueSheep.Interface
 
                     this.SocketManager = new SocketManager(this);
 
-                    this.SocketManager.Connect(new ConnectionInformations("213.248.126.39", 5555, "d'identification"));
+                    this.SocketManager.Connect(new ConnectionInformations("213.248.126.40", 5555, "d'identification"));
                     loginstate = "identification";
                     if (checkBoxBegin.Checked == true)
                         GetNextMeal();
+                    this.SocketManager.Send(new BasicPingMessage());
         }
 
         private void TimerConnectionThreadFinished(object stateInfo)

@@ -6,6 +6,7 @@ using BlueSheep.Interface;
 using System.IO;
 using System.Text;
 using BlueSheep.Interface.Text;
+using System.Collections.Generic;
 
 namespace BlueSheep.Engine.Handlers.Security
 {
@@ -17,26 +18,26 @@ namespace BlueSheep.Engine.Handlers.Security
         {
             //TODO : Bypass this fucking anti-bot
             Random random = new Random();
-            //int randomNumber = (int)Math.Floor(random.NextDouble() * 16777215);
+            int randomNumber = (int)Math.Floor(random.NextDouble() * 16777215);
 
-            //CheckIntegrityMessage checkIntegrityMessage = new CheckIntegrityMessage(randomNumber);
+            CheckIntegrityMessage checkIntegrityMessage = new CheckIntegrityMessage(new List<int>() {randomNumber} );
 
-            //using (BigEndianWriter writer = new BigEndianWriter())
-            //{
-            //    checkIntegrityMessage.Serialize(writer);
+            using (BigEndianWriter writer = new BigEndianWriter())
+            {
+                checkIntegrityMessage.Serialize(writer);
 
-            //    MessagePackaging messagePackaging = new MessagePackaging(writer);
+                MessagePackaging messagePackaging = new MessagePackaging(writer);
 
-            //    messagePackaging.Pack((int)checkIntegrityMessage.ProtocolID);
+                messagePackaging.Pack((int)checkIntegrityMessage.ProtocolID);
 
-            //    account.SocketManager.Send(messagePackaging.Writer.Content);
-            //}
+                account.SocketManager.Send(messagePackaging.Writer.Content);
+            }
             //using (BigEndianReader reader = new BigEndianReader(packetDatas))
             //{
             //    byte[] content = reader.ReadBytes((int)reader.BytesAvailable);
             //    string d = DateTime.Now.ToShortDateString().Replace('\\', '-').Replace('/', '-');
             //    File.WriteAllBytes(@"F:\RDMs\" + d + "_RDM.swf", content);
-            //    account.SocketManager.Disconnect();
+            //    //account.SocketManager.Disconnect();
             //}
 
             //using (BigEndianWriter writer = new BigEndianWriter())
@@ -54,6 +55,7 @@ namespace BlueSheep.Engine.Handlers.Security
             //    MessagePackaging pack = new MessagePackaging(writer);
             //    pack.Pack(6253);
             //    account.SocketManager.SendRaw(pack.Writer.Content);
+            //}
             //    System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create();
             //    byte[] hash = md5.ComputeHash(pack.Writer.Content);
             //    StringBuilder sb = new StringBuilder();
