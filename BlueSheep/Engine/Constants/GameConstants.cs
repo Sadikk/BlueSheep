@@ -5,8 +5,8 @@
         #region Fields
         public const sbyte Major = 2;
         public const sbyte Minor = 27;
-        public const sbyte Release = 4;
-        public const int Revision = 93193;
+        public const sbyte Release = 5;
+        public const int Revision = 93304;
         public const sbyte Patch = 0;
         public const sbyte BuildType = 0;
         public const sbyte Install = 0;
