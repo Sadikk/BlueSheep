@@ -49,14 +49,15 @@ namespace BlueSheep.Engine.Constants
             Dic.Clear();
             Dic.Add("Connecté", "Connected");
             Dic.Add("Déconnecté", "Disconnected");
-            Dic.Add("Dialogue", "Dialog");
-            Dic.Add("Regeneration", "Regenerating");
+            Dic.Add("Dialogue", "Speaking");
+            Dic.Add("Régénération", "Regenerating");
+            Dic.Add("Récolte", "Gathering");
+            Dic.Add("Déplacement", "Moving");
             Dic.Add("Combat", "Fighting");
+            Dic.Add("Téléportation", "Teleportating");
             Dic.Add("est mort", "is dead");
             Dic.Add("Fin du tour", "Turn ended");
             Dic.Add("Equipement rapide numero", "Stuff preset number");
-            Dic.Add("Récolte", "Gathering");
-            Dic.Add("Déplacement", "Moving");
             Dic.Add("Trajet arrêté", "Path Stopped");
             Dic.Add("Reconnexion automatique dans minutes", "Reconnection in X minutes");
             Dic.Add("Prochain repas dans", "Next meal in");
@@ -117,6 +118,14 @@ namespace BlueSheep.Engine.Constants
         private static void InitES()
         {
             Dic.Clear();
+            Dic.Add("Connecté", "Conectado");
+            Dic.Add("Déconnecté", "Desconectado");
+            Dic.Add("Dialogue", "Diálogo");
+            Dic.Add("Régénération", "Regeneración");
+            Dic.Add("Récolte", "Cosecha");
+            Dic.Add("Déplacement", "Desplazamiento");
+            Dic.Add("Combat", "Combate");
+            Dic.Add("Téléportation", "Teleportación");
             Dic.Add("Trajet arrêté", "Camino detuvo");
             Dic.Add("Reconnexion automatique dans minutes", "Reconexión en X minutos");
             Dic.Add("Prochain repas dans heures", "Alimentación Siguiente X horas");
@@ -179,6 +188,14 @@ namespace BlueSheep.Engine.Constants
         private static void InitPT()
         {
             Dic.Clear();
+            Dic.Add("Connecté", "Conectado");
+            Dic.Add("Déconnecté", "Desconectado");
+            Dic.Add("Dialogue", "Diálogo");
+            Dic.Add("Régénération", "Regeneração");
+            Dic.Add("Récolte", "Colheita");
+            Dic.Add("Déplacement", "Deslocação");
+            Dic.Add("Combat", "Briga");
+            Dic.Add("Téléportation", "Teletransporte");
             Dic.Add("Trajet arrêté", "Trajeto Parou");
             Dic.Add("Reconnexion automatique dans minutes", "Reconexão em X minutos");
             Dic.Add("Prochain repas dans heures", "Próxima alimentação em X horas");

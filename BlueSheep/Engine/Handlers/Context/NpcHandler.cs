@@ -1,6 +1,7 @@
 ﻿using BlueSheep.Common.Data.D2o;
 using BlueSheep.Common.IO;
 using BlueSheep.Common.Protocol.Messages;
+using BlueSheep.Engine.Enums;
 using BlueSheep.Engine.Types;
 using BlueSheep.Interface;
 using BlueSheep.Interface.Text;
@@ -22,7 +23,7 @@ namespace BlueSheep.Engine.Handlers.Context
             {
                 msg.Deserialize(reader);
             }
-            account.ModifBar(6, 0, 0, "Echange");
+            account.SetStatus(Status.Exchanging);
         }
 
         [MessageHandler(typeof(LeaveDialogMessage))]
@@ -34,7 +35,7 @@ namespace BlueSheep.Engine.Handlers.Context
             {
                 msg.Deserialize(reader);
             }
-            account.ModifBar(6, 0, 0, "Connecté");
+            account.SetStatus(Status.None);
         }
 
         [MessageHandler(typeof(NpcDialogCreationMessage))]
@@ -48,7 +49,7 @@ namespace BlueSheep.Engine.Handlers.Context
             }
             account.Npc.Id = msg.npcId;
             account.Npc.Entity = account.Map.Entities.FirstOrDefault((npc) => npc.Id == msg.npcId);
-            account.ModifBar(6, 0, 0, "Dialogue");
+            account.SetStatus(Status.Speaking);
         }
 
         [MessageHandler(typeof(NpcDialogQuestionMessage))]

@@ -1382,6 +1382,7 @@
     <Compile Include="Engine\Enums\IdentificationFailureReasonEnum.cs" />
     <Compile Include="Engine\Enums\ServerStatusEnum.cs" />
     <Compile Include="Engine\Enums\SpellInabilityReasonEnum.cs" />
+    <Compile Include="Engine\Enums\StatusEnum.cs" />
     <Compile Include="Engine\Frame\LatencyFrame.cs" />
     <Compile Include="Engine\Handlers\Basic\BasicHandler.cs" />
     <Compile Include="Engine\Handlers\Character\CharacterHandler.cs" />

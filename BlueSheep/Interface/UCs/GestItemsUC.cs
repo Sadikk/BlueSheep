@@ -69,7 +69,7 @@ namespace BlueSheep.Interface.UCs
         #region PrivateMethods
         private void PerformAutoDeletion(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if (account.StatusLb.Text == "Fighting" || account.StatusLb.Text == "Combat")
+            if (account.state == BlueSheep.Engine.Enums.Status.Fighting)
             {
                 account.Log(new ErrorTextInformation("La suppression automatique ne peut être effectuée en combat. Suppression automatique annulée. Mais elle reviendra muéhhééhhé"), 2);
                 return;

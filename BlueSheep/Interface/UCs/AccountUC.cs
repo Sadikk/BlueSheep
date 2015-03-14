@@ -33,6 +33,8 @@ using System.Collections;
 using BlueSheep.Engine.Constants;
 using System.Windows.Forms.DataVisualization.Charting;
 using BlueSheep.Interface.UCs;
+using BlueSheep.Engine.Enums;
+using BlueSheep.Common;
 
 namespace BlueSheep.Interface
 {
@@ -73,6 +75,7 @@ namespace BlueSheep.Interface
         public HeroicUC HeroicUC;
         public GestItemsUC GestItemsUC;
         public bool IsMITM;
+        public Status state;
         #endregion
 
         #region Properties
@@ -84,9 +87,7 @@ namespace BlueSheep.Interface
         public List<Pet> petsList { get; set; }
         public List<int> GiftsList { get; set; }
         public InteractiveElement Safe { get; set; }
-        //public List<ObjectItem> InventoryItems { get; set; }
         public CharacterBaseInformations CharacterBaseInformations { get; set; }
-        public string State { get; set; }
         public short Sequence { get; set; }
         public LatencyFrame LatencyFrame { get; set; }
         public Pods Pods { get; set; }
@@ -339,9 +340,10 @@ namespace BlueSheep.Interface
         private void DeleteItem_Click(object sender, EventArgs e)
         {
             //Delete an item from inventory
-            if (StatusLb.Text == "Combat" && StatusLb.Text == "Fighting")
+            if (state == BlueSheep.Engine.Enums.Status.Fighting)
             {
                 Log(new ErrorTextInformation("Impossible de supprimer un objet en combat ^^"), 0);
+                return;
             }
             for (int i = 0; i < LVItems.Items.Count; i++)
             {
@@ -355,9 +357,10 @@ namespace BlueSheep.Interface
         private void DropItems_Click(object sender, EventArgs e)
         {
             //Drop an item from inventory
-            if (StatusLb.Text == "Combat" && StatusLb.Text == "Fighting")
+            if (state == BlueSheep.Engine.Enums.Status.Fighting)
             {
                 Log(new ErrorTextInformation("Impossible de jeter un objet en combat ^^"), 0);
+                return;
             }
             for (int i = 0; i < LVItems.Items.Count; i++)
             {
@@ -371,9 +374,10 @@ namespace BlueSheep.Interface
         private void sadikButton1_Click(object sender, EventArgs e)
         {
             //Use an item from inventory
-            if (StatusLb.Text == "Combat" && StatusLb.Text == "Fighting")
+            if (state == BlueSheep.Engine.Enums.Status.Fighting)
             {
                 Log(new ErrorTextInformation("Impossible d'utiliser un objet en combat ^^"), 0);
+                return;
             }
             for (int i = 0; i < LVItems.Items.Count; i++)
             {
@@ -454,11 +458,6 @@ namespace BlueSheep.Interface
                         break;
                     case 5:
                         PosLabel.Text = text;
-                        break;
-                    case 6:
-                        if (MainForm.ActualMainForm.Lang != "FR")
-                            text = Engine.Constants.Translate.GetTranslation(text, MainForm.ActualMainForm.Lang);
-                        StatusLb.Text = text;
                         break;
                     case 7:
                         this.ParentForm.Text = text;
@@ -554,7 +553,6 @@ namespace BlueSheep.Interface
         public void ActualizeInventory()
         {
             this.BeginInvoke(new MethodInvoker(LVItems.Items.Clear));
-            //this.BeginInvoke(new Method(LVItems.Clear();
             foreach (Core.Inventory.Item i in Inventory.Items)
             {
                 string[] row1 = { i.GID.ToString(), i.UID.ToString(), i.Name, i.Quantity.ToString(), i.Type.ToString(), i.Price.ToString() };
@@ -624,8 +622,21 @@ namespace BlueSheep.Interface
         {
             if (e.KeyCode == Keys.Enter)
             {
-                SendCommand(CommandeBox.Text);
+                string text = CommandeBox.Text;
                 CommandeBox.Clear();
+                CLIParser parser = new CLIParser(this);
+                List<string> result = parser.Parse(text);
+                foreach (string s in result)
+                {
+                    if (s.Contains("ERROR"))
+                        Log(new ErrorTextInformation(s), 0);
+                    else
+                        Log(new BotTextInformation(s), 0);
+                }   
+            }
+            else if (e.KeyCode == Keys.Up)
+            {
+                CommandeBox.Text = CLIParser.CommandsHistory[CLIParser.CommandsHistory.Count - 1];
             }
         }
 
@@ -850,6 +861,47 @@ namespace BlueSheep.Interface
                 }
             }
         }
+
+        public void SetStatus(Status status)
+        {
+            state = status;
+            string nstatus = "";
+            switch (status)
+            {
+                case Status.None:
+                    nstatus = "Connecté";
+                    break;
+                case Status.Exchanging:
+                    nstatus = "Echange";
+                    break;
+                case Status.Fighting:
+                    nstatus = "Combat";
+                    break;
+                case Status.Gathering:
+                    nstatus = "Récolte";
+                    break;
+                case Status.Moving:
+                    nstatus = "Déplacement";
+                    break;
+                case Status.Speaking:
+                    nstatus = "Dialogue";
+                    break;
+                case Status.Teleporting:
+                    nstatus = "Teleportation";
+                    break;
+                case Status.Regenerating:
+                    nstatus = "Régénération";
+                    break;
+                case Status.Disconnected:
+                    nstatus = "Déconnecté";
+                    break;
+            }
+            if (MainForm.ActualMainForm.Lang != "FR")
+            {
+                nstatus = BlueSheep.Engine.Constants.Translate.GetTranslation(nstatus, MainForm.ActualMainForm.Lang);
+            }
+            Invoke(new DelegLabel(ModLabel),nstatus, StatusLb);
+        }
         #endregion
 
         #region Methodes Publics
@@ -937,74 +989,75 @@ namespace BlueSheep.Interface
             m_ConnectionThread.Start();
         }
 
-        private void SendCommand(string text)
-        {
-            string[] command = text.Split(':');
-            switch (command[0])
-            {
-                //case "/invite":
-                //    Invitation(command[1]);
-                //    break;
-                //case "/droite":
-                //    this.Map.ChangeMap("droite");
-                //    break;
-                //case "/gauche":
-                //    this.Map.ChangeMap("gauche");
-                //    break;
-                //case "/bas":
-                //    this.Map.ChangeMap("bas");
-                //    break;
-                //case "/haut":
-                //    this.Map.ChangeMap("haut");
-                //    break;
-                //case "/mapid":
-                //    Log(new BotTextInformation("L'id de la map est : " + this.Map.Id),0);
-                //    break;
-                //case "/cellid":
-                //    Log(new BotTextInformation("Le joueur se trouve sur la cellule " + this.Map.Character.CellId),0);
-                //    break;
-                //case "/cell":
-                //    try
-                //    {
-                //        this.Map.MoveToCell(Convert.ToInt32(command[1]));
-                //        Log(new BotTextInformation("Déplacement vers la cellid " + command[1]),0);
-                //    }
-                //    catch (Exception ex)
-                //    {
-                //        Log(new ErrorTextInformation(ex.Message),0);
-                //    }
-                //    break;
-                case "/g":
-                    Flood.SendMessage(2, command[1]);
-                    break;
-                case "/r":
-                    Flood.SendMessage(6, command[1]);
-                    break;
-                case "/b":
-                    Flood.SendMessage(5, command[1]);
-                    break;
-                case "/a":
-                    Flood.SendMessage(3, command[1]);
-                    break;
-                case "/s":
-                    Flood.SendMessage(0, command[1]);
-                    break;
-                case "/w":
-                    string name = command[1];
-                    string content = command[2];
-                    using (BigEndianWriter writer = new BigEndianWriter())
-                    {
-                        ChatClientPrivateMessage msg = new ChatClientPrivateMessage(content, name);
-                        msg.Serialize(writer);
-                        writer.Content = this.HumanCheck.hash_function(writer.Content);
-                        MessagePackaging pack = new MessagePackaging(writer);
-                        pack.Pack((int)msg.ProtocolID);
-                        SocketManager.Send(pack.Writer.Content);
-                        Log(new PrivateTextInformation("à " + name + " : " + content), 1);
-                    }
-                    break;
-            }
-        }
+        //private void SendCommand(string text)
+        //{
+           
+        //    //string[] command = text.Split(':');
+        //    //switch (command[0])
+        //    //{
+        //    //    //case "/invite":
+        //    //    //    Invitation(command[1]);
+        //    //    //    break;
+        //    //    //case "/droite":
+        //    //    //    this.Map.ChangeMap("droite");
+        //    //    //    break;
+        //    //    //case "/gauche":
+        //    //    //    this.Map.ChangeMap("gauche");
+        //    //    //    break;
+        //    //    //case "/bas":
+        //    //    //    this.Map.ChangeMap("bas");
+        //    //    //    break;
+        //    //    //case "/haut":
+        //    //    //    this.Map.ChangeMap("haut");
+        //    //    //    break;
+        //    //    //case "/mapid":
+        //    //    //    Log(new BotTextInformation("L'id de la map est : " + this.Map.Id),0);
+        //    //    //    break;
+        //    //    //case "/cellid":
+        //    //    //    Log(new BotTextInformation("Le joueur se trouve sur la cellule " + this.Map.Character.CellId),0);
+        //    //    //    break;
+        //    //    //case "/cell":
+        //    //    //    try
+        //    //    //    {
+        //    //    //        this.Map.MoveToCell(Convert.ToInt32(command[1]));
+        //    //    //        Log(new BotTextInformation("Déplacement vers la cellid " + command[1]),0);
+        //    //    //    }
+        //    //    //    catch (Exception ex)
+        //    //    //    {
+        //    //    //        Log(new ErrorTextInformation(ex.Message),0);
+        //    //    //    }
+        //    //    //    break;
+        //    //    case "/g":
+        //    //        Flood.SendMessage(2, command[1]);
+        //    //        break;
+        //    //    case "/r":
+        //    //        Flood.SendMessage(6, command[1]);
+        //    //        break;
+        //    //    case "/b":
+        //    //        Flood.SendMessage(5, command[1]);
+        //    //        break;
+        //    //    case "/a":
+        //    //        Flood.SendMessage(3, command[1]);
+        //    //        break;
+        //    //    case "/s":
+        //    //        Flood.SendMessage(0, command[1]);
+        //    //        break;
+        //    //    case "/w":
+        //    //        string name = command[1];
+        //    //        string content = command[2];
+        //    //        using (BigEndianWriter writer = new BigEndianWriter())
+        //    //        {
+        //    //            ChatClientPrivateMessage msg = new ChatClientPrivateMessage(content, name);
+        //    //            msg.Serialize(writer);
+        //    //            writer.Content = this.HumanCheck.hash_function(writer.Content);
+        //    //            MessagePackaging pack = new MessagePackaging(writer);
+        //    //            pack.Pack((int)msg.ProtocolID);
+        //    //            SocketManager.Send(pack.Writer.Content);
+        //    //            Log(new PrivateTextInformation("à " + name + " : " + content), 1);
+        //    //        }
+        //    //        break;
+        //    //}
+        //}
 
         public bool PerformGather()
         {

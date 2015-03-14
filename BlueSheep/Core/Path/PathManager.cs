@@ -51,6 +51,8 @@ namespace BlueSheep.Core.Path
 
         public void ParsePath()
         {
+            if (!File.Exists(path))
+                return;
             StreamReader sr = new StreamReader(path);
             string line = "";
             conditions = new List<Condition>();

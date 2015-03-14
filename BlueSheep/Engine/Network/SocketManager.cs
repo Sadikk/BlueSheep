@@ -1,4 +1,5 @@
 ﻿using BlueSheep.Common.IO;
+using BlueSheep.Engine.Enums;
 using BlueSheep.Engine.Frame;
 using BlueSheep.Engine.Types;
 using BlueSheep.Interface;
@@ -9,6 +10,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
+using System.Windows.Forms;
 namespace BlueSheep.Engine.Network
 {
     public class SocketManager
@@ -71,14 +73,14 @@ namespace BlueSheep.Engine.Network
                 m_Socket.Disconnect(false);
                 m_Socket.Dispose();
                 m_Socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                account.State = "Déconnecté";
+                account.SetStatus(Status.Disconnected);
             }
             try
             {
                 m_Socket.Connect(connectionInformations.Address, connectionInformations.Port);
                 if (m_Socket.Connected)
                 {
-                    account.State = "Connecté";
+                    account.SetStatus(Status.None);
                     account.LatencyFrame = new LatencyFrame(account);
                     account.Log(new ConnectionTextInformation("Connexion établie au serveur " + connectionInformations.ServerName + "."), 0);
                     if ((!m_IsChangingServer))
@@ -108,8 +110,7 @@ namespace BlueSheep.Engine.Network
             //if (m_TimerInactivity != null)
             // m_TimerInactivity.Dispose();
             account.Log(new ConnectionTextInformation("Déconnecté du serveur."), 0);
-            account.State = "Déconnecté";
-            account.ModifBar(6, 0, 0, "Déconnecté");
+            account.SetStatus(Status.Disconnected);
             //account.Dispose();
             //MainForm.ActualMainForm.ActualizeAccountInformations();
         }
@@ -128,7 +129,7 @@ namespace BlueSheep.Engine.Network
                 m_Socket.Send(content);
             }
         }
-        public void Send(Message msg)
+        public void Send(BlueSheep.Engine.Types.Message msg)
         {
             using (BigEndianWriter writer = new BigEndianWriter())
             {
@@ -136,7 +137,8 @@ namespace BlueSheep.Engine.Network
                 MessagePackaging pack = new MessagePackaging(writer);
                 pack.Pack((int)msg.ProtocolID);
                 account.SocketManager.Send(pack.Writer.Content);
-                account.Log(new BotTextInformation("SND : " + msg.ProtocolID), 0);
+                if (account.DebugMode.Checked)
+                    account.Log(new BotTextInformation("[SND] " + msg.ProtocolID), 0);
             }
         }
         public bool Connected()
@@ -249,6 +251,7 @@ namespace BlueSheep.Engine.Network
             account.Log(new BotTextInformation(" >> Listening dofus client started"), 0);
             while (true)
             {
+                Application.DoEvents();
                 m_DofSocket = srv.AcceptSocket();
                 if (m_DofSocket.Connected)
                 {

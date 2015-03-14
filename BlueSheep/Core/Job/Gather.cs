@@ -1,6 +1,7 @@
 ﻿using BlueSheep.Common.Data;
 using BlueSheep.Core.Map.Elements;
 using BlueSheep.Data.Pathfinding.Positions;
+using BlueSheep.Engine.Enums;
 using BlueSheep.Interface;
 using BlueSheep.Interface.Text;
 using System;
@@ -126,12 +127,12 @@ namespace BlueSheep.Core
                             }
                             Moved = false;
                             IsFishing = false;
-                            account.ModifBar(6, 0, 0, "Récolte");
+                            account.SetStatus(Status.Gathering);
                             return true;
                         }
                         if ((account.Inventory.HasFishingRod == false && account.Map.MoveToElement((int)UsableElement.Element.Id, 1)) || (account.Inventory.HasFishingRod == true && account.Map.MoveToElement((int)UsableElement.Element.Id, account.Inventory.WeaponRange)))
                         {
-                            account.ModifBar(6, 0, 0, "Récolte");
+                            account.SetStatus(Status.Gathering);
                             Id = (int)UsableElement.Element.Id;
                             SkillInstanceUid = UsableElement.Skills[0].skillInstanceUid;
                             IsFishing = true;

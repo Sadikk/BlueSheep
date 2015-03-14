@@ -562,8 +562,6 @@ namespace BlueSheep.Core.Fight
         public bool IsCellWalkable(int cellId)
         {
             BlueSheep.Data.D2p.Map MapData = (BlueSheep.Data.D2p.Map)m_Account.Map.Data;
-            //lock (CheckLock)
-            //{
             if (m_Account.Map.Data.IsWalkable(cellId))
             {
                 var selectedFighter = Fighters.FirstOrDefault((f) => f.CellId == cellId || MapData.Cells[cellId].NonWalkableDuringFight());
@@ -572,7 +570,6 @@ namespace BlueSheep.Core.Fight
                 else
                     return true;
             }
-            //}
             return false;
         }
 
@@ -587,55 +584,26 @@ namespace BlueSheep.Core.Fight
             {
                 foreach (MonsterGroup monsters in m_Account.Map.List)
                 {
-                    int monstersCount = monsters.m_staticInfos.underlings.Count() + 1;
-                    int monstersLevel = 0;
-                    List<string> monstersname = new List<string>();
 
-                    if (monstersCount < minNumber || monstersCount > maxNumber)
+                    if (monsters.monstersCount < minNumber || monsters.monstersCount > maxNumber)
                     {
                         continue;
                     }
-                    foreach (MonsterInGroupInformations monster in monsters.m_staticInfos.underlings)
-                    {
-                        DataClass monsterData = GameData.GetDataObject(D2oFileEnum.Monsters, monster.creatureGenericId);
-                        object monsterGrades = monsterData.Fields["grades"];
-                        ArrayList monsterGrades2 = (ArrayList)monsterGrades;
-                        DataClass monsterGradeData = (DataClass)monsterGrades2[Convert.ToInt32(monster.grade) - 1];
-                        monstersLevel += Convert.ToInt32(monsterGradeData.Fields["level"]);
-                        monstersname.Add(BlueSheep.Common.Data.I18N.GetText((int)monsterData.Fields["nameId"]));
-                    }
-                    DataClass mainmonsterData = GameData.GetDataObject(D2oFileEnum.Monsters, monsters.m_staticInfos.mainCreatureLightInfos.creatureGenericId);
-                    object mainmonsterGrades = mainmonsterData.Fields["grades"];
-                    ArrayList mainmonsterGrades2 = (ArrayList)mainmonsterGrades;
-                    DataClass mainmonsterGradeData = (DataClass)mainmonsterGrades2[Convert.ToInt32(monsters.m_staticInfos.mainCreatureLightInfos.grade) - 1];
-                    monstersLevel += Convert.ToInt32(mainmonsterGradeData.Fields["level"]);
-                    monstersname.Add(BlueSheep.Common.Data.I18N.GetText((int)mainmonsterData.Fields["nameId"]));
 
-                    if (monstersLevel < minLevel || monstersLevel > maxLevel)
+                    if (monsters.monstersLevel < minLevel || monsters.monstersLevel > maxLevel)
                     {
                         continue;
                     }
-                    if (m_Account.VerifGroup(monstersname) == false)
+                    if (m_Account.VerifGroup(monsters.NameList()) == false)
                         continue;
-                    string names = "";
-                    foreach (string item in monstersname)
-                    {
-                        //Account.Log("names = " + names + Environment.NewLine + "item = " + item);
-                        names = names + item;
-                        if (monstersname.IndexOf(item) != monstersname.Count - 1)
-                            names = names + ",";
-                    }
+
                     this.followinggroup = monsters;
                     if (m_Account.Map.MoveToCell(monsters.m_cellId))
                     {
-                        m_Account.ModifBar(6, 0, 0, "Déplacement");
-                        //m_Account.Log(new BotTextInformation(monsters.disposition.cellId.ToString() + "/" + m_Account.Map.Character.CellId));
-
+                        m_Account.SetStatus(Status.Moving);
                         m_Account.Path.Stop = true;
-                        m_Account.Log(new ActionTextInformation(string.Format("Lancement d'un combat contre {0} monstres de niveau {1} ({2})", monstersCount, monstersLevel, names)),1);
-                        //m_Account.Log(new BotTextInformation(monsters.contextualId.ToString()));
+                        m_Account.Log(new ActionTextInformation(string.Format("Lancement d'un combat contre {0} monstres de niveau {1} ({2})", monsters.monstersCount, monsters.monstersLevel, monsters.monstersName(true))),1);
                         return true;
-                        //m_Account.Map.List.Remove(entity);
                     }
 
                 }
@@ -666,8 +634,7 @@ namespace BlueSheep.Core.Fight
         public void KickPlayer(int id)
         {
                 GameContextKickMessage msg = new GameContextKickMessage(id);
-                m_Account.SocketManager.Send(msg);
-          
+                m_Account.SocketManager.Send(msg);       
         }
 
         public void LaunchSpell(int spellId, int cellId)
@@ -803,7 +770,7 @@ namespace BlueSheep.Core.Fight
         {
             if ((m_Account.CharacterStats.lifePoints / m_Account.CharacterStats.maxLifePoints) < m_Account.RegenChoice.Value)
             {
-                m_Account.ModifBar(6, 0, 0, "Regeneration");
+                m_Account.SetStatus(Status.Regenerating);
                 int maxLife = Convert.ToInt32(m_Account.CharacterStats.maxLifePoints);
                 int life = Convert.ToInt32(m_Account.CharacterStats.lifePoints);
                 int time = Convert.ToInt32(Math.Round(Convert.ToDecimal(maxLife - life) / 2));

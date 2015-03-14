@@ -6,6 +6,7 @@ using BlueSheep.Core.Map.Elements;
 using BlueSheep.Data.D2p.Elements;
 using BlueSheep.Data.Pathfinding;
 using BlueSheep.Data.Pathfinding.Positions;
+using BlueSheep.Engine.Enums;
 using BlueSheep.Engine.Types;
 using BlueSheep.Interface;
 using BlueSheep.Interface.Text;
@@ -238,9 +239,9 @@ namespace BlueSheep.Core.Map
 
         public bool MoveToCell(int cellId)
         {
-            if (m_Account.StatusLb.Text == "Combat" || m_Account.StatusLb.Text == "Fighting")
+            if (m_Account.state == Engine.Enums.Status.Fighting)
                 return false;
-            m_Account.ModifBar(6, 0, 0, "Déplacement");
+            m_Account.SetStatus(Status.Moving);
             MovementPath path = (new Pathfinder(m_Account.Map.Data, m_Account.Map)).FindPath(Character.CellId, cellId);
             if (path == null)
                 return false;
@@ -284,7 +285,7 @@ namespace BlueSheep.Core.Map
                 }
                 if (m_Account.Gather != null)
                     m_Account.Gather.Moved = true;
-                m_Account.ModifBar(6, 0, 0, "Connecté");
+                m_Account.SetStatus(Status.None);
             }
             
             return true;
@@ -364,7 +365,7 @@ namespace BlueSheep.Core.Map
 
         public bool MoveToCellWithDistance(int cellId, int maxDistance, bool bool1)
         {
-            m_Account.ModifBar(6, 0, 0, "Déplacement");
+            m_Account.SetStatus(Status.Moving);
             MovementPath path = null;
             int savDistance = -1;
             MapPoint characterPoint = new MapPoint(Character.CellId);
@@ -442,7 +443,7 @@ namespace BlueSheep.Core.Map
                 {
                     m_Account.SocketManager.Send(pack.Writer.Content);
                 }
-                m_Account.ModifBar(6, 0, 0, "Connecté");
+                m_Account.SetStatus(Status.None);
             }
             return true;
         }

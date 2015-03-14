@@ -30,12 +30,12 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AccountUC));
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.PosLabel = new System.Windows.Forms.ToolStripLabel();
             this.ToolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
@@ -157,6 +157,7 @@
             this.CellId = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Type = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage8 = new System.Windows.Forms.TabPage();
+            this.DebugMode = new BlueSheep.Interface.SadikCheckbox();
             this.toolStrip1.SuspendLayout();
             this.VTabAccount.SuspendLayout();
             this.ConsolePage.SuspendLayout();
@@ -453,6 +454,7 @@
             // tabPage6
             // 
             this.tabPage6.BackColor = System.Drawing.Color.White;
+            this.tabPage6.Controls.Add(this.DebugMode);
             this.tabPage6.Controls.Add(this.groupBox9);
             this.tabPage6.Location = new System.Drawing.Point(4, 34);
             this.tabPage6.Name = "tabPage6";
@@ -1028,33 +1030,33 @@
             // 
             // WinLoseFightPie
             // 
-            chartArea1.Name = "ChartArea1";
-            this.WinLoseFightPie.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.WinLoseFightPie.Legends.Add(legend1);
+            chartArea3.Name = "ChartArea1";
+            this.WinLoseFightPie.ChartAreas.Add(chartArea3);
+            legend3.Name = "Legend1";
+            this.WinLoseFightPie.Legends.Add(legend3);
             this.WinLoseFightPie.Location = new System.Drawing.Point(53, 149);
             this.WinLoseFightPie.Name = "WinLoseFightPie";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.WinLoseFightPie.Series.Add(series1);
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series3.Legend = "Legend1";
+            series3.Name = "Series1";
+            this.WinLoseFightPie.Series.Add(series3);
             this.WinLoseFightPie.Size = new System.Drawing.Size(250, 149);
             this.WinLoseFightPie.TabIndex = 1;
             this.WinLoseFightPie.Text = "WinLoseFightPie";
             // 
             // XpBarsChart
             // 
-            chartArea2.Name = "ChartArea1";
-            this.XpBarsChart.ChartAreas.Add(chartArea2);
-            legend2.Name = "Legend1";
-            this.XpBarsChart.Legends.Add(legend2);
+            chartArea4.Name = "ChartArea1";
+            this.XpBarsChart.ChartAreas.Add(chartArea4);
+            legend4.Name = "Legend1";
+            this.XpBarsChart.Legends.Add(legend4);
             this.XpBarsChart.Location = new System.Drawing.Point(40, 15);
             this.XpBarsChart.Name = "XpBarsChart";
-            series2.ChartArea = "ChartArea1";
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            this.XpBarsChart.Series.Add(series2);
+            series4.ChartArea = "ChartArea1";
+            series4.Legend = "Legend1";
+            series4.Name = "Series1";
+            this.XpBarsChart.Series.Add(series4);
             this.XpBarsChart.Size = new System.Drawing.Size(374, 134);
             this.XpBarsChart.TabIndex = 0;
             this.XpBarsChart.Text = "chart1";
@@ -1647,6 +1649,16 @@
             this.tabPage8.TabIndex = 4;
             this.tabPage8.Text = "Héroïque";
             // 
+            // DebugMode
+            // 
+            this.DebugMode.Checked = false;
+            this.DebugMode.Font = new System.Drawing.Font("Verdana", 8F);
+            this.DebugMode.Location = new System.Drawing.Point(6, 68);
+            this.DebugMode.Name = "DebugMode";
+            this.DebugMode.Size = new System.Drawing.Size(140, 20);
+            this.DebugMode.TabIndex = 3;
+            this.DebugMode.Text = "Debug mode";
+            // 
             // AccountUC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1846,5 +1858,6 @@
         private SadikButton DeleteItem;
         private System.Windows.Forms.TabPage tabPage9;
         private System.Windows.Forms.TabPage tabPage8;
+        public SadikCheckbox DebugMode;
     }
 }

@@ -16,7 +16,7 @@ namespace BlueSheep.Engine.Handlers.Connection
         [MessageHandler(typeof(HelloConnectMessage))]
         public static void HelloConnectMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
-            account.ModifBar(6, 0, 0, "Connecté");
+            account.SetStatus(Status.None);
             if (!account.IsMITM)
             {
                 HelloConnectMessage helloConnectMessage = (HelloConnectMessage)message;
@@ -109,12 +109,14 @@ namespace BlueSheep.Engine.Handlers.Connection
             // Cherche le statut du serveur
             ServerStatusEnum.Test((uint)serverStatusUpdateMessage.server.status, account);
         }
+
         [MessageHandler(typeof(ServersListMessage))]
         public static void ServerListMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
             account.Log(new ConnectionTextInformation("Serveur complet."), 0);
             account.TryReconnect(10);
         }
+
         [MessageHandler(typeof(HelloGameMessage))]
         public static void HelloGameMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {

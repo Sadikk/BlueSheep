@@ -1,5 +1,7 @@
 ﻿using BlueSheep.Common.IO;
 using BlueSheep.Common.Protocol.Messages;
+using BlueSheep.Common.Types;
+using BlueSheep.Engine.Enums;
 using BlueSheep.Engine.Network;
 using BlueSheep.Engine.Types;
 using BlueSheep.Interface;
@@ -16,7 +18,12 @@ namespace BlueSheep.Common
         /* Command Line Parser */
 
         #region Fields
-        private static AccountUC account;
+        private AccountUC account;
+
+        /// <summary>
+        /// Stores the commands history.
+        /// </summary>
+        public static List<string> CommandsHistory;
 
         /// <summary>
         /// The character used to distinguish which command lines parameters.
@@ -56,7 +63,14 @@ namespace BlueSheep.Common
         /// <summary>
         /// Store the result of the command in order to display it.
         /// </summary>
-        private static string result;
+        private List<string> result;
+        #endregion
+
+        #region Constructors
+        public CLIParser(AccountUC Account)
+        {
+            this.account = Account;
+        }
         #endregion
 
         #region Public Methods
@@ -67,20 +81,26 @@ namespace BlueSheep.Common
         /// The list of the required parameters.
         /// </param>
         /// <returns>The string to display.</returns>
-        public string Parse(string cmdLine)
+        public List<string> Parse(string cmdLine)
         {
-            result = "";
+            CLIParser.CommandsHistory.Add(cmdLine);
+            result = new List<string>();
             string[] split = cmdLine.Split(' ');
             switch (split[0])
             {
                 case "/help":
-                    return Usage(cmdLine.Split(' ')[1]);
+                    if (split.Length > 1)
+                        return Usage(split[1]);
+                    else
+                      return Usage("");
                 case "/move":
                     DefineOptionalParameter(new string[] { "-cell = 0", "-dir = null"});
                     ParseArguments(DeleteCommand(split));
                     return Move();
                 case "/mapid":
-                    return "L'id de la map est : " + account.Map.Id;
+                    return new List<string>() {"L'id de la map est : " + account.Map.Id};
+                case "/cellid":
+                    return new List<string>() {"Le joueur se trouve sur la cellule " + account.Map.Character.CellId};
                 case "/cell":
                     DefineOptionalParameter(new string[] {"-npc = 0", "-elem = 0", "-player = null"} );
                     ParseArguments(DeleteCommand(split));
@@ -90,6 +110,19 @@ namespace BlueSheep.Common
                     DefineOptionalParameter(new string[] { "-dest = null" });
                     ParseArguments(DeleteCommand(split));
                     return Say();
+                case "/entities":
+                    DefineSwitches(new string[] { "-v" });
+                    ParseArguments(DeleteCommand(split));
+                    return DispEntities();
+                case "/path":
+                    DefineOptionalParameter(new string[] { "-load = null", "-name = Unknown" });
+                    DefineSwitches(new string[] { "-start", "-stop" });
+                    ParseArguments(DeleteCommand(split));
+                    return Path();
+                case "/fight":
+                    DefineSwitches(new string[] { "-launch", "-lock", "-l", "-v", "-t", "-me"});
+                    ParseArguments(DeleteCommand(split));
+                    return Fight();
             }
             return Usage();
         }
@@ -107,7 +140,7 @@ namespace BlueSheep.Common
         /// <param name="expectedParams">
         /// The list of the required parameters.
         /// </param>
-        private static void DefineRequiredParameters(string[] requiredParameterNames)
+        private void DefineRequiredParameters(string[] requiredParameterNames)
         {
             CLIParser.requiredParameters = new Dictionary<string, string>();
 
@@ -117,8 +150,8 @@ namespace BlueSheep.Common
                 temp = temp.Trim();
                 if (string.IsNullOrEmpty(param))
                 {
-                    string errorMessage = "Error: The required command line parameter '" + param + "' is empty.";
-                    throw new Exception(errorMessage);
+                    string ERRORMessage = "ERROR: The required command line parameter '" + param + "' is empty.";
+                    throw new Exception(ERRORMessage);
                 }
 
                 CLIParser.requiredParameters.Add(param, string.Empty);
@@ -132,7 +165,7 @@ namespace BlueSheep.Common
         /// <param name="optionalParameters">
         /// The list of the optional parameters with their default values.
         /// </param>
-        private static void DefineOptionalParameter(string[] optionalPerams)
+        private void DefineOptionalParameter(string[] optionalPerams)
         {
             CLIParser.optionalParameters = new Dictionary<string, string>();
 
@@ -142,21 +175,21 @@ namespace BlueSheep.Common
 
                 if (tokens.Length != 2)
                 {
-                    string errorMessage = "Error: The optional command line parameter '" + param + "' has wrong format.\n Expeted param=value.";
-                    throw new Exception(errorMessage);
+                    string ERRORMessage = "ERROR: The optional command line parameter '" + param + "' has wrong format.\n Expeted param=value.";
+                    throw new Exception(ERRORMessage);
                 }
 
                 tokens[0] = tokens[0].Trim();
                 if (string.IsNullOrEmpty(tokens[0]))
                 {
-                    string errorMessage = "Error: The optional command line parameter '" + param + "' has empty name.";
-                    throw new Exception(errorMessage);
+                    string ERRORMessage = "ERROR: The optional command line parameter '" + param + "' has empty name.";
+                    throw new Exception(ERRORMessage);
                 }
 
                 tokens[1] = tokens[1].Trim();
                 if (string.IsNullOrEmpty(tokens[1]))
                 {
-                    string errorMessage = "Error: The optional command line parameter '" + param + "' has no value.";
+                    string ERRORMessage = "ERROR: The optional command line parameter '" + param + "' has no value.";
                 }
 
                 CLIParser.optionalParameters.Add(tokens[0], tokens[1]);
@@ -170,7 +203,7 @@ namespace BlueSheep.Common
         /// <param name="optionalParameters">
         /// The list of the optional parameters with their default values.
         /// </param>
-        private static void DefineOptionalParameter(KeyValuePair<string, string>[] optionalParameters)
+        private void DefineOptionalParameter(KeyValuePair<string, string>[] optionalParameters)
         {
             CLIParser.optionalParameters = new Dictionary<string, string>();
 
@@ -184,14 +217,14 @@ namespace BlueSheep.Common
 
                 if (string.IsNullOrEmpty(key))
                 {
-                    string errorMessage = "Error: The name of the optional parameter '" + param.Key + "' is empty.";
-                    throw new Exception(errorMessage);
+                    string ERRORMessage = "ERROR: The name of the optional parameter '" + param.Key + "' is empty.";
+                    throw new Exception(ERRORMessage);
                 }
 
                 if (string.IsNullOrEmpty(value))
                 {
-                    string errorMessage = "Error: The value of the optional parameter '" + param.Key + "' is empty.";
-                    throw new Exception(errorMessage);
+                    string ERRORMessage = "ERROR: The value of the optional parameter '" + param.Key + "' is empty.";
+                    throw new Exception(ERRORMessage);
                 }
 
                 CLIParser.optionalParameters.Add(param.Key, param.Value);
@@ -204,7 +237,7 @@ namespace BlueSheep.Common
         /// functionality provided by the application. For example a switch for tracing.
         /// </summary>
         /// <param name="switches"></param>
-        private static void DefineSwitches(string[] switches)
+        private void DefineSwitches(string[] switches)
         {
             CLIParser.switches = new Dictionary<string, bool>(switches.Length);
 
@@ -215,8 +248,8 @@ namespace BlueSheep.Common
 
                 if (string.IsNullOrEmpty(temp))
                 {
-                    string errorMessage = "Error: The switch '" + sw + "' is empty.";
-                    throw new Exception(errorMessage);
+                    string ERRORMessage = "ERROR: The switch '" + sw + "' is empty.";
+                    throw new Exception(ERRORMessage);
                 }
 
                 CLIParser.switches.Add(temp, false);
@@ -227,7 +260,7 @@ namespace BlueSheep.Common
         /// Parse the command line arguments.
         /// </summary>
         /// <param name="args">The command line arguments.</param>
-        private static void ParseArguments(string[] args)
+        private void ParseArguments(string[] args)
         {
             rawArguments = new List<string>(args);
 
@@ -238,7 +271,7 @@ namespace BlueSheep.Common
             ParseOptionalParameters();
             ParseSwitches();
 
-            ThrowIfErrors();
+            ThrowIfERRORs();
         }
 
         /// <summary>
@@ -246,7 +279,7 @@ namespace BlueSheep.Common
         /// </summary>
         /// <param name="paramName">The name of the perameter.</param>
         /// <returns>The value of the parameter.</returns>
-        private static string GetParamValue(string paramName)
+        private string GetParamValue(string paramName)
         {
             string paramValue = string.Empty;
 
@@ -260,14 +293,14 @@ namespace BlueSheep.Common
             }
             else
             {
-                string errorMessage = "Error: The parameter '" + paramName + "' is not supported.";
-                throw new Exception(errorMessage);
+                string ERRORMessage = "ERROR: The parameter '" + paramName + "' is not supported.";
+                throw new Exception(ERRORMessage);
             }
 
             return paramValue;
         }
 
-        private static bool IsSwitchOn(string switchName)
+        private bool IsSwitchOn(string switchName)
         {
             bool switchValue = false;
 
@@ -277,14 +310,14 @@ namespace BlueSheep.Common
             }
             else
             {
-                string errorMessage = "Error: switch '" + switchName + "' not supported.";
-                throw new Exception(errorMessage);
+                string ERRORMessage = "ERROR: switch '" + switchName + "' not supported.";
+                throw new Exception(ERRORMessage);
             }
 
             return switchValue;
         }
 
-        private static void ParseRequiredParameters()
+        private void ParseRequiredParameters()
         {
             if (CLIParser.requiredParameters == null || CLIParser.requiredParameters.Count == 0)
             {
@@ -306,7 +339,7 @@ namespace BlueSheep.Common
                     {
                         //
                         // The argument after the parameter name is expected to be its value.
-                        // No check for error is done here.
+                        // No check for ERROR is done here.
                         //
                         requiredParameters[paramName] = rawArguments[paramInd + 1];
 
@@ -322,7 +355,7 @@ namespace BlueSheep.Common
             }
         }
 
-        private static void ParseOptionalParameters()
+        private void ParseOptionalParameters()
         {
             if (CLIParser.optionalParameters == null || CLIParser.optionalParameters.Count == 0)
             {
@@ -358,7 +391,7 @@ namespace BlueSheep.Common
             }
         }
 
-        private static void ParseSwitches()
+        private void ParseSwitches()
         {
             if (CLIParser.switches == null || CLIParser.switches.Count == 0)
             {
@@ -379,49 +412,49 @@ namespace BlueSheep.Common
             }
         }
 
-        private static void ThrowIfErrors()
+        private void ThrowIfERRORs()
         {
-            StringBuilder errorMessage = new StringBuilder();
+            StringBuilder ERRORMessage = new StringBuilder();
 
             if (missingRequiredParameters.Count > 0 || missingValue.Count > 0 || rawArguments.Count > 0)
             {
-                errorMessage.Append("Error: Processing Command Line Arguments\n");
+                ERRORMessage.Append("ERROR: Processing Command Line Arguments\n");
             }
 
             if (missingRequiredParameters.Count > 0)
             {
-                errorMessage.Append("Missing Required Parameters\n");
+                ERRORMessage.Append("Missing Required Parameters\n");
                 foreach (string missingParam in missingRequiredParameters)
                 {
-                    errorMessage.Append("\t" + missingParam + "\n");
+                    ERRORMessage.Append("\t" + missingParam + "\n");
                 }
             }
 
             if (missingValue.Count > 0)
             {
-                errorMessage.Append("Missing Values\n");
+                ERRORMessage.Append("Missing Values\n");
                 foreach (string value in missingValue)
                 {
-                    errorMessage.Append("\t" + value + "\n");
+                    ERRORMessage.Append("\t" + value + "\n");
                 }
             }
 
             if (rawArguments.Count > 0)
             {
-                errorMessage.Append("Unknown Parameters");
+                ERRORMessage.Append("Unknown Parameters");
                 foreach (string unknown in rawArguments)
                 {
-                    errorMessage.Append("\t" + unknown + "\n");
+                    ERRORMessage.Append("\t" + unknown + "\n");
                 }
             }
 
-            if (errorMessage.Length > 0)
+            if (ERRORMessage.Length > 0)
             {
-                account.Log(new ErrorTextInformation(errorMessage.ToString()), 0); 
+                account.Log(new ErrorTextInformation(ERRORMessage.ToString()), 0); 
             }
         }
 
-        private static string[] DeleteCommand(string[] cmd)
+        private string[] DeleteCommand(string[] cmd)
         {
             List<string> args = cmd.ToList();
             args.RemoveAt(0);
@@ -433,97 +466,154 @@ namespace BlueSheep.Common
         /// </summary>
         /// <param name="cmd">The name of the command.</param>
         /// <returns>The general help/the command help</returns>
-        private static string Usage(string cmd = "")
+        private static List<string> Usage(string cmd = "")
         {
-            StringBuilder sb = new StringBuilder("USAGE:");
+            List<string> ls = new List<string>() { "USAGE:" };
             switch (cmd)
             {
                 case "":                 
-                    sb.AppendLine("    command -arg1 -arg2 ... -argn Value -switch1");
-                    sb.AppendLine();
-                    sb.AppendLine("Below are the available commands. Type /help with the name of the command for a specific help.");
-                    sb.AppendLine("  - move");
-                    sb.AppendLine("  - ");
-                    sb.AppendLine("  - ");
-                    sb.AppendLine("  - ");
-                    sb.AppendLine("  - ");
-                    sb.AppendLine("EXAMPLE:");
-                    sb.AppendLine("1. > /help move");
-                    sb.AppendLine("   - Display the help of the move command.");
-                    return sb.ToString();
+                    ls.Add("/command -arg1 -arg2 ... -argn Value -switch1");
+                    ls.Add("");
+                    ls.Add("Below are the available commands. Type /help with the name of the command for a specific help.");
+                    ls.Add("  - move");
+                    ls.Add("  - cell");
+                    ls.Add("  - say");
+                    ls.Add("  - entities");
+                    ls.Add("  - mapid");
+                    ls.Add("  - cellid");
+                    ls.Add("  - path");
+                    ls.Add("  - fight");
+                    ls.Add("EXAMPLE:");
+                    ls.Add("1. > /help move");
+                    ls.Add("   - Display the help of the move command.");
+                    return ls;
                 case "move":
-                    sb.AppendLine("/move [-cell <int>] [-dir <string>]");
-                    sb.AppendLine("OPTIONS:");
-                    sb.AppendLine("  - cell: move to the specified cell.");
-                    sb.AppendLine("  - dir : move to the specified direction (right, left, bottom or up).");
-                    sb.AppendLine("EXAMPLE:");
-                    sb.AppendLine("1. > /move -cell 150");
-                    sb.AppendLine("   - Move to the cell 150.");
-                    sb.AppendLine();
-                    sb.AppendLine("2. > /move -cell 150 -dir right");
-                    sb.AppendLine("   - Move to the cell 150 and then move to the map at the right");
-                    return sb.ToString();
+                    ls.Add("/move [-cell <int>] [-dir <string>]");
+                    ls.Add("Move to a cell and/or a direction.");
+                    ls.Add("OPTIONS:");
+                    ls.Add("  - cell: move to the specified cell.");
+                    ls.Add("  - dir : move to the specified direction (right, left, bottom or up).");
+                    ls.Add("EXAMPLE:");
+                    ls.Add("1. > /move -cell 150");
+                    ls.Add("   - Move to the cell 150.");
+                    ls.Add("");
+                    ls.Add("2. > /move -cell 150 -dir right");
+                    ls.Add("   - Move to the cell 150 and then move to the map at the right");
+                    return ls;
                 case "cell":
-                    sb.AppendLine("/cell [-npc <int>] [-elem <int>] [-player <string>]");
-                    sb.AppendLine("OPTIONS:");
-                    sb.AppendLine("  - npc: Get the cell of the specified npc id.");
-                    sb.AppendLine("  - elem : Get the cell of the specified element id.");
-                    sb.AppendLine("  - player : Get the cell of the player name.");
-                    sb.AppendLine("EXAMPLE:");
-                    sb.AppendLine("1. > /cell -npc 10001");
-                    sb.AppendLine("   - Get the cell of the npc which has the id 10001.");
-                    sb.AppendLine();
-                    sb.AppendLine("2. > /cell -player Sadik");
-                    sb.AppendLine("   - Get the cell of the player named Sadik.");
-                    return sb.ToString();
+                    ls.Add("/cell [-npc <int>] [-elem <int>] [-player <string>]");
+                    ls.Add("Get the cell of an element.");
+                    ls.Add("OPTIONS:");
+                    ls.Add("  - npc: Get the cell of the specified npc id.");
+                    ls.Add("  - elem : Get the cell of the specified element id.");
+                    ls.Add("  - player : Get the cell of the player name.");
+                    ls.Add("EXAMPLE:");
+                    ls.Add("1. > /cell -npc 10001");
+                    ls.Add("   - Get the cell of the npc which has the id 10001.");
+                    ls.Add("");
+                    ls.Add("2. > /cell -player Sadik");
+                    ls.Add("   - Get the cell of the player named Sadik.");
+                    return ls;
                 case "say":
-                    sb.AppendLine("/say -canal <char> -message <string> [-dest <string>]");
-                    sb.AppendLine("OPTIONS:");
-                    sb.AppendLine("  - canal   : Canal where the message will be displayed (ex: s for general canal).");
-                    sb.AppendLine("  - message : Message that will be sent.");
-                    sb.AppendLine("  - dest    : The dest. player of the message. Only on private message (-canal w)");
-                    sb.AppendLine("EXAMPLE:");
-                    sb.AppendLine("1. > /say -canal b -message I sell some things pm me");
-                    sb.AppendLine("   - Send the message \"I sell some things pm me in the\" in the business canal.");
-                    sb.AppendLine();
-                    sb.AppendLine("2. > /say -canal w -message hi -dest Sadik");
-                    sb.AppendLine("   - Send the private message \"hi\" to the player named Sadik.");
-                    return sb.ToString();
+                    ls.Add("/say -canal <char> -message <string> [-dest <string>]");
+                    ls.Add("Say something in the chat");
+                    ls.Add("OPTIONS:");
+                    ls.Add("  - canal   : Canal where the message will be displayed (ex: s for general canal).");
+                    ls.Add("  - message : Message that will be sent.");
+                    ls.Add("  - dest    : The dest. player of the message. Only on private message (-canal w)");
+                    ls.Add("EXAMPLE:");
+                    ls.Add("1. > /say -canal b -message I sell some things pm me");
+                    ls.Add("   - Send the message \"I sell some things pm me in the\" in the business canal.");
+                    ls.Add("");
+                    ls.Add("2. > /say -canal w -message hi -dest Sadik");
+                    ls.Add("   - Send the private message \"hi\" to the player named Sadik.");
+                    return ls;
+                case "entities":
+                    ls.Add("/entities [-v]");
+                    ls.Add("Display informations about entities on the map.");
+                    ls.Add("OPTIONS:");
+                    ls.Add("  - v   : Display a more verbose output.");
+                    ls.Add("EXAMPLE:");
+                    ls.Add("1. > /entities");
+                    ls.Add("   - Display informations about entities on the map.");
+                    ls.Add("");
+                    ls.Add("2. > /entities -v");
+                    ls.Add("   - Display detailed informations about entities on the map");
+                    return ls;
+                case "mapid":
+                    ls.Add("/mapid");
+                    ls.Add("Returns the current mapid.");
+                    return ls;
+                case "cellid":
+                    ls.Add("/cellid");
+                    ls.Add("Returns the current player's cellid.");
+                    return ls;
+                case "path":
+                    ls.Add("/path [-start] [-stop] [-load <string>] [-name <string>]");
+                    ls.Add("Interface to manage path.");
+                    ls.Add("OPTIONS:");
+                    ls.Add("  - start   : Start the path.");
+                    ls.Add("  - stop    : Stop the path.");
+                    ls.Add("  - load    : Load the path in the specified file.");
+                    ls.Add("  - name    : [To use with load] Specify the loaded path's name. Default is Unknown");
+                    ls.Add("EXAMPLE:");
+                    ls.Add("1. > /path -load C:\\Users\\Sadik\\path.txt -name MyPath");
+                    ls.Add("   - Load the path \"path.txt\" located in Sadik's folder, and shows it as \"MyPath\".");
+                    ls.Add("");
+                    ls.Add("2. > /path -start");
+                    ls.Add("   - Start the current loaded path.");
+                    return ls;
+                case "fight":
+                    ls.Add("/fight [-launch] [-l] [-lock] [-me] [-v] [-t]");
+                    ls.Add("Interface to manage fights.");
+                    ls.Add("OPTIONS:");
+                    ls.Add("  - launch  : Research for a fight on the map.");
+                    ls.Add("  - l   : List all fighters.");
+                    ls.Add("  - v   : Display a more verbose output.");
+                    ls.Add("  - me   : Display informations about you in the fight.");
+                    ls.Add("  - t   : Display the current turn number.");
+                    ls.Add("  - lock   : Lock the fight.");
+                    ls.Add("EXAMPLE:");
+                    ls.Add("1. > /fight -me -l -v -t");
+                    ls.Add("   - Display a verbose output with the informations about all fighters and display the current turn.");
+                    ls.Add("");
+                    ls.Add("2. > /fight -launch");
+                    ls.Add("   - Research and launch a fight on the map.");
+                    return ls;
 
             }
-            return "";
+            return ls = new List<string>() { ""};
         }
 
         /// <summary>
         /// Do the moving action.
         /// </summary>
         /// <returns>A display string of the action</returns>
-        private static string Move()
+        private List<string> Move()
         {
-            int cell = Int32.Parse(CLIParser.GetParamValue("-cell"));
-            string dir = CLIParser.GetParamValue("-dir");
-            result = "";
+            int cell = Int32.Parse(GetParamValue("-cell"));
+            string dir = GetParamValue("-dir");
 
             try
             {
                 if (cell != 0)
                 {
                     account.Map.MoveToCell(cell);
-                    result += "Déplacement vers la cellid : " + cell + "\n";
+                    result.Add("Déplacement vers la cellid : " + cell + "\n");
                 }
 
                 if (dir != "null")
                 {
                     account.Map.ChangeMap(dir);
-                    result += "Déplacement vers la/le : " + dir + "\n";
+                    result.Add("Déplacement vers la/le : " + dir + "\n");
                 }
             }
             catch (Exception ex)
             {
-                result += "[Error] " + ex.Message + "\n";
+                result.Add("[ERROR] " + ex.Message + "\n");
                 return result;
             }
-            if (result == "")
+            if (!(result.Count > 0))
                 return Usage("move");
             else
                 return result;
@@ -533,11 +623,11 @@ namespace BlueSheep.Common
         /// Get the cell of a specified element.
         /// </summary>
         /// <returns>The cell of the specified element.</returns>
-        private static string Cell()
+        private List<string> Cell()
         {
-            int npcid = Int32.Parse(CLIParser.GetParamValue("-npc"));
-            int elemid = Int32.Parse(CLIParser.GetParamValue("-elem"));
-            string player = CLIParser.GetParamValue("-player");
+            int npcid = Int32.Parse(GetParamValue("-npc"));
+            int elemid = Int32.Parse(GetParamValue("-elem"));
+            string player = GetParamValue("-player");
 
             try
             {
@@ -546,17 +636,17 @@ namespace BlueSheep.Common
                     string name = account.Npc.GetNpcName(npcid);
                     int cell = account.Map.GetCellFromContextId(npcid);
                     if (cell != 0)
-                        result += "Le pnj " + name + " est à la cellule " + cell + ". \n";
+                        result.Add("Le pnj " + name + " est à la cellule " + cell + ". \n");
                     else
-                        result += "Pnj introuvable.";
+                        result.Add("Pnj introuvable.");
                 }
                 else if (elemid != 0)
                 {
                     int cell = account.Map.GetCellFromContextId(elemid);
                     if (cell != 0)
-                        result += "L'élement " + elemid + " est à la cellule " + cell + ". \n";
+                        result.Add("L'élement " + elemid + " est à la cellule " + cell + ". \n");
                     else
-                        result += "Cellule introuvable.";
+                        result.Add("Cellule introuvable.");
                 }
                 else if (player != "null")
                 {
@@ -569,17 +659,17 @@ namespace BlueSheep.Common
                         }
                     }
                     if (cell != 0)
-                        result += "Le joueur " + player + " est à la cellule " + cell + ". \n";
+                        result.Add("Le joueur " + player + " est à la cellule " + cell + ". \n");
                     else
-                        result += "Joueur introuvable.";
+                        result.Add("Joueur introuvable.");
                 }
             }
             catch (Exception ex)
             {
-                result += "[Error] " + ex.Message + "\n";
+                result.Add("[ERROR] " + ex.Message + "\n");
                 return result;
             }
-            if (result == "")
+            if (!(result.Count > 0))
                 return Usage("cell");
             else
                 return result;
@@ -589,11 +679,11 @@ namespace BlueSheep.Common
         /// Say a message in the specified canal.
         /// </summary>
         /// <returns>The result.</returns>
-        private static string Say()
+        private List<string> Say()
         {
-            char canal = char.Parse(CLIParser.GetParamValue("-canal"));
-            string message = CLIParser.GetParamValue("-message");
-            string dest = CLIParser.GetParamValue("-dest");
+            char canal = char.Parse(GetParamValue("-canal"));
+            string message = GetParamValue("-message");
+            string dest = GetParamValue("-dest");
 
             try
             {
@@ -607,7 +697,7 @@ namespace BlueSheep.Common
                         MessagePackaging pack = new MessagePackaging(writer);
                         pack.Pack((int)msg.ProtocolID);
                         account.SocketManager.Send(pack.Writer.Content);
-                        result += "à " + dest + " : " + message + "\n";
+                        result.Add("à " + dest + " : " + message + "\n");
                     }
                 }
                 else
@@ -616,34 +706,195 @@ namespace BlueSheep.Common
                     {
                         case 'g':
                             account.Flood.SendMessage(2, message);
-                            result += "Message envoyé. \n";
+                            result.Add("Message envoyé. \n");
                             break;
                         case 'r':
                             account.Flood.SendMessage(6, message);
-                                result += "Message envoyé. \n";
+                                result.Add("Message envoyé. \n");
                             break;
                         case 'b':
                             account.Flood.SendMessage(5, message);
-                            result += "Message envoyé. \n";
+                            result.Add("Message envoyé. \n");
                             break;
                         case 'a':
                             account.Flood.SendMessage(3, message);
-                            result += "Message envoyé. \n";
+                            result.Add("Message envoyé. \n");
                             break;
                         case 's':
                             account.Flood.SendMessage(0, message);
-                            result += "Message envoyé. \n";
+                            result.Add("Message envoyé. \n");
                             break;
                     }
                 }
             }
             catch (Exception ex)
             {
-                result += "[Error] " + ex.Message + "\n";
+                result.Add("[ERROR] " + ex.Message + "\n");
                 return result;
             }
-            if (result == "")
+            if (!(result.Count > 0))
                 return Usage("say");
+            else
+                return result;
+        }
+
+        /// <summary>
+        /// Display informations about the entities
+        /// </summary>
+        /// <returns>The informations</returns>
+        private List<string> DispEntities()
+        {
+            bool verbose = IsSwitchOn("-v");
+
+            try
+            {
+                foreach (KeyValuePair<int, int> pair in account.Npc.Npcs)
+                {
+                    string name = account.Npc.GetNpcName(pair.Value);
+                    int cell = account.Map.GetCellFromContextId(pair.Value);
+                    result.Add("[PNJ] " + name + " -> id : +" + pair.Value + " contextual id : " + pair.Key + " cell : " + cell + ". \n");
+
+                }
+                foreach (KeyValuePair<int, BlueSheep.Core.Map.Elements.InteractiveElement> pair in account.Map.InteractiveElements)
+                {
+                    int cell = account.Map.GetCellFromContextId(pair.Key);
+                    if (verbose)
+                        result.Add("[INTERACTIVE ELEMENT] " + pair.Value.Name + " -> id " + pair.Key + " cell : " + cell + " IsUsable : " + pair.Value.IsUsable + ". \n");
+                    else
+                        result.Add("[INTERACTIVE ELEMENT] " + pair.Value.Name + " -> id " + pair.Key + " cell : " + cell + ". \n");
+                }
+                foreach (BlueSheep.Common.Protocol.Types.GameRolePlayCharacterInformations p in account.Map.Players.Values)
+                {
+                   int cell = account.Map.GetCellFromContextId(p.contextualId);
+                   if (verbose)
+                       result.Add("[PLAYER] " + p.name + " -> contextual id " + p.contextualId + " cell : " + cell + " Sex : " + (p.humanoidInfo.sex ? "Male" : "Female") + ". \n");
+                   else
+                       result.Add("[PLAYER] " + p.name + " -> contextual id " + p.contextualId + " cell : " + cell + ". \n");
+                    
+                }
+                foreach (MonsterGroup m in account.Map.List)
+                {
+                    if (verbose)
+                        result.Add("[MONSTERS] " + " -> (" + m.monstersLevel + ") " + m.monstersName(true) + " contextual id " + m.m_contextualId + " cell : " + m.m_cellId + ". \n");
+                    else
+                        result.Add("[MONSTERS] " + " -> " + m.monstersName(false) + " contextual id " + m.m_contextualId + ". \n");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                result.Add("[ERROR] " + ex.Message + "\n");
+                return result;
+            }
+            if (!(result.Count > 0))
+                return Usage("entities");
+            else
+                return result;
+        }
+
+        /// <summary>
+        /// Interface to manage path
+        /// </summary>
+        private List<string> Path()
+        {
+            string path = GetParamValue("-load");
+            string name = GetParamValue("-name");
+            bool start = IsSwitchOn("-start");
+            bool stop = IsSwitchOn("-stop");
+
+            try
+            {
+                if (path != "null")
+                {
+                    account.Path = new Core.Path.PathManager(account, path, name);
+                    account.Path.Stop = true;
+                    account.Log(new BotTextInformation("Trajet chargé : " + name), 0);
+                }
+                if (start)
+                    account.Path.ParsePath();
+                if (stop)
+                    account.Path.Stop = true;
+            }
+            catch (Exception ex)
+            {
+                result.Add("[ERROR] " + ex.Message + "\n");
+                return result;
+            }
+            if (!(result.Count > 0))
+                return Usage("path");
+            else
+                return result;
+        }
+
+        /// <summary>
+        /// Interface to manage fights
+        /// </summary>
+        private List<string> Fight()
+        {
+            bool launch = IsSwitchOn("-launch");
+            bool Lock = IsSwitchOn("-lock");
+            bool fighters = IsSwitchOn("-l");
+            bool verbose = IsSwitchOn("-v");
+            bool turn = IsSwitchOn("-t");
+            bool me = IsSwitchOn("-me");
+
+            try
+            {
+                if (account.Fight != null)
+                {
+                    if (launch && account.state != Status.Fighting)
+                    {
+                        account.Fight.SearchFight();
+                        result.Add("Recherche d'un combat... \n");
+                    }                
+                    if (Lock && account.Fight.WaitForReady)
+                    {
+                        account.Fight.LockFight();
+                        result.Add("Fermeture du combat. \n");
+                    }
+                    if (turn && account.state == Status.Fighting)
+                    {
+                        result.Add("[TURN] " + account.Fight.TurnId + "\n");
+                    }
+                    if (fighters && account.state == Status.Fighting)
+                    {
+                        foreach (BFighter f in account.Fight.Fighters)
+                        {
+                            if (verbose)
+                            {
+                                bool isAlly = f.TeamId == account.Fight.Fighter.TeamId;
+                                result.Add(String.Format("[%1] LP : %2/%3 AP:%4 MP:%5 Cell: %6 Alive ? %7 \n", 
+                                    isAlly ? "ALLY" : "ENNEMY", f.LifePoints, f.MaxLifePoints, 
+                                    f.ActionPoints, f.MovementPoints, f.CellId, f.IsAlive));
+                            }
+                            else
+                            {
+                                bool isAlly = f.TeamId == account.Fight.Fighter.TeamId;
+                                result.Add(String.Format("[%1] LP : %2/%3 Alive ? %4 \n",
+                                    isAlly ? "ALLY" : "ENNEMY", f.LifePoints, f.MaxLifePoints,f.IsAlive));
+                            }
+                        }
+                    }
+                    if (me && account.state == Status.Fighting)
+                    {
+                        BFighter m = account.Fight.Fighter;
+                        if (verbose)
+                            result.Add(String.Format("[ME] LP : %1/%2 AP:%3 MP:%4 Cell: %5 Alive ? %6 \n", m.LifePoints, m.MaxLifePoints
+                                , m.ActionPoints, m.MovementPoints, m.IsAlive));
+                        else
+                            result.Add(String.Format("[ME] LP : %1/%2 Alive ? %3 \n", m.LifePoints, m.MaxLifePoints, m.IsAlive));
+                    }
+
+                        
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Add("[ERROR] " + ex.Message + "\n");
+                return result;
+            }
+            if (!(result.Count > 0))
+                return Usage("fight");
             else
                 return result;
         }

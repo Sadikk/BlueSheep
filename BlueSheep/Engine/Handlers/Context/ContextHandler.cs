@@ -8,6 +8,7 @@ using BlueSheep.Data.D2p;
 using BlueSheep.Data.D2p.Elements;
 using BlueSheep.Data.Pathfinding;
 using BlueSheep.Data.Pathfinding.Positions;
+using BlueSheep.Engine.Enums;
 using BlueSheep.Engine.Types;
 using BlueSheep.Interface;
 using BlueSheep.Interface.Text;
@@ -103,14 +104,14 @@ namespace BlueSheep.Engine.Handlers.Context
             }
             if (account.Path != null)
             {
-                if (account.Path.Current_Flag == "<Fight>" && account.StatusLb.Text != "Combat" || account.StatusLb.Text == "Fighting" && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString())
+                if (account.Path.Current_Flag == "<Fight>" && account.state != Enums.Status.Fighting && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString())
                 {
                     if (account.Fight.SearchFight() == false)
                     {
                         account.Path.PerformActionsStack();
                     }
                 }
-                else if (account.Path != null & account.StatusLb.Text != "Combat" && account.StatusLb.Text != "Fighting" && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString())
+                else if (account.Path != null & account.state != Enums.Status.Fighting && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString())
                     account.Path.PerformActionsStack();
                 else if (account.Path != null & account.Path.Current_Map != account.Map.X.ToString() + "," + account.Map.Y.ToString() || account.Map.Id != account.Map.LastMapId)
                 {
@@ -210,14 +211,14 @@ namespace BlueSheep.Engine.Handlers.Context
             }
             if (account.Path != null)
             {
-                if (account.Path.Current_Flag == "<Fight>" && (account.StatusLb.Text != "Combat" || account.StatusLb.Text == "Fighting") && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString())
+                if (account.Path.Current_Flag == "<Fight>" && account.state != Enums.Status.Fighting && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString())
                 {
                     if (account.Fight.SearchFight() == false)
                     {
                         account.Path.PerformActionsStack();
                     }
                 }
-                else if (account.StatusLb.Text != "Combat" && account.StatusLb.Text != "Fighting" && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString() && account.Map.LastMapId == account.Map.Id)
+                else if (account.state != Enums.Status.Fighting && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString() && account.Map.LastMapId == account.Map.Id)
                     account.Path.PerformActionsStack();
                 else if ((account.Path.Current_Map != account.Map.X.ToString() + "," + account.Map.Y.ToString()) || account.Map.Id != account.Map.LastMapId)
                 {
@@ -298,14 +299,14 @@ namespace BlueSheep.Engine.Handlers.Context
             }
             if (account.Path != null)
             {
-                if (account.Path.Current_Flag == "<Fight>" && account.StatusLb.Text != "Combat" || account.StatusLb.Text == "Fighting" && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString())
+                if (account.Path.Current_Flag == "<Fight>" && account.state != Enums.Status.Fighting && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString())
                 {
                     if (account.Fight.SearchFight() == false)
                     {
                         account.Path.PerformActionsStack();
                     }
                 }
-                else if (account.Path != null & account.StatusLb.Text != "Combat" && account.StatusLb.Text != "Fighting" && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString())
+                else if (account.Path != null & account.state != Enums.Status.Fighting && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString())
                     account.Path.PerformActionsStack();
                 else if (account.Path != null & account.Path.Current_Map != account.Map.X.ToString() + "," + account.Map.Y.ToString() || account.Map.Id != account.Map.LastMapId)
                 {
@@ -487,7 +488,7 @@ namespace BlueSheep.Engine.Handlers.Context
                     if (neighbourId >= 0)
                         account.Map.LaunchChangeMap(neighbourId);
                 }
-                account.ModifBar(6, 0, 0, "Connecté");
+                account.SetStatus(Status.None);
 
         }
 
@@ -767,21 +768,32 @@ namespace BlueSheep.Engine.Handlers.Context
                 msg.Deserialize(reader);
             }
             
-            if ((int)msg.type == 1 && msg.rideId == account.CharacterBaseInformations.id)
+            
+        }
+
+        [MessageHandler(typeof(ObtainedItemMessage))]
+        public static void ObtainedItemMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
+        {
+            ObtainedItemMessage msg = (ObtainedItemMessage)message;
+
+            using (BigEndianReader reader = new BigEndianReader(packetDatas))
             {
+                msg.Deserialize(reader);
+            }
                 if (account.Gather.resourceName == "Unknown")
                     return;
-                account.ModifBar(6, 0, 0, "Connecté");
-                account.Log(new ActionTextInformation("Ressource récoltée : " + account.Gather.resourceName + " +" + msg.value), 3);
+                account.SetStatus(Status.None);
+                account.Log(new ActionTextInformation("Ressource récoltée : " + account.Gather.resourceName + " +" + msg.baseQuantity), 3);
                 if (account.Gather.Stats.ContainsKey(account.Gather.resourceName))
-                    account.Gather.Stats[account.Gather.resourceName] += msg.value;
+                    account.Gather.Stats[account.Gather.resourceName] += msg.baseQuantity;
                 else
-                    account.Gather.Stats.Add(account.Gather.resourceName, msg.value);
+                    account.Gather.Stats.Add(account.Gather.resourceName, msg.baseQuantity);
                 account.Gather.Current_Job.ActualizeStats(account.Gather.Stats);
                 if (account.PerformGather() == false && account.Path != null)
                     account.Path.PerformActionsStack();
-            }
+            
         }
+
 
         //[MessageHandler(typeof(DisplayNumericalValueWithAgeBonusMessage))]
         //public static void DisplayNumericalValueWithAgeBonusTreatment(Message message, byte[] packetDatas, AccountUC account)

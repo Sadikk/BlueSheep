@@ -201,7 +201,7 @@ namespace BlueSheep.Engine.Handlers.Fight
                         ((BFighter)fighter).CellId = d.cellId;
                 });
             }
-            account.ModifBar(6, 0, 0, "Combat");
+            account.SetStatus(Status.Fighting);
         }
         [MessageHandler(typeof(GameFightEndMessage))]
         public static void GameFightEndMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
@@ -429,7 +429,7 @@ namespace BlueSheep.Engine.Handlers.Fight
                 msg.Deserialize(reader);
             }
             MovementPath clientMovement = MapMovementAdapter.GetClientMovement(msg.keyMovements.Select<short, uint>(k => (uint)k).ToList());
-            if (account.StatusLb.Text == "Combat" || account.StatusLb.Text == "Fighting")
+            if (account.state == Enums.Status.Fighting)
             {
                 BFighter fighter = account.Fight.GetFighter(msg.actorId);
                 if (fighter != null)
@@ -469,7 +469,7 @@ namespace BlueSheep.Engine.Handlers.Fight
             {
                 msg.Deserialize(reader);
             }
-            account.ModifBar(6, 0, 0, "Combat");
+            account.SetStatus(Status.Fighting);
             account.Fight.PlacementCells = msg.positionsForChallengers.ToList();
             account.Fight.TurnId = 0;
             if (account.Fight.m_Conf.Tactic != BlueSheep.Core.Fight.TacticEnum.Immobile)
@@ -523,7 +523,7 @@ namespace BlueSheep.Engine.Handlers.Fight
             {
                 msg.Deserialize(reader);
             }
-            if (account.Fight != null && account.StatusLb.Text == "Combat" || account.StatusLb.Text == "Fighting")
+            if (account.Fight != null && account.state == Enums.Status.Fighting)
             {
                 account.Fight.watch.Stop();
                 account.Fight.WaitForReady = false;
@@ -541,7 +541,7 @@ namespace BlueSheep.Engine.Handlers.Fight
                 }
                 account.Fight.PerformAutoTimeoutFight(2000);
                 account.Fight.PulseRegen();
-                account.ModifBar(6, 0, 0, "Connecté");
+                account.SetStatus(Status.None);
             }
             //account.Path.Stop = false;
         }
