@@ -103,6 +103,23 @@ namespace BlueSheep.Interface
                     break;
             }
         }
+
+        private void Form_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Minimized)
+            {
+                notifyIcon.Visible = true;
+                notifyIcon.ShowBalloonTip(3000);
+                this.ShowInTaskbar = false;
+            }
+        }
+
+        private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            this.WindowState = FormWindowState.Normal;
+            this.ShowInTaskbar = true;
+            notifyIcon.Visible = false;
+        }
         #endregion
 
         #region Private methods
