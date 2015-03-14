@@ -95,7 +95,8 @@ namespace BlueSheep.Interface
                 {
                     // TODO : Automate the dll injection
                     Process proc = new Process();
-                    proc.StartInfo.FileName = MainForm.ActualMainForm.DofusPath + @"\app\Dofus.exe";
+                    string directoryPath = System.IO.Path.Combine (MainForm.ActualMainForm.DofusPath, "Dofus.exe");
+                    proc.StartInfo.FileName = directoryPath;
                     proc.Start();
                     BlueSheep.Engine.Constants.DllInjector Injector = new Engine.Constants.DllInjector();
                     String path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\No.Ankama.dll";

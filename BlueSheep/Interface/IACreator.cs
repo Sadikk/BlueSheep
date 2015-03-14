@@ -36,7 +36,9 @@ namespace BlueSheep.Interface
                 BlueSheep.Engine.Constants.IntelliSense.AutoCompleteTextBox(MonsterTextBox, lstPopup, BlueSheep.Engine.Constants.IntelliSense.MonstersList, e);
             };
             Account = account;
-            saveFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\IAs";
+            string ApplicationDataPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
+            string combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "IAs");
+            saveFileDialog1.InitialDirectory = combinedPath;
             FillSpells();
             switch (MainForm.ActualMainForm.Lang)
             {
@@ -100,13 +102,18 @@ namespace BlueSheep.Interface
                 dynamic iapath = saveFileDialog1.FileName;
                 Display Disp = new Display(ChoixName.Text, ChoixAuteur.Text, ChoixClasse.Text, ChoixVersion.Value);
                 FightConfig Config = new FightConfig(ChoixTactique.SelectedText, ChoixPlacement.SelectedText, (int)ChoixFarCells.Value);
-                Serialize(Disp, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\disp.xml");
-                Serialize(Config, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\config.xml");
-                Serialize(SpellsList, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\spells.xml");
-                compression(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\", iapath);
-                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\disp.xml");
-                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\config.xml");
-                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\disp.xml");
+                string ApplicationDataPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
+                string tempPath = iapath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp");
+                string dispPath = System.IO.Path.Combine (tempPath, "disp.xml");
+                Serialize(Disp, dispPath);
+                string configPath = System.IO.Path.Combine (tempPath, "config.xml");
+                Serialize(Config, configPath);
+                string spellsPath = System.IO.Path.Combine (tempPath, "spells.xml");
+                Serialize(SpellsList, spellsPath);
+                compression(tempPath, iapath);
+                File.Delete(dispPath);
+                File.Delete(configPath);
+                File.Delete(dispPath);//TODO: unneeded? possibly meant to delete another file?
                 this.Close();
             }
         }

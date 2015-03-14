@@ -766,7 +766,7 @@ namespace BlueSheep.Engine.Handlers.Context
             {
                 msg.Deserialize(reader);
             }
-            
+
             if ((int)msg.type == 1 && msg.rideId == account.CharacterBaseInformations.id)
             {
                 if (account.Gather.resourceName == "Unknown")
