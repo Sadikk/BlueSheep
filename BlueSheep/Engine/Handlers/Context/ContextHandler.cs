@@ -767,6 +767,7 @@ namespace BlueSheep.Engine.Handlers.Context
             {
                 msg.Deserialize(reader);
             }
+<<<<<<< HEAD
             
             
         }
@@ -777,6 +778,10 @@ namespace BlueSheep.Engine.Handlers.Context
             ObtainedItemMessage msg = (ObtainedItemMessage)message;
 
             using (BigEndianReader reader = new BigEndianReader(packetDatas))
+=======
+
+            if ((int)msg.type == 1 && msg.rideId == account.CharacterBaseInformations.id)
+>>>>>>> e41140c8d47f40befe92cfc239ef4a04b7ea78f0
             {
                 msg.Deserialize(reader);
             }

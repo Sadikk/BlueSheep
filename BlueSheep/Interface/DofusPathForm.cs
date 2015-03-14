@@ -42,10 +42,13 @@ namespace BlueSheep.Interface
             }
             else
             {
-                if (Directory.Exists(TextBox1.Text + "\\app\\data\\i18n"))
+                string directoryPath = Path.Combine (TextBox1.Text, "data", "i18n");
+
+                if (Directory.Exists(directoryPath))
                 {
                     mainfrm.DofusPath = TextBox1.Text;
-                    StreamWriter sr = new StreamWriter(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\bs.conf");
+                    string combinedPath = Path.Combine (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlueSheep", "bs.conf");
+                    StreamWriter sr = new StreamWriter(combinedPath);
                     sr.WriteLine(TextBox1.Text);
                     sr.Close();
                     this.Close();
@@ -53,7 +56,7 @@ namespace BlueSheep.Interface
                 }
                 else
                 {
-                    System.Windows.Forms.MessageBox.Show("Impossible de trouver le dossier : \"" + TextBox1.Text + @"\app\data\i18n\");
+                    System.Windows.Forms.MessageBox.Show("Impossible de trouver le dossier : \"" + directoryPath);
                     flag = 0;
                     BtValider.Text = "Parcourir";
                     TextBox1.Clear();

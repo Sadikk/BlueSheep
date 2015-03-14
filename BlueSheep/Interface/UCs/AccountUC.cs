@@ -807,8 +807,12 @@ namespace BlueSheep.Interface
                 Invoke(new DelegGatherPie(ActualizeFightStats), winLose, xpwon);
                 return;
             }
+            #if __MonoCS__
+
+            #else
             if (WinLoseFightPie.Titles.Count < 1)
-                WinLoseFightPie.Titles.Add("Résultats des combats");
+            WinLoseFightPie.Titles.Add("Résultats des combats");
+            #endif
             WinLoseFightPie.Series.Clear();
             WinLoseFightPie.ChartAreas[0].BackColor = Color.Transparent;
             Series series1 = new Series
@@ -829,8 +833,12 @@ namespace BlueSheep.Interface
                 i += 1;
             }
             this.XpBarsChart.Series.Clear();
+            #if __MonoCS__
+
+            #else
             if (XpBarsChart.Titles.Count < 1)
-                this.XpBarsChart.Titles.Add("Experience gagnée");
+            this.XpBarsChart.Titles.Add("Experience gagnée");
+            #endif
             foreach (KeyValuePair<DateTime, int> p in xpwon)
             {
                 Series series = new Series(p.Key.ToShortDateString());

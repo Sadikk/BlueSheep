@@ -105,8 +105,12 @@
             this.nudMaxMonstersNumber = new System.Windows.Forms.NumericUpDown();
             this.nudMinMonstersNumber = new System.Windows.Forms.NumericUpDown();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            #if __MonoCS__
+
+            #else
             this.WinLoseFightPie = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.XpBarsChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            #endif
             this.JobPage = new System.Windows.Forms.TabPage();
             this.JobsTabP = new BlueSheep.Interface.SadikTabControl();
             this.FamiPage = new System.Windows.Forms.TabPage();
@@ -185,8 +189,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudMaxMonstersNumber)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMinMonstersNumber)).BeginInit();
             this.tabPage4.SuspendLayout();
+            #if __MonoCS__
+
+            #else
             ((System.ComponentModel.ISupportInitialize)(this.WinLoseFightPie)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.XpBarsChart)).BeginInit();
+            #endif
             this.JobPage.SuspendLayout();
             this.FamiPage.SuspendLayout();
             this.panelAccountInformations.SuspendLayout();
@@ -1019,14 +1027,21 @@
             // tabPage4
             // 
             this.tabPage4.BackColor = System.Drawing.Color.White;
+            #if __MonoCS__
+
+            #else
             this.tabPage4.Controls.Add(this.WinLoseFightPie);
             this.tabPage4.Controls.Add(this.XpBarsChart);
+            #endif
             this.tabPage4.Location = new System.Drawing.Point(4, 34);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage4.Size = new System.Drawing.Size(484, 304);
             this.tabPage4.TabIndex = 1;
             this.tabPage4.Text = "Statistiques";
+            #if __MonoCS__
+
+            #else
             // 
             // WinLoseFightPie
             // 
@@ -1060,6 +1075,7 @@
             this.XpBarsChart.Size = new System.Drawing.Size(374, 134);
             this.XpBarsChart.TabIndex = 0;
             this.XpBarsChart.Text = "chart1";
+            #endif
             // 
             // JobPage
             // 
