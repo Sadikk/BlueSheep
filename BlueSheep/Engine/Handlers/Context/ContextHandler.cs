@@ -46,6 +46,7 @@ namespace BlueSheep.Engine.Handlers.Context
             account.ModifBar(5, 0, 0, "[" + account.Map.X + ";" + account.Map.Y + "]" + " " + mapName + " (" + subAreaName + ")");
             account.Map.Entities.Clear();
             account.Map.List.Clear();
+            account.Map.Players = new Dictionary<int, Common.Protocol.Types.GameRolePlayCharacterInformations>();
             foreach (GameRolePlayActorInformations actor in msg.actors)
             {
                 account.Map.Entities.Add(new BlueSheep.Core.Fight.Entity(actor.contextualId, actor.disposition.cellId));
@@ -160,6 +161,7 @@ namespace BlueSheep.Engine.Handlers.Context
             account.ModifBar(5, 0, 0, "[" + account.Map.X + ";" + account.Map.Y + "]" + " " + mapName + " (" + subAreaName + ")");
             account.Map.Entities.Clear();
             account.Map.List.Clear();
+            account.Map.Players = new Dictionary<int, Common.Protocol.Types.GameRolePlayCharacterInformations>();
             foreach (GameRolePlayActorInformations actor in msg.actors)
             {
                 account.Map.Entities.Add(new BlueSheep.Core.Fight.Entity(actor.contextualId, actor.disposition.cellId));
@@ -167,6 +169,11 @@ namespace BlueSheep.Engine.Handlers.Context
                 {
                     GameRolePlayGroupMonsterInformations a = (GameRolePlayGroupMonsterInformations)actor;
                     account.Map.List.Add(new MonsterGroup(a.staticInfos, a.disposition.cellId, a.contextualId));
+                }
+                else if (actor is GameRolePlayCharacterInformations)
+                {
+                    GameRolePlayCharacterInformations a = (GameRolePlayCharacterInformations)actor;
+                    account.Map.Players.Add(a.contextualId, a);
                 }
 
             }
@@ -767,7 +774,6 @@ namespace BlueSheep.Engine.Handlers.Context
             {
                 msg.Deserialize(reader);
             }
-<<<<<<< HEAD
             
             
         }
@@ -778,10 +784,6 @@ namespace BlueSheep.Engine.Handlers.Context
             ObtainedItemMessage msg = (ObtainedItemMessage)message;
 
             using (BigEndianReader reader = new BigEndianReader(packetDatas))
-=======
-
-            if ((int)msg.type == 1 && msg.rideId == account.CharacterBaseInformations.id)
->>>>>>> e41140c8d47f40befe92cfc239ef4a04b7ea78f0
             {
                 msg.Deserialize(reader);
             }

@@ -37,7 +37,10 @@
             this.NUDAutoDeletion = new System.Windows.Forms.NumericUpDown();
             this.AutoDeletionBox = new BlueSheep.Interface.SadikCheckbox();
             this.sadikLabel2 = new BlueSheep.Interface.SadikLabel();
+            this.NUDBank = new System.Windows.Forms.NumericUpDown();
+            this.sadikLabel3 = new BlueSheep.Interface.SadikLabel();
             ((System.ComponentModel.ISupportInitialize)(this.NUDAutoDeletion)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NUDBank)).BeginInit();
             this.SuspendLayout();
             // 
             // litPopup
@@ -53,9 +56,9 @@
             // 
             // ItemTxtBox
             // 
-            this.ItemTxtBox.Location = new System.Drawing.Point(16, 20);
+            this.ItemTxtBox.Location = new System.Drawing.Point(16, 15);
             this.ItemTxtBox.Name = "ItemTxtBox";
-            this.ItemTxtBox.Size = new System.Drawing.Size(292, 20);
+            this.ItemTxtBox.Size = new System.Drawing.Size(249, 20);
             this.ItemTxtBox.TabIndex = 29;
             this.ItemTxtBox.Text = "Entrez le nom d\'un item...";
             this.ItemTxtBox.GotFocus += new System.EventHandler(this.ItemTxtBox_GotFocus);
@@ -151,10 +154,30 @@
             this.sadikLabel2.TabIndex = 36;
             this.sadikLabel2.Text = "minutes.";
             // 
+            // NUDBank
+            // 
+            this.NUDBank.Location = new System.Drawing.Point(271, 15);
+            this.NUDBank.Name = "NUDBank";
+            this.NUDBank.Size = new System.Drawing.Size(29, 20);
+            this.NUDBank.TabIndex = 37;
+            // 
+            // sadikLabel3
+            // 
+            this.sadikLabel3.AutoSize = true;
+            this.sadikLabel3.Font = new System.Drawing.Font("Verdana", 8F);
+            this.sadikLabel3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(135)))), ((int)(((byte)(135)))), ((int)(((byte)(135)))));
+            this.sadikLabel3.Location = new System.Drawing.Point(306, 15);
+            this.sadikLabel3.Name = "sadikLabel3";
+            this.sadikLabel3.Size = new System.Drawing.Size(93, 26);
+            this.sadikLabel3.TabIndex = 38;
+            this.sadikLabel3.Text = "% de pods \r\npour la banque";
+            // 
             // GestItemsUC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.sadikLabel3);
+            this.Controls.Add(this.NUDBank);
             this.Controls.Add(this.sadikLabel2);
             this.Controls.Add(this.AutoDeletionBox);
             this.Controls.Add(this.NUDAutoDeletion);
@@ -167,6 +190,7 @@
             this.Name = "GestItemsUC";
             this.Size = new System.Drawing.Size(410, 283);
             ((System.ComponentModel.ISupportInitialize)(this.NUDAutoDeletion)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NUDBank)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -183,5 +207,7 @@
         private System.Windows.Forms.NumericUpDown NUDAutoDeletion;
         private SadikCheckbox AutoDeletionBox;
         private SadikLabel sadikLabel2;
+        public System.Windows.Forms.NumericUpDown NUDBank;
+        private SadikLabel sadikLabel3;
     }
 }

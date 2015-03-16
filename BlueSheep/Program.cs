@@ -31,8 +31,8 @@ namespace BlueSheep
                         System.Threading.Thread.Sleep(1000);
                     }
                     reg.SetValue("Version", 0.8);
-                    reg.SetValue("Minor", 7);
-                    Application.Run(new MainForm("0.8.7"));
+                    reg.SetValue("Minor", 8);
+                    Application.Run(new MainForm("0.8.8"));
                 }
                 catch (Exception ex)
                 { MessageBox.Show(ex.Message + ex.StackTrace); }

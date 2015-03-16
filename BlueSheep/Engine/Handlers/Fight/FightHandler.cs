@@ -98,6 +98,27 @@ namespace BlueSheep.Engine.Handlers.Fight
                 }
             }
         }
+
+        [MessageHandler(typeof(GameActionFightLifePointsLostMessage))]
+        public static void GameActionFightLifePointsLostMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
+        {
+            GameActionFightLifePointsLostMessage msg = (GameActionFightLifePointsLostMessage)message;
+            using (BigEndianReader reader = new BigEndianReader(packetDatas))
+            {
+                msg.Deserialize(reader);
+            }
+            if (account.Fight != null && account.state == Status.Fighting)
+            {
+                BFighter fighter = account.Fight.GetFighter(msg.targetId);
+                account.Fight.Fighters[account.Fight.Fighters.IndexOf(fighter)].LifePoints -= msg.loss;
+                if (fighter.Id == account.Fight.Fighter.Id)
+                {
+                    account.ModifBar(2, account.Fight.Fighter.MaxLifePoints, account.Fight.Fighter.LifePoints, "Vitalité");
+                }
+            }
+        
+        }
+
         [MessageHandler(typeof(GameActionFightSlideMessage))]
         public static void GameActionFightSlideMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -172,6 +193,7 @@ namespace BlueSheep.Engine.Handlers.Fight
             }
             account.Fight.Fighters.Add(new BFighter(msg.summon.contextualId, msg.summon.disposition.cellId, msg.summon.stats.actionPoints, msg.summon.stats, msg.summon.alive, msg.summon.stats.lifePoints, msg.summon.stats.maxLifePoints, msg.summon.stats.movementPoints, (uint)msg.summon.teamId, 0));
         }
+
         [MessageHandler(typeof(GameActionFightTeleportOnSameMapMessage))]
         public static void GameActionFightTeleportOnSameMapMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -184,6 +206,7 @@ namespace BlueSheep.Engine.Handlers.Fight
             if (fighter != null)
                 fighter.CellId = msg.cellId;
         }
+
         [MessageHandler(typeof(GameEntitiesDispositionMessage))]
         public static void GameEntitiesDispositionMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -203,6 +226,7 @@ namespace BlueSheep.Engine.Handlers.Fight
             }
             account.SetStatus(Status.Fighting);
         }
+
         [MessageHandler(typeof(GameFightEndMessage))]
         public static void GameFightEndMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -212,6 +236,7 @@ namespace BlueSheep.Engine.Handlers.Fight
                 msg.Deserialize(reader);
             }
         }
+
         [MessageHandler(typeof(GameFightHumanReadyStateMessage))]
         public static void GameFightHumanReadyStateMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -223,6 +248,7 @@ namespace BlueSheep.Engine.Handlers.Fight
             if (msg.characterId == account.CharacterBaseInformations.id)
                 account.Fight.WaitForReady = !msg.isReady;
         }
+
         [MessageHandler(typeof(GameFightJoinMessage))]
         public static void GameFightJoinMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -250,6 +276,7 @@ namespace BlueSheep.Engine.Handlers.Fight
                 account.Path.Stop = true;
             }
         }
+
         [MessageHandler(typeof(GameFightLeaveMessage))]
         public static void GameFightLeaveMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -270,6 +297,7 @@ namespace BlueSheep.Engine.Handlers.Fight
                     account.Fight.Fighters.Remove(fighter);
             }
         }
+
         [MessageHandler(typeof(GameFightOptionStateUpdateMessage))]
         public static void GameFightOptionStateUpdateMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -285,6 +313,7 @@ namespace BlueSheep.Engine.Handlers.Fight
             if (msg.state && !account.Fight.Options.Contains((FightOptionEnum)msg.option))
                 account.Fight.Options.Add((FightOptionEnum)msg.option);
         }
+
         [MessageHandler(typeof(GameFightShowFighterMessage))]
         public static void GameFightShowFighterMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -305,6 +334,7 @@ namespace BlueSheep.Engine.Handlers.Fight
                 account.Fight.Fighters.Add(new BFighter(msg.informations.contextualId, msg.informations.disposition.cellId, msg.informations.stats.actionPoints, msg.informations.stats, msg.informations.alive, msg.informations.stats.lifePoints, msg.informations.stats.maxLifePoints, msg.informations.stats.movementPoints, (uint)msg.informations.teamId, 0));
             }
         }
+
         [MessageHandler(typeof(GameFightShowFighterRandomStaticPoseMessage))]
         public static void GameFightShowFighterRandomStaticPoseMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -323,6 +353,7 @@ namespace BlueSheep.Engine.Handlers.Fight
                 account.Fight.Fighters.Add(new BFighter(msg.informations.contextualId, msg.informations.disposition.cellId, msg.informations.stats.actionPoints, msg.informations.stats, msg.informations.alive, msg.informations.stats.lifePoints, msg.informations.stats.maxLifePoints, msg.informations.stats.movementPoints, (uint)msg.informations.teamId, 0));
             }
         }
+
         [MessageHandler(typeof(GameFightStartMessage))]
         public static void GameFightStartMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -336,6 +367,7 @@ namespace BlueSheep.Engine.Handlers.Fight
             account.Log(new ActionTextInformation("Début du combat"), 2);
             account.Fight.watch.Restart();
         }
+
         [MessageHandler(typeof(GameFightSynchronizeMessage))]
         public static void GameFightSynchronizeMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -351,6 +383,7 @@ namespace BlueSheep.Engine.Handlers.Fight
                 msg.fighters.Select(f => new BFighter(f.contextualId, f.disposition.cellId, f.stats.actionPoints, f.stats, f.alive, f.stats.lifePoints, f.stats.maxLifePoints, f.stats.movementPoints, (uint)f.teamId, 0)));
             }
         }
+
         [MessageHandler(typeof(GameFightTurnEndMessage))]
         public static void GameFightTurnEndMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -401,6 +434,7 @@ namespace BlueSheep.Engine.Handlers.Fight
                 fighter.MovementPoints = fighter.GameFightMinimalStats.maxMovementPoints;
             }
         }
+
         [MessageHandler(typeof(GameFightTurnStartMessage))]
         public static void GameFightTurnStartMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -417,9 +451,8 @@ namespace BlueSheep.Engine.Handlers.Fight
             }
             else
                 account.Fight.IsFighterTurn = false;
-            account.Fight.FighterTurnId = msg.id;
-            //TODO Perform Turn
         }
+
         [MessageHandler(typeof(GameMapMovementMessage))]
         public static void GameMapMovementMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -450,6 +483,7 @@ namespace BlueSheep.Engine.Handlers.Fight
             }
             account.Fight.TurnId = msg.roundNumber;
         }
+
         [MessageHandler(typeof(GameFightTurnStartPlayingMessage))]
         public static void GameFightTurnStartPlayingMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -461,6 +495,7 @@ namespace BlueSheep.Engine.Handlers.Fight
             account.Fight.PerformAutoTimeoutFight(100);
             account.Fight.FightTurn();
         }
+
         [MessageHandler(typeof(GameFightPlacementPossiblePositionsMessage))]
         public static void GameFightPlacementPossiblePositionsMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -490,6 +525,7 @@ namespace BlueSheep.Engine.Handlers.Fight
             account.SocketManager.Send(nmsg);
             account.Log(new BotTextInformation("Send Ready !"), 5);
         }
+
         [MessageHandler(typeof(GameFightTurnReadyRequestMessage))]
         public static void GameFightTurnReadyRequestMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -501,6 +537,7 @@ namespace BlueSheep.Engine.Handlers.Fight
             GameFightTurnReadyMessage msg2 = new GameFightTurnReadyMessage(true);
             account.SocketManager.Send(msg2);
         }
+
         [MessageHandler(typeof(SequenceEndMessage))]
         public static void SequenceEndMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -513,8 +550,11 @@ namespace BlueSheep.Engine.Handlers.Fight
             {
                 GameActionAcknowledgementMessage msg2 = new GameActionAcknowledgementMessage(true, msg.sequenceType);
                 account.SocketManager.Send(msg2);
+                if (account.Fight.PerformSpellsStack() == false)
+                    account.Fight.PerformMove();
             }
         }
+
         [MessageHandler(typeof(LifePointsRegenBeginMessage))]
         public static void LifePointsRegenBeginMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -545,6 +585,7 @@ namespace BlueSheep.Engine.Handlers.Fight
             }
             //account.Path.Stop = false;
         }
+
         [MessageHandler(typeof(LifePointsRegenEndMessage))]
         public static void LifePointsRegenEndMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -558,6 +599,7 @@ namespace BlueSheep.Engine.Handlers.Fight
             //string text = msg.lifePoints + "/" + msg.maxLifePoints + "(" + percent + "%)";
             account.ModifBar(2, (int)msg.maxLifePoints, (int)msg.lifePoints, "Vitalité");
         }
+
         [MessageHandler(typeof(GameFightSpectatorJoinMessage))]
         public static void GameFightSpectatorJoinMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -566,6 +608,7 @@ namespace BlueSheep.Engine.Handlers.Fight
             {
                 msg.Deserialize(reader);
             }
+           
         }
         #endregion
     }

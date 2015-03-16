@@ -67,7 +67,7 @@ namespace BlueSheep.Core.Npc
 
         public string GetNpcName(int npcId)
         {
-            return BlueSheep.Common.Data.I18N.GetText((int)GameData.GetDataObject(D2oFileEnum.NpcMessages, npcId).Fields["nameId"]);
+            return BlueSheep.Common.Data.I18N.GetText((int)GameData.GetDataObject(D2oFileEnum.Npcs, npcId).Fields["nameId"]);
         }
 
         public void TalkToNpc(int npcId)

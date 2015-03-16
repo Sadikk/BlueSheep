@@ -131,15 +131,15 @@ namespace BlueSheep.Interface
             if (!Directory.Exists(blueSheepPath))
                 Directory.CreateDirectory(blueSheepPath);
             if (!Directory.Exists(Path.Combine(blueSheepPath, "Accounts")))
-                Directory.CreateDirectory(Path.Combine(blueSheepPath, "Accounts"));
+                Directory.CreateDirectory(Path.Combine(blueSheepPath, "Accounts")).Attributes = FileAttributes.Normal;
             if (!Directory.Exists(Path.Combine(blueSheepPath, "Groups")))
-                Directory.CreateDirectory(Path.Combine(blueSheepPath, "Groups"));
+                Directory.CreateDirectory(Path.Combine(blueSheepPath, "Groups")).Attributes = FileAttributes.Normal;
             if (!Directory.Exists(Path.Combine(blueSheepPath, "Temp")))
-                Directory.CreateDirectory(Path.Combine(blueSheepPath, "Temp"));
+                Directory.CreateDirectory(Path.Combine(blueSheepPath, "Temp")).Attributes = FileAttributes.Normal;
             if (!Directory.Exists(Path.Combine(blueSheepPath, "Paths")))
-                Directory.CreateDirectory(Path.Combine(blueSheepPath, "Paths"));
+                Directory.CreateDirectory(Path.Combine(blueSheepPath, "Paths")).Attributes = FileAttributes.Normal;
             if (!Directory.Exists(Path.Combine(blueSheepPath, "IAs")))
-                Directory.CreateDirectory(Path.Combine(blueSheepPath, "IAs"));
+                Directory.CreateDirectory(Path.Combine(blueSheepPath, "IAs")).Attributes = FileAttributes.Normal;
 
             string bsConfPath = Path.Combine (blueSheepPath, "bs.conf");
             if (File.Exists(bsConfPath))
@@ -186,7 +186,7 @@ namespace BlueSheep.Interface
                 PaysList.AddRange(new List<string>() { "fr", "en", "ja", "es", "de" });
                 foreach (string pays in PaysList)
                 {
-                    string combinedPath = Path.Combine (ActualMainForm.DofusPath, "data", "i18n", "i18n_" + pays + ".d2i");
+                    string combinedPath = Path.Combine(ActualMainForm.DofusPath, "app", "data", "i18n", "i18n_" + pays + ".d2i");
                     if (File.Exists(combinedPath))
                     {
                         i18NFileAccessor.Init(combinedPath);
@@ -194,13 +194,13 @@ namespace BlueSheep.Interface
                     }
                 }
                 I18N i18N = new I18N(i18NFileAccessor);
-                GameData.Init(Path.Combine (ActualMainForm.DofusPath, "data", "common"));
-                MapsManager.Init(Path.Combine (ActualMainForm.DofusPath, "content", "maps"));
+                GameData.Init(Path.Combine (ActualMainForm.DofusPath, "app","data", "common"));
+                MapsManager.Init(Path.Combine(ActualMainForm.DofusPath, "app", "content", "maps"));
 
             }
             else
             {
-                i18NFileAccessor.Init(Path.Combine (ActualMainForm.DofusPath, "data", "i18n", "i18n_fr.d2i"));
+                i18NFileAccessor.Init(Path.Combine(ActualMainForm.DofusPath, "app", "data", "i18n", "i18n_fr.d2i"));
                 I18N i18N = new I18N(i18NFileAccessor);
                 GameData.Init(@"D:\Dofus2\app\data\common");
                 MapsManager.Init(@"D:\Dofus2\app\content\maps");

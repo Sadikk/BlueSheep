@@ -72,6 +72,7 @@ namespace BlueSheep.Engine.Handlers.Character
             }
 
             account.CharacterStats = msg.stats;
+            account.CaracUC.Init();
             int percent = (msg.stats.lifePoints / msg.stats.maxLifePoints) * 100;
             string text = msg.stats.lifePoints + "/" + msg.stats.maxLifePoints + "(" + percent + "%)";
             account.ModifBar(2, (int)msg.stats.maxLifePoints,(int)msg.stats.lifePoints, "Vitalité");
@@ -126,6 +127,7 @@ namespace BlueSheep.Engine.Handlers.Character
             }
             account.ModifBar(8, 0, 0, Convert.ToString(msg.newLevel));
             account.Log(new BotTextInformation("Level up ! New level : " + Convert.ToString(msg.newLevel)), 3);
+            account.CaracUC.UpAuto();
         }
 
         [MessageHandler(typeof(AchievementFinishedMessage))]
@@ -169,6 +171,24 @@ namespace BlueSheep.Engine.Handlers.Character
                 account.Fight.xpWon[DateTime.Today] += (int)msg.experienceCharacter;
             }
 
+        }
+
+        [MessageHandler(typeof(StatsUpgradeResultMessage))]
+        public static void StatsUpgradeResultMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
+        {
+            StatsUpgradeResultMessage msg = (StatsUpgradeResultMessage)message;
+            using (BigEndianReader reader = new BigEndianReader(packetDatas))
+            {
+                msg.Deserialize(reader);
+            }
+            //if (msg.result == 1)
+            //{
+            //    //account.CaracUC.DecreaseAvailablePoints(msg.nbCharacBoost);
+            //    account.Log(new BotTextInformation("Caractéristique augmentée."),0);
+            //}
+            //else
+            //    account.Log(new ErrorTextInformation("Echec de l'up de caractéristique."), 0);
+                
         }
         #endregion
     }

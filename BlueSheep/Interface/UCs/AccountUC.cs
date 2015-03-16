@@ -74,6 +74,7 @@ namespace BlueSheep.Interface
         public HumanCheck HumanCheck;
         public HeroicUC HeroicUC;
         public GestItemsUC GestItemsUC;
+        public CaracUC CaracUC;
         public bool IsMITM;
         public Status state;
         #endregion
@@ -277,6 +278,12 @@ namespace BlueSheep.Interface
             GestItemsUC = new GestItemsUC(this);
             tabPage9.Controls.Add(GestItemsUC);
             GestItemsUC.Show();
+
+            //Carac
+            CaracUC = new CaracUC(this);
+            StatsPage.Controls.Add(CaracUC);
+            CaracUC.Show();
+            
 
             
         }
@@ -634,9 +641,21 @@ namespace BlueSheep.Interface
                         Log(new BotTextInformation(s), 0);
                 }   
             }
-            else if (e.KeyCode == Keys.Up)
+            else if (e.KeyCode == Keys.Up && CLIParser.CommandsHistory.Count > 0)
             {
-                CommandeBox.Text = CLIParser.CommandsHistory[CLIParser.CommandsHistory.Count - 1];
+                int index = CLIParser.CommandsHistory.IndexOf(CommandeBox.Text);
+                if (index != -1)
+                    CommandeBox.Text = CLIParser.CommandsHistory[index - 1];
+                else
+                    CommandeBox.Text = CLIParser.CommandsHistory[CLIParser.CommandsHistory.Count - 1];
+            }
+            else if (e.KeyCode == Keys.Down && CLIParser.CommandsHistory.Count > 0)
+            {
+                int index = CLIParser.CommandsHistory.IndexOf(CommandeBox.Text);
+                if (index != -1 && index != CLIParser.CommandsHistory.Count)
+                    CommandeBox.Text = CLIParser.CommandsHistory[index + 1];
+                else
+                    CommandeBox.Text = "";
             }
         }
 
@@ -818,7 +837,7 @@ namespace BlueSheep.Interface
             Series series1 = new Series
             {
                 Name = "series1",
-                IsVisibleInLegend = true,
+                IsVisibleInLegend = false,
                 Color = System.Drawing.Color.DeepSkyBlue,
                 ChartType = SeriesChartType.Pie
             };
@@ -1199,7 +1218,8 @@ namespace BlueSheep.Interface
         {
             if (this.IsDisposed == true)
                 return;
-            Connect();
+            m_ConnectionThread = new Thread(Connect);
+            m_ConnectionThread.Start();
         }
 
         private static int GetRandomTime()

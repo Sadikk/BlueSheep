@@ -75,8 +75,9 @@
   <PropertyGroup>
     <StartupObject>BlueSheep.Program</StartupObject>
   </PropertyGroup>
+  <PropertyGroup />
   <PropertyGroup>
-    <NoWin32Manifest>true</NoWin32Manifest>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, processorArchitecture=MSIL">
@@ -1339,6 +1340,7 @@
     <Compile Include="Common\Types\Bot.cs" />
     <Compile Include="Common\Types\Food.cs" />
     <Compile Include="Common\Types\Group.cs" />
+    <Compile Include="Common\Types\Lot.cs" />
     <Compile Include="Common\Types\MonsterGroup.cs" />
     <Compile Include="Common\Types\Pet.cs" />
     <Compile Include="Common\Types\Pods.cs" />
@@ -1450,6 +1452,12 @@
     <Compile Include="Interface\IACreator.Designer.cs">
       <DependentUpon>IACreator.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interface\UCs\CaracUC.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Interface\UCs\CaracUC.Designer.cs">
+      <DependentUpon>CaracUC.cs</DependentUpon>
+    </Compile>
     <Compile Include="Interface\UCs\GestItemsUC.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -1526,6 +1534,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Interface\IACreator.resx">
       <DependentUpon>IACreator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\UCs\CaracUC.resx">
+      <DependentUpon>CaracUC.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Interface\UCs\GestItemsUC.resx">
       <DependentUpon>GestItemsUC.cs</DependentUpon>

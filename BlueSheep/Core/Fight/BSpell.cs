@@ -90,6 +90,8 @@ namespace BlueSheep.Core.Fight
         }
     }
 
+
+
     [Serializable()]
     public class Display
     {

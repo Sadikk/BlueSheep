@@ -135,7 +135,10 @@ namespace BlueSheep.Core
                             account.SetStatus(Status.Gathering);
                             Id = (int)UsableElement.Element.Id;
                             SkillInstanceUid = UsableElement.Skills[0].skillInstanceUid;
-                            IsFishing = true;
+                            if (account.Inventory.HasFishingRod)
+                                IsFishing = true;
+                            else
+                                IsFishing = false;
                             return true;                    
                         }
                     }

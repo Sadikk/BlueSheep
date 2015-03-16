@@ -225,7 +225,7 @@ namespace BlueSheep.Interface
 
         private void IsMITM_CheckedChanged(object sender)
         {
-            MessageBox.Show("La fonction MITM est encore experimental.");
+            MessageBox.Show("La fonction MITM est encore experimentale.");
         }
 
         #endregion

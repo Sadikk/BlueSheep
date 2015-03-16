@@ -78,6 +78,8 @@ namespace BlueSheep.Core.Path
                     }
                     return false;
                 case ConditionEnum.PodsPercent:
+                    if (m_delta == "%PODS%")
+                        m_delta = account.GestItemsUC.NUDBank.Value;
                     switch (m_operateur)
                     {
                         case '<':

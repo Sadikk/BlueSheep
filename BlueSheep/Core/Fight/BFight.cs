@@ -22,37 +22,52 @@ namespace BlueSheep.Core.Fight
     public class BFight
     {
         #region Fields
-        public AccountUC m_Account;
-        private Object clock = new Object();
-        public List<BSpell> m_Spells;
-        public FightConfig m_Conf;
-        public BFighter NearMonster;
+        #region Dictionary
         public Dictionary<DateTime, int> xpWon;
         public Dictionary<string, int> winLoseDic;
-        public int DeadEnnemiInTurn;
-        public int TurnId;
-        public bool AutoTimeout = false;
         public Dictionary<int, int> DurationByEffect = new Dictionary<int, int>();
-        public List<BFighter> Fighters = new List<BFighter>();
-        public int FighterTurnId = 0;
-        public bool IsFighterTurn = false;
-        public bool IsFightStarted = false;
         public Dictionary<int, int> LastTurnLaunchBySpell = new Dictionary<int, int>();
-        public List<FightOptionEnum> Options = new List<FightOptionEnum>();
-        public int TimeoutMin = 0;
-        public int TimeoutMax = 0;
         public Dictionary<int, int> TotalLaunchBySpell = new Dictionary<int, int>();
         public Dictionary<int, Dictionary<int, int>> TotalLaunchByCellBySpell = new Dictionary<int, Dictionary<int, int>>();
-        public bool WaitForReady = false; 
+        #endregion
+        #region Public Fields
+        public AccountUC m_Account;
+        public List<BSpell> m_Spells;
+        public FightConfig m_Conf;
+        List<BSpell> spells;
+
+        public BFighter NearMonster;
+        public List<BFighter> Fighters = new List<BFighter>();
+
+        public int DeadEnnemiInTurn;
+        public int TurnId;
+        public int TimeoutMin = 0;
+        public int TimeoutMax = 0;
+        public int Relaunch;
+
+        public bool AutoTimeout = false;
+        public bool IsFighterTurn = false;
+        public bool IsFightStarted = false;
+        public bool WaitForReady = false;
+
+        public List<FightOptionEnum> Options = new List<FightOptionEnum>();
+        
         public List<short> PlacementCells;
+        public MonsterGroup followinggroup;
+        public Stopwatch watch = new Stopwatch();
+        #endregion
+        #region Private Fields
+        private Object clock = new Object();
+        #endregion
+        #endregion
+
+        #region Properties
         public BFighter Fighter
         {
             get { return GetFighter(m_Account.CharacterBaseInformations.id); }
         }
-        public MonsterGroup followinggroup;
-        public Stopwatch watch = new Stopwatch();
         #endregion
-        
+
         #region Constructeurs
         public BFight(AccountUC account)
         {
@@ -202,9 +217,113 @@ namespace BlueSheep.Core.Fight
             return SpellInabilityReason.None;
         }
 
+        public bool PerformSpellsStack()
+        {
+            
+            Relaunch--;              /* On baisse le relaunch */
+            if (Relaunch == 0)       /* Si on l'a lancé le nombre de fois qu'il fallait, on passe au sort suivant */
+                spells.RemoveAt(0);
+            if (spells.Count() == 0) /* Si il n'y a plus de sorts restants, on renvoie false pour terminer le tour. */
+                return false;
+            BFighter target = null;
+            if (spells[0].TargetName == "Nom du monstre") /* On récup la cible */
+            {
+                target = GetTarget(spells[0].Target);
+            }
+            else
+            {
+                target = GetTarget(spells[0].TargetName);
+            }
+           
+            //if (spells[0].SpellId == 413)
+            //{
+            //    if (target.LifePoints / target.MaxLifePoints * 100 <= spells[0].TargetLife && GetFighters(true).Count() < 2)
+            //    {
+            //        m_Account.Log(new BotTextInformation("It's time to capture ! POKEBALL GOOOOOOOOOO"), 5);
+            //        LaunchSpell(spells[0].SpellId, Fighter.CellId);
+            //        spells[0].LastTurn = TurnId;
+            //        PerformAutoTimeoutFight(1000);
+            //    }
+            //}
+            if (target != null && target.LifePoints / target.MaxLifePoints * 100 <= spells[0].TargetLife)
+            {
+                m_Account.Log(new BotTextInformation("Cible en vue à la cellule " + target.CellId + " !"), 5);
+                if (m_Conf.Tactic == TacticEnum.Immobile)
+                {
+                    if (CanLaunchSpell(spells[0].SpellId) == SpellInabilityReason.None && CanLaunchSpell(spells[0].SpellId, Fighter.CellId, target.CellId) == SpellInabilityReason.None)
+                    {
+                        m_Account.Log(new BotTextInformation("CanLaunchSpell !"), 5);
+                        LaunchSpell(spells[0].SpellId, target.CellId);
+                        spells[0].LastTurn = TurnId;
+                    }
+                    else
+                    {
+                        Relaunch = 1;           /* Si on peut pas lancer ce sort, on passe au suivant en mettant le relaunch comme fini */
+                        return PerformSpellsStack();
+                    }
+                }
+                else if (CanUseSpell(spells[0], target))
+                {
+                    m_Account.Log(new BotTextInformation("CanUseSpell ! "), 5);
+                    LaunchSpell(spells[0].SpellId, target.CellId);
+                    spells[0].LastTurn = TurnId;
+                }
+                else
+                {
+                    Relaunch = 1;              /* Si on peut pas lancer ce sort, on passe au suivant en mettant le relaunch comme fini */
+                    return PerformSpellsStack();
+                }
+            }
+            else
+            {
+                Relaunch = 1;
+                return PerformSpellsStack();
+            }
+                
+
+            if (Relaunch == 0)                /* Si on a réussi a lancé le sort et que le relaunch n'a pas été mis, on le définit. */
+                Relaunch = spells[0].Relaunch;
+            
+            return true;
+        }
+
+        public void PerformMove()
+        {
+            NearMonster = NearestMonster();
+
+            if (NearMonster == null)
+            {
+                return;
+            }
+
+            // EndMove
+            if (Fighter.MovementPoints > 0 && m_Conf.Tactic != TacticEnum.Immobile)
+            {
+                int distance = new MapPoint(Fighter.CellId).DistanceToCell(new MapPoint(NearMonster.CellId));
+                if (m_Conf.Tactic == TacticEnum.Fuyard)
+                {
+                    if (distance > m_Conf.FarCells)
+                    {
+                        MoveToCell(NearCell());
+                    }
+                    else
+                    {
+                        MoveToCell(FarCell());
+                    }
+                }
+                else if (m_Conf.Tactic == TacticEnum.Barbare && !IsHandToHand())
+                    MoveToCell(NearCell());
+
+                m_Account.Log(new BotTextInformation("EndMove"), 5);
+            }
+
+            EndTurn();
+        }
+
         public void FightTurn()
         {
-            m_Account.Log(new BotTextInformation("FightTurn"),5);
+            m_Account.Log(new BotTextInformation("FightTurn"), 5);
+            spells = new List<BSpell>();
             try
             {
                 if (GetFighters(true).Count > 0)
@@ -216,112 +335,106 @@ namespace BlueSheep.Core.Fight
                         {
                             continue;
                         }
-                        m_Account.Log(new BotTextInformation("Sort validé"),5);
-                        //Relaunch
-                        for (int i = 0; i <= spell.Relaunch - 1; i++)
-                        {
-                            if (GetFighters(true).Count > 0)
-                            {
-                                if (DeadEnnemiInTurn > 0)
-                                {
-                                    m_Account.Wait(Convert.ToInt32((DeadEnnemiInTurn + 1.5) * 1000), (DeadEnnemiInTurn + 2) * 1000);
-                                    DeadEnnemiInTurn = 0;
-                                }
-                                BFighter target = null;
-                                if (spell.TargetName == "Nom du monstre")
-                                {
-                                    target = GetTarget(spell.Target);
-                                }
-                                else
-                                {
-                                    target = GetTarget(spell.TargetName);
-                                }
-                                m_Account.Log(new BotTextInformation("Cible en vue à la cellule " + target.CellId + " !"),5);
-                                //target = GetTarget(spell.Target);
-                                if (spell.SpellId == 413 )
-                                {
-                                    if (target.LifePoints / target.MaxLifePoints * 100 <= spell.TargetLife && GetFighters(true).Count() < 2)
-                                    {
-                                        m_Account.Log(new BotTextInformation("It's time to capture ! POKEBALL GOOOOOOOOOO"),5);
-                                        LaunchSpell(spell.SpellId, Fighter.CellId);
-                                        spell.LastTurn = TurnId;
-                                        PerformAutoTimeoutFight(1000);
-                                        EndTurn();
-                                        return;
-                                    }
-                                    else
-                                        break;
-                                }
-                                if (target.LifePoints / target.MaxLifePoints * 100 <= spell.TargetLife)
-                                {
-                                    if (m_Conf.Tactic == TacticEnum.Immobile)
-                                    {
-                                        if (CanLaunchSpell(spell.SpellId) == SpellInabilityReason.None && CanLaunchSpell(spell.SpellId, Fighter.CellId, target.CellId) == SpellInabilityReason.None)
-                                        {
-                                            m_Account.Log(new BotTextInformation("CanLaunchSpell ! "),5);
-                                            LaunchSpell(spell.SpellId, target.CellId);
-                                            spell.LastTurn = TurnId;
-                                        }
-                                        else
-                                        {
-                                            break;
-                                        }
-                                    }
-                                    else if (CanUseSpell(spell, target))
-                                    {
-                                        m_Account.Log(new BotTextInformation("CanUseSpell ! "),5);
-                                        LaunchSpell(spell.SpellId, target.CellId);
-                                        spell.LastTurn = TurnId;
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
-
-                                    PerformAutoTimeoutFight(700);
-                                }
-                            }
-                        }
+                        else
+                            spells.Add(spell);
                     }
-                    NearMonster = NearestMonster();
-
-                    if (NearMonster == null)
-                    {
-                        return;
-                    }
-
-                    // EndMove
-                    if (Fighter.MovementPoints > 0 && m_Conf.Tactic != TacticEnum.Immobile)
-                    {
-                        int distance = new MapPoint(Fighter.CellId).DistanceToCell(new MapPoint(NearMonster.CellId));
-                        if (m_Conf.Tactic == TacticEnum.Fuyard)
-                        {
-                            if (distance > m_Conf.FarCells)
-                            {
-                                MoveToCell(NearCell());
-                            }
-                            else
-                            {
-                                MoveToCell(FarCell());
-                            }
-                        }
-                        else if (m_Conf.Tactic == TacticEnum.Barbare && !IsHandToHand())
-                            MoveToCell(NearCell());
-                        
-                        m_Account.Log(new BotTextInformation("EndMove"),5);
-                        //else if (!IsHandToHand())
-                        //{
-                        //    Account.Game.Fight.MoveToCell(NearCell());
-                        //}
-                    }
-                    PerformAutoTimeoutFight(700);
-                    EndTurn();
+                    spells = spells.OrderBy(o => o.Turns).ToList();
+                    spells.Reverse();
+                    PerformSpellsStack();
                 }
+
+
+
+                //    m_Account.Log(new BotTextInformation("Sort validé"), 5);
+                //    //Relaunch
+                //    //for (int i = 0; i <= spell.Relaunch - 1; i++)
+                //    //{
+                //    if (GetFighters(true).Count > 0)
+                //    {
+                //        //if (DeadEnnemiInTurn > 0)
+                //        //{
+                //        //    PerformAutoTimeoutFight(Convert.ToInt32((DeadEnnemiInTurn + 1.5) * 500));
+                //        //    DeadEnnemiInTurn = 0;
+                //        //}
+                //        BFighter target = null;
+                //        if (spell.TargetName == "Nom du monstre")
+                //        {
+                //            target = GetTarget(spell.Target);
+                //        }
+                //        else
+                //        {
+                //            target = GetTarget(spell.TargetName);
+                //        }
+                //        m_Account.Log(new BotTextInformation("Cible en vue à la cellule " + target.CellId + " !"), 5);
+                //        //target = GetTarget(spell.Target);
+                //        if (spell.SpellId == 413)
+                //        {
+                //            if (target.LifePoints / target.MaxLifePoints * 100 <= spell.TargetLife && GetFighters(true).Count() < 2)
+                //            {
+                //                m_Account.Log(new BotTextInformation("It's time to capture ! POKEBALL GOOOOOOOOOO"), 5);
+                //                LaunchSpell(spell.SpellId, Fighter.CellId);
+                //                spell.LastTurn = TurnId;
+                //                PerformAutoTimeoutFight(1000);
+                //                EndTurn();
+                //                return;
+                //            }
+                //            else
+                //                break;
+                //        }
+                //        if (Relaunch == -1)
+                //            Relaunch = spell.Relaunch;
+                //        if (target.LifePoints / target.MaxLifePoints * 100 <= spell.TargetLife)
+                //        {
+                //            if (m_Conf.Tactic == TacticEnum.Immobile)
+                //            {
+                //                if (CanLaunchSpell(spell.SpellId) == SpellInabilityReason.None && CanLaunchSpell(spell.SpellId, Fighter.CellId, target.CellId) == SpellInabilityReason.None)
+                //                {
+                //                    m_Account.Log(new BotTextInformation("CanLaunchSpell ! "), 5);
+                //                    LaunchSpell(spell.SpellId, target.CellId);
+                //                    spell.LastTurn = TurnId;
+                //                }
+                //                else
+                //                {
+                //                    break;
+                //                }
+                //            }
+                //            else if (CanUseSpell(spell, target))
+                //            {
+                //                m_Account.Log(new BotTextInformation("CanUseSpell ! "), 5);
+                //                LaunchSpell(spell.SpellId, target.CellId);
+                //                spell.LastTurn = TurnId;
+                //            }
+                //            else
+                //            {
+                //                break;
+                //            }
+
+                //        }
+                //    }
+                //    //}
+                //}
+                
+                    //else if (!IsHandToHand())
+                    //{
+                    //    Account.Game.Fight.MoveToCell(NearCell());
+                    //}
+                    //}
+                    //EndTurn();
+                //}
             }
             catch (Exception ex)
             {
-                m_Account.Log(new ErrorTextInformation(ex.Message),0);
+                m_Account.Log(new ErrorTextInformation(ex.Message), 0);
             }
+        }
+
+
+
+        public void EndTurn()
+        {
+            GameFightTurnFinishMessage msg = new GameFightTurnFinishMessage();
+            m_Account.SocketManager.Send(msg);
+            IsFighterTurn = false;
         }
 
         public bool IsHandToHand(int cell = 0)
@@ -441,136 +554,9 @@ namespace BlueSheep.Core.Fight
             return null;
         }
 
-        public BFighter NearestMonster()
-        {
-            MapPoint CharacterPoint = new MapPoint(this.Fighter.CellId);
-            BFighter Fighterr = null;
-            int SavDistance = -1;
-            foreach (BFighter TestFighter in Fighters)
-            {
-                if (TestFighter.TeamId == Fighter.TeamId || TestFighter.IsAlive == false)
-                    continue;
-                MapPoint TestFighterPoint = new MapPoint(TestFighter.CellId);
-                int dist = new SimplePathfinder(m_Account.Map.Data).FindPath(CharacterPoint.CellId, TestFighterPoint.CellId).Cells.Count();
-                dist += CharacterPoint.DistanceToCell(TestFighterPoint);
-                if (((dist < SavDistance) || (SavDistance == -1)) && TestFighter != this.Fighter)
-                {
-                    SavDistance = dist;
-                    Fighterr = TestFighter;
-                }
-            }
-            if (Fighterr == null)
-            {
-                return null;
-            }
-            return Fighterr;
-        }
-
-        public int FarCell()
-        {
-            List<int> ReachableCells = GetReachableCells();
-            int CellId = -1;
-            int SavDistance = -1;
-            foreach (int ReachableCell in ReachableCells)
-            {
-                MapPoint ReachableCellPoint = new MapPoint(ReachableCell);
-                int Distance = 0;
-                Distance = (Distance + ReachableCellPoint.DistanceToCell(new MapPoint(NearMonster.CellId)));
-                if (((SavDistance == -1) || (Distance > SavDistance)))
-                {
-                    CellId = ReachableCell;
-                    SavDistance = Distance;
-                }
-            }
-            return CellId;
-        }
-
-        public int NearCell()
-        {
-            List<int> ReachableCells = GetReachableCells();
-            int CellId = -1;
-            int SavDistance = -1;
-            foreach (int ReachableCell in ReachableCells)
-            {
-                MapPoint ReachableCellPoint = new MapPoint(ReachableCell);
-                int Distance = 0;
-                Distance = (Distance + ReachableCellPoint.DistanceToCell(new MapPoint(NearMonster.CellId)));
-                if (((SavDistance == -1) || (Distance < SavDistance)))
-                {
-                    CellId = ReachableCell;
-                    SavDistance = Distance;
-                }
-            }
-            return CellId;
-        }
-
         public BFighter GetFighter(int fighterId)
         {
             return Fighters.FirstOrDefault(f => f.Id == fighterId);
-        }
-
-        public void EndTurn()
-        {
-            GameFightTurnFinishMessage msg = new GameFightTurnFinishMessage();
-            m_Account.SocketManager.Send(msg);
-            IsFighterTurn = false;
-        }
-
-        public List<BFighter> GetFighters(bool ennemies)
-        {
-            // TODO : Rework with LINQ
-            List<BFighter> fighters = new List<BFighter>();
-            if (Fighter != null)
-            {
-                uint TeamIdAllies = Fighter.TeamId;
-
-                foreach (var fighter in Fighters)
-                {
-                    if (fighter.IsAlive & fighter.Id != m_Account.CharacterBaseInformations.id)
-                    {
-                        if ((ennemies == true && TeamIdAllies != fighter.TeamId) || (!ennemies && TeamIdAllies == fighter.TeamId))
-                            fighters.Add(fighter);
-                    }
-                }
-            }
-            return fighters;
-        }
-
-        public List<int> GetReachableCells()
-        {
-            // TODO : Generate Losange form Fighter Point
-            List<int> listCellulesMarchables = new List<int>();
-            MapPoint point = new MapPoint(Fighter.CellId);
-            int movementPoints = Fighter.MovementPoints;
-
-            for (int i = 0; i < 600; i++)
-            {
-                if (IsCellWalkable(i))
-                {
-                    MapPoint cellPoint = new MapPoint(i);
-                    if (cellPoint.DistanceToCell(point) <= movementPoints)
-                        listCellulesMarchables.Add(i);
-                }
-            }
-
-            if (listCellulesMarchables.Contains(point.CellId))
-                listCellulesMarchables.Add(point.CellId);
-
-            return listCellulesMarchables;
-        }
-
-        public bool IsCellWalkable(int cellId)
-        {
-            BlueSheep.Data.D2p.Map MapData = (BlueSheep.Data.D2p.Map)m_Account.Map.Data;
-            if (m_Account.Map.Data.IsWalkable(cellId))
-            {
-                var selectedFighter = Fighters.FirstOrDefault((f) => f.CellId == cellId || MapData.Cells[cellId].NonWalkableDuringFight());
-                if (selectedFighter != null)
-                    return false;
-                else
-                    return true;
-            }
-            return false;
         }
 
         public bool SearchFight()
@@ -629,92 +615,6 @@ namespace BlueSheep.Core.Fight
                 m_Account.SocketManager.Send(msg);
                 //m_Account.Log(new ActionTextInformation(id.ToString()));
             }
-        }
-
-        public void KickPlayer(int id)
-        {
-                GameContextKickMessage msg = new GameContextKickMessage(id);
-                m_Account.SocketManager.Send(msg);       
-        }
-
-        public void LaunchSpell(int spellId, int cellId)
-        {
-
-            foreach (BFighter fighter in Fighters)
-            {
-                if (fighter.CellId == cellId)
-                {
-                    GameActionFightCastOnTargetRequestMessage msg = new GameActionFightCastOnTargetRequestMessage((short)spellId, fighter.Id);
-                    m_Account.SocketManager.Send(msg);
-                    m_Account.Log(new ActionTextInformation("Lancement d'un sort en " + cellId), 5);
-                    return;
-                }
-            }
-            using (BigEndianWriter writer = new BigEndianWriter())
-            {
-                GameActionFightCastRequestMessage msg = new GameActionFightCastRequestMessage((short)spellId, (short)cellId);
-                msg.Serialize(writer);
-                writer.Content = m_Account.HumanCheck.hash_function(writer.Content);
-                MessagePackaging pack = new MessagePackaging(writer);
-                pack.Pack((int)msg.ProtocolID);
-                m_Account.SocketManager.Send(pack.Writer.Content);
-                m_Account.Log(new ActionTextInformation("Lancement d'un sort en " + cellId), 5);
-            }
-        }
-
-        public bool MoveToCell(int cellId)
-        {
-            if (cellId != Fighter.CellId)
-            {
-                if (!(IsCellWalkable(cellId)))
-                {
-                    int num = -1;
-                    int num2 = 5000;
-                    MapPoint point = new MapPoint(Fighter.CellId);
-                    MapPoint point2 = new MapPoint(cellId);
-                    int direction = 1;
-                    while (true)
-                    {
-                        MapPoint nearestCellInDirection = point2.GetNearestCellInDirection(direction, 1);
-                        if (IsCellWalkable(nearestCellInDirection.CellId))
-                        {
-                            int num4 = point.DistanceToCell(nearestCellInDirection);
-                            if (num4 < num2)
-                            {
-                                num2 = num4;
-                                num = nearestCellInDirection.CellId;
-                            }
-                        }
-                        direction = (direction + 2);
-                        if (direction > 7)
-                        {
-                            if (num == -1)
-                                return false;
-                            cellId = num;
-                            break;
-                        }
-                    }
-                }
-                SimplePathfinder pathfinder = new SimplePathfinder((BlueSheep.Data.D2p.Map)m_Account.Map.Data);
-                pathfinder.SetFight(Fighters, Fighter.MovementPoints);
-                MovementPath path = pathfinder.FindPath(Fighter.CellId, cellId);
-                if (path != null)
-                {
-                    List<UInt32> serverMovement = MapMovementAdapter.GetServerMovement(path);
-                    //Account.Network.SendToServer(new GameMapMovementRequestMessage(serverMovement.ToList().Select<uint, short>(ui => (short)ui).ToArray(), Account.Game.Map.Id));
-                    using (BigEndianWriter writer = new BigEndianWriter())
-                    {
-                        GameMapMovementRequestMessage msg = new GameMapMovementRequestMessage(serverMovement.ToList().Select<uint, short>(ui => (short)ui).ToArray(), m_Account.Map.Id);
-                        msg.Serialize(writer);
-                        writer.Content = m_Account.HumanCheck.hash_function(writer.Content);
-                        MessagePackaging pack = new MessagePackaging(writer);
-                        pack.Pack((int)msg.ProtocolID);
-                        m_Account.SocketManager.Send(pack.Writer.Content);
-                    }
-                    return true;
-                }
-            }
-            return false;
         }
 
         public void PlaceCharacter()
@@ -783,6 +683,7 @@ namespace BlueSheep.Core.Fight
                     m_Account.SocketManager.Send(pack.Writer.Content);
                 }
                 m_Account.Wait(time * 1000, (time + 1) * 1000);
+                m_Account.Log(new GeneralTextInformation(String.Format("Régénération pendant {0} secondes.", time)), 2);
             }
         }
 
@@ -817,7 +718,211 @@ namespace BlueSheep.Core.Fight
             return !Fighters.Any(f => f != null && f.CellId == cellId);
         }
 
+        private void KickPlayer(int id)
+        {
+            GameContextKickMessage msg = new GameContextKickMessage(id);
+            m_Account.SocketManager.Send(msg);
+        }
 
+        private void LaunchSpell(int spellId, int cellId)
+        {
+
+            foreach (BFighter fighter in Fighters)
+            {
+                if (fighter.CellId == cellId)
+                {
+                    GameActionFightCastOnTargetRequestMessage msg = new GameActionFightCastOnTargetRequestMessage((short)spellId, fighter.Id);
+                    m_Account.SocketManager.Send(msg);
+                    m_Account.Log(new ActionTextInformation("Lancement d'un sort en " + cellId), 5);
+                    return;
+                }
+            }
+            using (BigEndianWriter writer = new BigEndianWriter())
+            {
+                GameActionFightCastRequestMessage msg = new GameActionFightCastRequestMessage((short)spellId, (short)cellId);
+                msg.Serialize(writer);
+                writer.Content = m_Account.HumanCheck.hash_function(writer.Content);
+                MessagePackaging pack = new MessagePackaging(writer);
+                pack.Pack((int)msg.ProtocolID);
+                m_Account.SocketManager.Send(pack.Writer.Content);
+                m_Account.Log(new ActionTextInformation("Lancement d'un sort en " + cellId), 5);
+            }
+        }
+
+        private bool MoveToCell(int cellId)
+        {
+            if (cellId != Fighter.CellId)
+            {
+                if (!(IsCellWalkable(cellId)))
+                {
+                    int num = -1;
+                    int num2 = 5000;
+                    MapPoint point = new MapPoint(Fighter.CellId);
+                    MapPoint point2 = new MapPoint(cellId);
+                    int direction = 1;
+                    while (true)
+                    {
+                        MapPoint nearestCellInDirection = point2.GetNearestCellInDirection(direction, 1);
+                        if (IsCellWalkable(nearestCellInDirection.CellId))
+                        {
+                            int num4 = point.DistanceToCell(nearestCellInDirection);
+                            if (num4 < num2)
+                            {
+                                num2 = num4;
+                                num = nearestCellInDirection.CellId;
+                            }
+                        }
+                        direction = (direction + 2);
+                        if (direction > 7)
+                        {
+                            if (num == -1)
+                                return false;
+                            cellId = num;
+                            break;
+                        }
+                    }
+                }
+                SimplePathfinder pathfinder = new SimplePathfinder((BlueSheep.Data.D2p.Map)m_Account.Map.Data);
+                pathfinder.SetFight(Fighters, Fighter.MovementPoints);
+                MovementPath path = pathfinder.FindPath(Fighter.CellId, cellId);
+                if (path != null)
+                {
+                    List<UInt32> serverMovement = MapMovementAdapter.GetServerMovement(path);
+                    //Account.Network.SendToServer(new GameMapMovementRequestMessage(serverMovement.ToList().Select<uint, short>(ui => (short)ui).ToArray(), Account.Game.Map.Id));
+                    using (BigEndianWriter writer = new BigEndianWriter())
+                    {
+                        GameMapMovementRequestMessage msg = new GameMapMovementRequestMessage(serverMovement.ToList().Select<uint, short>(ui => (short)ui).ToArray(), m_Account.Map.Id);
+                        msg.Serialize(writer);
+                        writer.Content = m_Account.HumanCheck.hash_function(writer.Content);
+                        MessagePackaging pack = new MessagePackaging(writer);
+                        pack.Pack((int)msg.ProtocolID);
+                        m_Account.SocketManager.Send(pack.Writer.Content);
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private List<BFighter> GetFighters(bool ennemies)
+        {
+            // TODO : Rework with LINQ
+            List<BFighter> fighters = new List<BFighter>();
+            if (Fighter != null)
+            {
+                uint TeamIdAllies = Fighter.TeamId;
+
+                foreach (var fighter in Fighters)
+                {
+                    if (fighter.IsAlive & fighter.Id != m_Account.CharacterBaseInformations.id)
+                    {
+                        if ((ennemies == true && TeamIdAllies != fighter.TeamId) || (!ennemies && TeamIdAllies == fighter.TeamId))
+                            fighters.Add(fighter);
+                    }
+                }
+            }
+            return fighters;
+        }
+
+        private List<int> GetReachableCells()
+        {
+            // TODO : Generate Losange form Fighter Point
+            List<int> listCellulesMarchables = new List<int>();
+            MapPoint point = new MapPoint(Fighter.CellId);
+            int movementPoints = Fighter.MovementPoints;
+
+            for (int i = 0; i < 600; i++)
+            {
+                if (IsCellWalkable(i))
+                {
+                    MapPoint cellPoint = new MapPoint(i);
+                    if (cellPoint.DistanceToCell(point) <= movementPoints)
+                        listCellulesMarchables.Add(i);
+                }
+            }
+
+            if (listCellulesMarchables.Contains(point.CellId))
+                listCellulesMarchables.Add(point.CellId);
+
+            return listCellulesMarchables;
+        }
+
+        private bool IsCellWalkable(int cellId)
+        {
+            BlueSheep.Data.D2p.Map MapData = (BlueSheep.Data.D2p.Map)m_Account.Map.Data;
+            if (m_Account.Map.Data.IsWalkable(cellId))
+            {
+                var selectedFighter = Fighters.FirstOrDefault((f) => f.CellId == cellId || MapData.Cells[cellId].NonWalkableDuringFight());
+                if (selectedFighter != null)
+                    return false;
+                else
+                    return true;
+            }
+            return false;
+        }
+
+        private BFighter NearestMonster()
+        {
+            MapPoint CharacterPoint = new MapPoint(this.Fighter.CellId);
+            BFighter Fighterr = null;
+            int SavDistance = -1;
+            foreach (BFighter TestFighter in Fighters)
+            {
+                if (TestFighter.TeamId == Fighter.TeamId || TestFighter.IsAlive == false)
+                    continue;
+                MapPoint TestFighterPoint = new MapPoint(TestFighter.CellId);
+                int dist = new SimplePathfinder(m_Account.Map.Data).FindPath(CharacterPoint.CellId, TestFighterPoint.CellId).Cells.Count();
+                dist += CharacterPoint.DistanceToCell(TestFighterPoint);
+                if (((dist < SavDistance) || (SavDistance == -1)) && TestFighter != this.Fighter)
+                {
+                    SavDistance = dist;
+                    Fighterr = TestFighter;
+                }
+            }
+            if (Fighterr == null)
+            {
+                return null;
+            }
+            return Fighterr;
+        }
+
+        private int FarCell()
+        {
+            List<int> ReachableCells = GetReachableCells();
+            int CellId = -1;
+            int SavDistance = -1;
+            foreach (int ReachableCell in ReachableCells)
+            {
+                MapPoint ReachableCellPoint = new MapPoint(ReachableCell);
+                int Distance = 0;
+                Distance = (Distance + ReachableCellPoint.DistanceToCell(new MapPoint(NearMonster.CellId)));
+                if (((SavDistance == -1) || (Distance > SavDistance)))
+                {
+                    CellId = ReachableCell;
+                    SavDistance = Distance;
+                }
+            }
+            return CellId;
+        }
+
+        private int NearCell()
+        {
+            List<int> ReachableCells = GetReachableCells();
+            int CellId = -1;
+            int SavDistance = -1;
+            foreach (int ReachableCell in ReachableCells)
+            {
+                MapPoint ReachableCellPoint = new MapPoint(ReachableCell);
+                int Distance = 0;
+                Distance = (Distance + ReachableCellPoint.DistanceToCell(new MapPoint(NearMonster.CellId)));
+                if (((SavDistance == -1) || (Distance < SavDistance)))
+                {
+                    CellId = ReachableCell;
+                    SavDistance = Distance;
+                }
+            }
+            return CellId;
+        }
         #endregion
     }
 }
