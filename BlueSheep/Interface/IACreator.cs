@@ -71,12 +71,9 @@ namespace BlueSheep.Interface
         #region Interface Methods
         private void AddBt_Click(object sender, EventArgs e)
         {
-            //string CaC = null;
             string Mob = null;
             Spell iSpell = Account.Spells.FirstOrDefault(s => s.GetName() == ChoixSorts.SelectedItem.ToString());
-            //Dim spell As New Spell(SpellsList.Count, iSpell.Id, iSpell.GetName(), DirectCast(ChoixCible.SelectedIndex, TeamEnum), CInt(ChoixTour.Value), CInt(ChoixNbLancer.Value), _
-            //    cbIsHandToHand.Checked, CInt(nudTargetLifePercent.Value), CStr(ChoixMonsterName.Text))
-            BSpell spell = new BSpell(iSpell.Id, iSpell.GetName(), (TeamEnum)ChoixCible.SelectedIndex, Convert.ToInt32(ChoixTour.Value), Convert.ToInt32(ChoixNbLancer.Value), Convert.ToInt32(nudTargetLifePercent.Value),MonsterTextBox.Text);
+            BSpell spell = new BSpell(iSpell.Id, iSpell.GetName(), (TeamEnum)ChoixCible.SelectedIndex, Convert.ToInt32(ChoixTour.Value), Convert.ToInt32(ChoixNbLancer.Value), Convert.ToInt32(nudTargetLifePercent.Value), MonsterTextBox.Text);
             SpellsList.Add(spell);
             if (MonsterTextBox.Text == "Nom du monstre")
             {
@@ -102,18 +99,25 @@ namespace BlueSheep.Interface
                 dynamic iapath = saveFileDialog1.FileName;
                 Display Disp = new Display(ChoixName.Text, ChoixAuteur.Text, ChoixClasse.Text, ChoixVersion.Value);
                 FightConfig Config = new FightConfig(ChoixTactique.SelectedText, ChoixPlacement.SelectedText, (int)ChoixFarCells.Value);
-                string ApplicationDataPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
-                string tempPath = iapath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp");
-                string dispPath = System.IO.Path.Combine (tempPath, "disp.xml");
-                Serialize(Disp, dispPath);
-                string configPath = System.IO.Path.Combine (tempPath, "config.xml");
-                Serialize(Config, configPath);
-                string spellsPath = System.IO.Path.Combine (tempPath, "spells.xml");
-                Serialize(SpellsList, spellsPath);
-                compression(tempPath, iapath);
-                File.Delete(dispPath);
-                File.Delete(configPath);
-                File.Delete(dispPath);//TODO: unneeded? possibly meant to delete another file?
+                //string ApplicationDataPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
+                //string tempPath = iapath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp");
+                //string dispPath = System.IO.Path.Combine (tempPath, "disp.xml");
+                //Serialize(Disp, dispPath);
+                //string configPath = System.IO.Path.Combine (tempPath, "config.xml");
+                //Serialize(Config, configPath);
+                //string spellsPath = System.IO.Path.Combine (tempPath, "spells.xml");
+                //Serialize(SpellsList, spellsPath);
+                //compression(tempPath, iapath);
+                //File.Delete(dispPath);
+                //File.Delete(configPath);
+                //File.Delete(spellsPath);
+                Serialize(Disp, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\disp.xml");
+                Serialize(Config, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\config.xml");
+                Serialize(SpellsList, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\spells.xml");
+                compression(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\", iapath);
+                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\disp.xml");
+                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\config.xml");
+                File.Delete(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Temp\spells.xml");
                 this.Close();
             }
         }

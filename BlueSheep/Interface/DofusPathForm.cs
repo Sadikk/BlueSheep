@@ -42,7 +42,11 @@ namespace BlueSheep.Interface
             }
             else
             {
+<<<<<<< Updated upstream
                 string directoryPath = Path.Combine (TextBox1.Text, "app", "data", "i18n");
+=======
+                string directoryPath = Path.Combine (TextBox1.Text, "app" ,"data", "i18n");
+>>>>>>> Stashed changes
 
                 if (Directory.Exists(directoryPath))
                 {

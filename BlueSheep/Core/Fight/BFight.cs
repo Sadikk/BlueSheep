@@ -223,8 +223,11 @@ namespace BlueSheep.Core.Fight
             Relaunch--;              /* On baisse le relaunch */
             if (Relaunch == 0)       /* Si on l'a lancé le nombre de fois qu'il fallait, on passe au sort suivant */
                 spells.RemoveAt(0);
-            if (spells.Count() == 0) /* Si il n'y a plus de sorts restants, on renvoie false pour terminer le tour. */
+            if (spells.Count() == 0)
+            {                           /* Si il n'y a plus de sorts restants, on renvoie false pour terminer le tour. */
+                PerformMove();
                 return false;
+            }
             BFighter target = null;
             if (spells[0].TargetName == "Nom du monstre") /* On récup la cible */
             {
@@ -283,7 +286,6 @@ namespace BlueSheep.Core.Fight
 
             if (Relaunch == 0)                /* Si on a réussi a lancé le sort et que le relaunch n'a pas été mis, on le définit. */
                 Relaunch = spells[0].Relaunch;
-            
             return true;
         }
 

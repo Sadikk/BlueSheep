@@ -12,13 +12,13 @@ namespace BlueSheep.Common.Cryptography
     {
         #region Fields
         
-        private const string m_PublicKey = "MIIBUzANBgkqhkiG9w0BAQEFAAOCAUAAMIIBOwKCATIAq8EYkkGCUg86Bf2CHaM1z1Q2ahQgVXkx"
-+ "49I0igwTVCIqG86jsgNb22na1DThZ+IP7DfyBszIecVSP8nwbYPbx6Z7dwq4pnMVx/lx5lyMZUO1"
-+ "n/HGEkw1S06AlfXzSg58ci5DL9RJ9ZIa1oMDKtrZiNYA5C3L+7NSCVp/2H/yypWkDjzkFan65+TN"
-+ "RExo/2O3+MytJtQ/BXVkbYD58+iiZegddNTNGvz8WlPz2cZvPQt4x1TN+KOgJRKZH5imNAxCtRg6"
-+ "l1OLVxfwwUjKFgM4uAsto8vJv5DUFZQMO1Sh9gMpmzeMwXIF4fDD4O1TNiVmu3ABybt2Y4EdaQhs"
-+ "/ponC0SNcWbrY0stYbX+Wpk9/Hcxmo3zoduf1ZAdGM01E1g3IjQMd0gOP4v1KQtBjoHim2MCAwEA"
-+ "AQ==";
+        private const string m_PublicKey = "MIIBUzANBgkqhkiG9w0BAQEFAAOCAUAAMIIBOwKCATIAgucoka9J2PXcNdjcu6CuDmgteIMB+rih"
++ "2UZJIuSoNT/0J/lEKL/W4UYbDA4U/6TDS0dkMhOpDsSCIDpO1gPG6+6JfhADRfIJItyHZflyXNUj"
++"WOBG4zuxc/L6wldgX24jKo+iCvlDTNUedE553lrfSU23Hwwzt3+doEfgkgAf0l4ZBez5Z/ldp9it"
++"2NH6/2/7spHm0Hsvt/YPrJ+EK8ly5fdLk9cvB4QIQel9SQ3JE8UQrxOAx2wrivc6P0gXp5Q6bHQo"
++"ad1aUp81Ox77l5e8KBJXHzYhdeXaM91wnHTZNhuWmFS3snUHRCBpjDBCkZZ+CxPnKMtm2qJIi57R"
++"slALQVTykEZoAETKWpLBlSm92X/eXY2DdGf+a7vju9EigYbX0aXxQy2Ln2ZBWmUJyZE8B58CAwEA"
++"AQ==";
         #endregion
 
         #region Public methods

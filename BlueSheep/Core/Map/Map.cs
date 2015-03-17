@@ -185,18 +185,22 @@ namespace BlueSheep.Core.Map
             int num2 = -1;
             switch(direction)
             {
+                case "haut":
                 case "up":
                 neighbourId = ((BlueSheep.Data.D2p.Map)Data).TopNeighbourId;
                 num2 = 64;
                     break;
+                case "bas":
                 case "bottom":
                 neighbourId = ((BlueSheep.Data.D2p.Map)Data).BottomNeighbourId;
                 num2 = 4;
                     break;
+                case "droite":
                 case "right":
                 neighbourId = ((BlueSheep.Data.D2p.Map)Data).RightNeighbourId;
                 num2 = 1;
                     break;
+                case "gauche":
                 case "left":
                 neighbourId = ((BlueSheep.Data.D2p.Map)Data).LeftNeighbourId;
                 num2 = 16;
@@ -273,11 +277,6 @@ namespace BlueSheep.Core.Map
                 {
                     m_Account.SocketManager.Send(pack.Writer.Content);
                     m_Account.Fight.LaunchFight(m_Account.Fight.followinggroup.m_contextualId);
-                    //m_Account.Wait(3000, 4000);
-                    //if (m_Account.StatusLb.Text != "Combat")
-                    //{
-                    //    m_Account.Fight.SearchFight();
-                    //}
                 }
                 else
                 {

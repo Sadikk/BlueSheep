@@ -35,6 +35,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using BlueSheep.Interface.UCs;
 using BlueSheep.Engine.Enums;
 using BlueSheep.Common;
+using System.IO;
 
 namespace BlueSheep.Interface
 {
@@ -329,8 +330,9 @@ namespace BlueSheep.Interface
                 text.Text = "[" + DateTime.Now.ToShortTimeString() +
                     "] (" + text.Category + ") " + text.Text;
 
-                //using (StreamWriter fileWriter = new StreamWriter(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Logs.txt", true))
-                //    fileWriter.WriteLine(text.Text);
+                if (LogCb.Checked)
+                    using (StreamWriter fileWriter = new StreamWriter(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Logs.txt", true))
+                        fileWriter.WriteLine(text.Text);
 
                 int startIndex = LogConsole.TextLength;
 

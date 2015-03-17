@@ -492,7 +492,7 @@ namespace BlueSheep.Engine.Handlers.Fight
             {
                 msg.Deserialize(reader);
             }
-            account.Fight.PerformAutoTimeoutFight(100);
+            //account.Fight.PerformAutoTimeoutFight(100);
             account.Fight.FightTurn();
         }
 
@@ -550,8 +550,8 @@ namespace BlueSheep.Engine.Handlers.Fight
             {
                 GameActionAcknowledgementMessage msg2 = new GameActionAcknowledgementMessage(true, msg.sequenceType);
                 account.SocketManager.Send(msg2);
-                if (account.Fight.PerformSpellsStack() == false)
-                    account.Fight.PerformMove();
+                account.Fight.PerformSpellsStack();
+                    //account.Fight.PerformMove();
             }
         }
 
@@ -579,7 +579,6 @@ namespace BlueSheep.Engine.Handlers.Fight
                     account.SocketManager.Send(msg2);
                     account.Log(new ActionTextInformation("Equipement rapide numero " + Convert.ToString(id)), 5);
                 }
-                account.Fight.PerformAutoTimeoutFight(2000);
                 account.Fight.PulseRegen();
                 account.SetStatus(Status.None);
             }

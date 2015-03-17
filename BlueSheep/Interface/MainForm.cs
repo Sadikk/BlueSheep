@@ -145,8 +145,16 @@ namespace BlueSheep.Interface
             if (File.Exists(bsConfPath))
             {
                 StreamReader sr = new StreamReader(bsConfPath);
-                ActualMainForm.DofusPath = sr.ReadLine();
-                sr.Close();
+                string path = sr.ReadLine();
+                if (Directory.Exists(Path.Combine(path, "app", "content", "maps")))
+                    ActualMainForm.DofusPath = path;
+                else
+                {
+                    sr.Close();
+                    DofusPathForm frm = new DofusPathForm(ActualMainForm);             
+                    frm.ShowDialog();
+                }
+                
             }
             else
             {
@@ -155,11 +163,11 @@ namespace BlueSheep.Interface
             }
 
 
-            //FileInfo fileInfo = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Logs.txt");
-            //fileInfo.Delete();
-            //using (fileInfo.Create())
-            //{
-            //}
+            FileInfo fileInfo = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Logs.txt");
+            fileInfo.Delete();
+            using (fileInfo.Create())
+            {
+            }
 
             //fileInfo = new FileInfo(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Packets.txt");
             //fileInfo.Delete();
@@ -198,13 +206,13 @@ namespace BlueSheep.Interface
                 MapsManager.Init(Path.Combine(ActualMainForm.DofusPath, "app", "content", "maps"));
 
             }
-            else
-            {
-                i18NFileAccessor.Init(Path.Combine(ActualMainForm.DofusPath, "app", "data", "i18n", "i18n_fr.d2i"));
-                I18N i18N = new I18N(i18NFileAccessor);
-                GameData.Init(@"D:\Dofus2\app\data\common");
-                MapsManager.Init(@"D:\Dofus2\app\content\maps");
-            }
+            //else
+            //{
+            //    i18NFileAccessor.Init(Path.Combine(ActualMainForm.DofusPath, "app", "data", "i18n", "i18n_fr.d2i"));
+            //    I18N i18N = new I18N(i18NFileAccessor);
+            //    GameData.Init(@"D:\Dofus2\app\data\common");
+            //    MapsManager.Init(@"D:\Dofus2\app\content\maps");
+            //}
             IntelliSense.InitMonsters();
             IntelliSense.InitItems();
             
