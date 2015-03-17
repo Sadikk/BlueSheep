@@ -42,7 +42,7 @@ namespace BlueSheep.Interface
             }
             else
             {
-                string directoryPath = Path.Combine (TextBox1.Text, "data", "i18n");
+                string directoryPath = Path.Combine (TextBox1.Text, "app", "data", "i18n");
 
                 if (Directory.Exists(directoryPath))
                 {
