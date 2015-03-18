@@ -268,7 +268,10 @@ namespace BlueSheep.Engine.Handlers.Fight
                 account.Fight.IsFightStarted = msg.isFightStarted;
                 account.Fight.WaitForReady = (!msg.isFightStarted && msg.canSayReady);
                 if (account.IsLockingFight.Checked)
+                {
+                    account.Fight.PerformAutoTimeoutFight(1000);
                     account.Fight.LockFight();
+                }                  
                 account.Fight.followinggroup = null;
             }
             if (account.Path != null)

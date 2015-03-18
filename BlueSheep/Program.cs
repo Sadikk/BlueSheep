@@ -30,9 +30,9 @@ namespace BlueSheep
                         reg.DeleteValue("Minor");
                         System.Threading.Thread.Sleep(1000);
                     }
-                    reg.SetValue("Version", 0.8);
-                    reg.SetValue("Minor", 9);
-                    Application.Run(new MainForm("0.8.9"));
+                    reg.SetValue("Version", 0.9);
+                    reg.SetValue("Minor", 0);
+                    Application.Run(new MainForm("0.9.0"));
                 }
                 catch (Exception ex)
                 { MessageBox.Show(ex.Message + ex.StackTrace); }

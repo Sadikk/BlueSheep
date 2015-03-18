@@ -73,11 +73,11 @@ namespace BlueSheep.Interface
             {
                 Group group = SearchGroups(item.Text);
                 List<AccountUC> listaccounts = new List<AccountUC>();
-                //foreach (AccountUC account in group.accounts)
-                //{
-                //    //AccountUC acc = new AccountUC(account.Name, account.Password);
-                //    listaccounts.Add(account);
-                //}
+                foreach (AccountUC account in group.accounts)
+                {
+                    //AccountUC acc = new AccountUC(account.Name, account.Password);
+                    listaccounts.Add(account);
+                }
                 GroupForm frm = new GroupForm(listaccounts);
                 foreach (AccountUC account in frm.listAccounts)
                 {

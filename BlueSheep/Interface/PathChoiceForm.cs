@@ -154,6 +154,10 @@ namespace BlueSheep.Interface
                 Account.Path = new Core.Path.PathManager(Account, FilesList.SelectedItems[0].SubItems[5].Text, FilesList.SelectedItems[0].SubItems[0].Text);
                 Account.Path.Stop = true;
                 Account.Log(new BotTextInformation("Trajet chargé : " + FilesList.SelectedItems[0].Text),0);
+                if (Account.Fight == null)
+                {
+                    Account.Log(new ErrorTextInformation("WARNING : T'as chargé aucune IA, fait gaffe mon coco :p"), 0);
+                }
                 this.Close();
             }
         }

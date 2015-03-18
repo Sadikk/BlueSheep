@@ -78,12 +78,12 @@ namespace BlueSheep.AccountsManager
         }
         public void SaveGroup(List<AccountUC> accounts, string groupname)
         {
-            m_GroupAccounts.Clear();
-            foreach (AccountUC bot in accounts)
-            {
-                bot.AccountPassword = CryptageBS.EncryptBS(bot.AccountPassword);
-                m_GroupAccounts.Add(bot);
-            }
+            //m_GroupAccounts.Clear();
+            //foreach (AccountUC bot in accounts)
+            //{
+            //    bot.AccountPassword = CryptageBS.EncryptBS(bot.AccountPassword);
+            //    m_GroupAccounts.Add(bot);
+            //}
             if (!Directory.Exists(m_SavingGroupDirectoryPath))
                 Directory.CreateDirectory(m_SavingGroupDirectoryPath);
             //if (!File.Exists(m_SavingDirectoryPath + @"\" + groupname))
@@ -94,37 +94,48 @@ namespace BlueSheep.AccountsManager
                 foreach (Account accountObject in m_Accounts)
                 {
                     writer.WriteUTF(accountObject.Name);
-                    writer.WriteUTF(accountObject.Password);
+                    writer.WriteUTF(CryptageBS.EncryptBS(accountObject.Password));
                 }
-                IFormatter binaryFormatter = new BinaryFormatter();
-                using (Stream stream = new FileStream(m_SavingGroupDirectoryPath + @"\" + groupname, FileMode.Create, FileAccess.Write))
-                {
-                    binaryFormatter.Serialize(stream, writer);
-                }
+                //IFormatter binaryFormatter = new BinaryFormatter();
+                //using (Stream stream = new FileStream(m_SavingGroupDirectoryPath + @"\" + groupname, FileMode.Create, FileAccess.Write))
+                //{
+                //    binaryFormatter.Serialize(stream, writer);
+                //}
             }
-            foreach (AccountUC bot in accounts)
-                bot.AccountPassword = CryptageBS.DecryptBS(bot.AccountPassword);
+            //foreach (AccountUC bot in accounts)
+            //    bot.AccountPassword = CryptageBS.DecryptBS(bot.AccountPassword);
         }
         public void RecoverGroups()
         {
             foreach (FileInfo file in new DirectoryInfo(m_SavingGroupDirectoryPath).GetFiles())
             {
-                IFormatter binaryFormatter = new BinaryFormatter();
-                using (Stream stream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
+                //IFormatter binaryFormatter = new BinaryFormatter();
+                //using (Stream stream = new FileStream(file.FullName, FileMode.Open, FileAccess.Read))
+                //{
+                //    BigEndianWriter writer = (BigEndianWriter)binaryFormatter.Deserialize(stream);
+                //    using (BigEndianReader reader = new BigEndianReader(writer.Content))
+                //    {
+                //        int limite = reader.ReadInt();
+                //        m_GroupAccounts = new List<AccountUC>();
+                //        for (int index = 0; index < limite; index++)
+                //            m_GroupAccounts.Add(new AccountUC(reader.ReadUTF(), reader.ReadUTF(), false));
+                //        Groups.Add(new Group(m_GroupAccounts, file.Name.Remove((int)file.Name.Length - 3)));
+                //        foreach (Account accountObject in m_Accounts)
+                //            accountObject.Password = CryptageBS.DecryptBS(accountObject.Password);
+                //    }
+                //    writer.Dispose();
+                //    stream.Close();
+                //}
+                byte[] content = File.ReadAllBytes(file.FullName);
+                using (BigEndianReader reader = new BigEndianReader(content))
                 {
-                    BigEndianWriter writer = (BigEndianWriter)binaryFormatter.Deserialize(stream);
-                    using (BigEndianReader reader = new BigEndianReader(writer.Content))
-                    {
-                        int limite = reader.ReadInt();
-                        m_GroupAccounts = new List<AccountUC>();
-                        for (int index = 0; index < limite; index++)
-                            m_GroupAccounts.Add(new AccountUC(reader.ReadUTF(), reader.ReadUTF(), false));
-                        Groups.Add(new Group(m_GroupAccounts, file.Name.Remove((int)file.Name.Length - 3)));
-                        foreach (Account accountObject in m_Accounts)
-                            accountObject.Password = CryptageBS.DecryptBS(accountObject.Password);
-                    }
-                    writer.Dispose();
-                    stream.Close();
+                    int limite = reader.ReadInt();
+                    m_GroupAccounts = new List<AccountUC>();
+                    for (int index = 0; index < limite; index++)
+                        m_GroupAccounts.Add(new AccountUC(reader.ReadUTF(), reader.ReadUTF(), false));
+                    Groups.Add(new Group(m_GroupAccounts, file.Name.Remove((int)file.Name.Length - 3)));
+                    foreach (Account accountObject in m_Accounts)
+                        accountObject.Password = CryptageBS.DecryptBS(accountObject.Password);
                 }
             }
         }

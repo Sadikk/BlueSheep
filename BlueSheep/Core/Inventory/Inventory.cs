@@ -74,7 +74,6 @@ namespace BlueSheep.Core.Inventory
                 ObjectDeleteMessage msg = new ObjectDeleteMessage(uid, quantity);
                 Account.SocketManager.Send(msg);
                 Account.Log(new ActionTextInformation("Suppression de " + GetItemFromUID(uid).Name + "(x" + quantity + ")."), 2);
-                Account.ActualizeInventory();
             }
             
         }
@@ -85,9 +84,7 @@ namespace BlueSheep.Core.Inventory
             {
                     ObjectDropMessage msg = new ObjectDropMessage(uid, quantity);
                     Account.SocketManager.Send(msg);
-                    Account.Log(new ActionTextInformation("Jet de " + GetItemFromUID(uid).Name + "(x" + quantity + ")."), 2);
-                    Account.ActualizeInventory();
-                
+                    Account.Log(new ActionTextInformation("Jet de " + GetItemFromUID(uid).Name + "(x" + quantity + ")."), 2);               
             }
         }
 

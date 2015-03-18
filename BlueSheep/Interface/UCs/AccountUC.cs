@@ -646,7 +646,7 @@ namespace BlueSheep.Interface
             else if (e.KeyCode == Keys.Up && CLIParser.CommandsHistory.Count > 0)
             {
                 int index = CLIParser.CommandsHistory.IndexOf(CommandeBox.Text);
-                if (index != -1)
+                if (index != -1 && index != 0)
                     CommandeBox.Text = CLIParser.CommandsHistory[index - 1];
                 else
                     CommandeBox.Text = CLIParser.CommandsHistory[CLIParser.CommandsHistory.Count - 1];

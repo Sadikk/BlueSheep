@@ -45,17 +45,37 @@ namespace BlueSheep.Interface.UCs
         public void UpAuto()
         {
             if (VitaRb.Checked)
-                UpStat(11,1);
+            {
+                while (Convert.ToInt32(AvailabPtLb.Text) != 0)
+                    UpStat(11, 1);
+            }
             else if (WisRb.Checked)
-                UpStat(12,3);
+            {
+                while (Convert.ToInt32(AvailabPtLb.Text)%3 == 0)
+                    UpStat(12, 3);     
+            }
             else if (StreRb.Checked)
-                UpStat(10,1);
+            {
+                while (Convert.ToInt32(AvailabPtLb.Text) != 0)
+                    UpStat(10, 1);
+            }           
             else if (InteRb.Checked)
-                UpStat(15,1);
+            {
+                 while (Convert.ToInt32(AvailabPtLb.Text) != 0)
+                    UpStat(15, 1);        
+            }
             else if (LuckRb.Checked)
-                UpStat(13,1);
+            {
+                while (Convert.ToInt32(AvailabPtLb.Text) != 0)
+                    UpStat(13, 1); 
+            }           
             else if (AgiRb.Checked)
-                UpStat(14,1);
+            {
+                while (Convert.ToInt32(AvailabPtLb.Text) != 0)
+                    UpStat(14, 1);  
+            }
+                
+
         }
 
         public void DecreaseAvailablePoints(int n)

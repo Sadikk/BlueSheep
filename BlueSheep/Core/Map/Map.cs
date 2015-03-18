@@ -423,7 +423,7 @@ namespace BlueSheep.Core.Map
                 newmsg.Serialize(writer);
                 MessagePackaging pack = new MessagePackaging(writer);
                 pack.Pack((int)newmsg.ProtocolID);
-                if (m_Account.Fight != null && m_Account.Fight.IsFollowingGroup())
+                if (m_Account.Fight != null && m_Account.Fight.IsFollowingGroup() && m_Account.Fight.followinggroup.m_cellId == cellId)
                 {
                     m_Account.SocketManager.Send(pack.Writer.Content);
                     m_Account.Fight.LaunchFight(m_Account.Fight.followinggroup.m_contextualId);
@@ -432,6 +432,10 @@ namespace BlueSheep.Core.Map
                     //{
                     //    m_Account.Fight.SearchFight();
                     //}
+                }
+                else if (m_Account.Fight != null && m_Account.Fight.IsFollowingGroup())
+                {
+                    m_Account.Fight.SearchFight();
                 }
                 else if (m_Account.Gather.Id != -1)
                 {

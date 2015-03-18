@@ -175,30 +175,37 @@ namespace BlueSheep.Engine.Network
         #region Private methods
         private void SocketReception()
         {
-            m_MessageInformations = new MessageInformations(account);
-            while ((m_Socket != null) && (Connected()))
+            try
             {
-                byte[] buffer = new byte[m_Socket.Available];
-                if (buffer.Length != 0)
+                m_MessageInformations = new MessageInformations(account);
+                while ((m_Socket != null) && (Connected()))
                 {
-                    m_Socket.Receive(buffer);
-                    account.LatencyFrame.UpdateLatency();
-                    m_MessageInformations.ParseBuffer(buffer);
+                    byte[] buffer = new byte[m_Socket.Available];
+                    if (buffer.Length != 0)
+                    {
+                        m_Socket.Receive(buffer);
+                        account.LatencyFrame.UpdateLatency();
+                        m_MessageInformations.ParseBuffer(buffer);
+                    }
                 }
+                if (!m_ForcedDisconnect)
+                {
+                    account.Log(
+                    new ErrorTextInformation("La connexion a été interrompue à cause d'une raison inconnue."), 0);
+                    if (account.IsMITM)
+                    {
+                        account.Log(new ErrorTextInformation("MITM : Impossible de se reconnecter."), 0);
+                        DisconnectServer();
+                    }
+                    else
+                        account.TryReconnect(2);
+                }
+                m_ForcedDisconnect = false;
             }
-            if (!m_ForcedDisconnect)
+            catch (SocketException ex)
             {
-                account.Log(
-                new ErrorTextInformation("La connexion a été interrompue à cause d'une raison inconnue."), 0);
-                if (account.IsMITM)
-                {
-                    account.Log(new ErrorTextInformation("MITM : Impossible de se reconnecter."), 0);
-                    DisconnectServer();
-                }
-                else
-                    account.TryReconnect(2);
+                account.Log(new ErrorTextInformation(ex.Message + ex.StackTrace), 0);
             }
-            m_ForcedDisconnect = false;
         }
         private void DofSocketReception()
         {

@@ -129,6 +129,7 @@ namespace BlueSheep.Engine.Handlers.Inventory
                 account.SocketManager.Send(channelEnablingMessage);
             }
         }
+
         [MessageHandler(typeof(ObjectModifiedMessage))]
         public static void ObjectModifiedMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -152,6 +153,7 @@ namespace BlueSheep.Engine.Handlers.Inventory
                 account.Log(new ActionTextInformation("Familier nourri : " + BlueSheep.Common.Data.I18N.GetText((int)ItemData.Fields["nameId"]) + " " + "."), 3);
             }
         }
+
         [MessageHandler(typeof(ObjectQuantityMessage))]
         public static void ObjectQuantityMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -174,12 +176,14 @@ namespace BlueSheep.Engine.Handlers.Inventory
                     pet.SetFood();
             }
         }
+
         [MessageHandler(typeof(ExchangeErrorMessage))]
         public static void ExchangeErrorMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
             account.Log(new CharacterTextInformation("Echec de l'ouverture du coffre."), 0);
             account.Running.OnSafe = false;
         }
+
         [MessageHandler(typeof(StorageInventoryContentMessage))]
         public static void StorageInventoryContentMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -191,6 +195,7 @@ namespace BlueSheep.Engine.Handlers.Inventory
             foreach (ObjectItem item in storageInventoryContentMessage.@objects)
                 account.SafeItems.Add(item);
         }
+
         [MessageHandler(typeof(InventoryWeightMessage))]
         public static void InventoryWeightMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -208,6 +213,7 @@ namespace BlueSheep.Engine.Handlers.Inventory
             account.Inventory.weight = msg.weight;
             account.Inventory.maxWeight = msg.weightMax;
         }
+
         [MessageHandler(typeof(ObjectAddedMessage))]
         public static void ObjectAddedMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -244,8 +250,8 @@ namespace BlueSheep.Engine.Handlers.Inventory
                     account.Inventory.Items.RemoveAt(index);
                     break;
                 }
-                account.ActualizeInventory();
             }
+            account.ActualizeInventory();
             if (account.Running != null)
             {
                 foreach (Pet pet in account.petsList)
