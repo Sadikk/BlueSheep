@@ -12,9 +12,9 @@ Visual Studio 2013
 
 TODO
 ----
-Check all the //TODO in order to find what is needed.
-Maj 2.27
-Anti-bot bypass is almost complete but not entirely.
+Check all the //TODO in order to find what is needed. \n
+Anti-bot bypass is almost complete but not entirely. \n 
+Check suggestions from forum \n
 
 MAINTAINERS
 -----------
@@ -24,5 +24,5 @@ Current maintainers:
 
 USEFULL LINKS
 -------------
-http://bluesheepbot.com
+http://bluesheepbot.com \n
 http://forum.bluesheepbot.com
