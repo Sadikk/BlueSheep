@@ -3,6 +3,7 @@ using BlueSheep.Common.Protocol.Messages;
 using BlueSheep.Engine.Constants;
 using BlueSheep.Engine.Types;
 using BlueSheep.Interface;
+using BlueSheep.Interface.Text;
 using BlueSheep.Interface.Text.Chat;
 using System;
 using System.Collections.Generic;
@@ -52,6 +53,8 @@ namespace BlueSheep.Core.Misc
                 MessagePackaging pack = new MessagePackaging(writer);
                 pack.Pack((int)msg.ProtocolID);
                 account.SocketManager.Send(pack.Writer.Content);
+                if (account.DebugMode.Checked)
+                    account.Log(new BotTextInformation("[SND] 861 (ChatClientMultiMessage)"), 0);
             }
         }
 
@@ -70,7 +73,9 @@ namespace BlueSheep.Core.Misc
                 MessagePackaging pack = new MessagePackaging(writer);
                 pack.Pack((int)msg.ProtocolID);
                 account.SocketManager.Send(pack.Writer.Content);
-                account.Log(new PrivateTextInformation("à " + name + " : " + content),1); 
+                account.Log(new PrivateTextInformation("à " + name + " : " + content),1);
+                if (account.DebugMode.Checked)
+                    account.Log(new BotTextInformation("[SND] 851 (ChatClientPrivateMessage)"), 0);
             }
         }
 

@@ -28,22 +28,25 @@ namespace BlueSheep.Engine.Handlers.Fight
             {
                 msg.Deserialize(reader);
             }
-            BFighter fighter = account.Fight.GetFighter(msg.targetId);
-            if (fighter != null)
+            if (account.Fight != null)
             {
-                fighter.IsAlive = false;
-                fighter.LifePoints = 0;
-                if (fighter.Id == account.Fight.Fighter.Id)
+                BFighter fighter = account.Fight.GetFighter(msg.targetId);
+                if (fighter != null)
                 {
-                    account.Log(new ErrorTextInformation("Personnage mort :'("), 0);
+                    fighter.IsAlive = false;
+                    fighter.LifePoints = 0;
+                    if (fighter.Id == account.Fight.Fighter.Id)
+                    {
+                        account.Log(new ErrorTextInformation("Personnage mort :'("), 0);
+                    }
+                    account.Fight.Fighters.RemoveAt(account.Fight.Fighters.IndexOf(account.Fight.GetFighter(msg.targetId)));
                 }
-                account.Fight.Fighters.RemoveAt(account.Fight.Fighters.IndexOf(account.Fight.GetFighter(msg.targetId)));
+                if (fighter.CreatureGenericId != 0)
+                {
+                    account.Log(new ActionTextInformation(BlueSheep.Common.Data.I18N.GetText((int)GameData.GetDataObject(D2oFileEnum.Monsters, fighter.CreatureGenericId).Fields["nameId"]) + "est mort ! "), 5);
+                }
+                account.Fight.DeadEnnemiInTurn += 1;
             }
-            if (fighter.CreatureGenericId != 0)
-            {
-                account.Log(new ActionTextInformation(BlueSheep.Common.Data.I18N.GetText((int)GameData.GetDataObject(D2oFileEnum.Monsters, fighter.CreatureGenericId).Fields["nameId"]) + "est mort ! "), 5);
-            }
-            account.Fight.DeadEnnemiInTurn += 1;
         }
         [MessageHandler(typeof(GameActionFightDispellableEffectMessage))]
         public static void GameActionFightDispellableEffectMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
@@ -53,23 +56,26 @@ namespace BlueSheep.Engine.Handlers.Fight
             {
                 msg.Deserialize(reader);
             }
-            if (msg.effect is FightTemporaryBoostStateEffect)
+            if (account.Fight != null)
             {
-                FightTemporaryBoostStateEffect effect = (FightTemporaryBoostStateEffect)msg.effect;
-                if (effect.targetId == account.Fight.Fighter.Id)
+                if (msg.effect is FightTemporaryBoostStateEffect)
                 {
-                    if (account.Fight.DurationByEffect.ContainsKey(effect.stateId))
-                        account.Fight.DurationByEffect.Remove(effect.stateId);
-                    account.Fight.DurationByEffect.Add(effect.stateId, effect.turnDuration);
+                    FightTemporaryBoostStateEffect effect = (FightTemporaryBoostStateEffect)msg.effect;
+                    if (effect.targetId == account.Fight.Fighter.Id)
+                    {
+                        if (account.Fight.DurationByEffect.ContainsKey(effect.stateId))
+                            account.Fight.DurationByEffect.Remove(effect.stateId);
+                        account.Fight.DurationByEffect.Add(effect.stateId, effect.turnDuration);
+                    }
                 }
-            }
-            else if (msg.effect is FightTemporaryBoostEffect)
-            {
-                FightTemporaryBoostEffect effect = (FightTemporaryBoostEffect)msg.effect;
-                if (msg.actionId == 168)
-                    ((BFighter)account.Fight.Fighter).ActionPoints = account.Fight.Fighter.ActionPoints - effect.delta;
-                else if (msg.actionId == 169)
-                    ((BFighter)account.Fight.Fighter).MovementPoints = account.Fight.Fighter.MovementPoints - effect.delta;
+                else if (msg.effect is FightTemporaryBoostEffect)
+                {
+                    FightTemporaryBoostEffect effect = (FightTemporaryBoostEffect)msg.effect;
+                    if (msg.actionId == 168)
+                        ((BFighter)account.Fight.Fighter).ActionPoints = account.Fight.Fighter.ActionPoints - effect.delta;
+                    else if (msg.actionId == 169)
+                        ((BFighter)account.Fight.Fighter).MovementPoints = account.Fight.Fighter.MovementPoints - effect.delta;
+                }
             }
         }
         [MessageHandler(typeof(GameActionFightPointsVariationMessage))]
@@ -80,21 +86,24 @@ namespace BlueSheep.Engine.Handlers.Fight
             {
                 msg.Deserialize(reader);
             }
-            BFighter fighter = (BFighter)account.Fight.GetFighter(msg.targetId);
-            if (fighter != null)
+            if (account.Fight != null)
             {
-                switch (msg.actionId)
+                BFighter fighter = (BFighter)account.Fight.GetFighter(msg.targetId);
+                if (fighter != null)
                 {
-                    case 101:
-                    case 102:
-                    case 120:
-                        fighter.ActionPoints = (fighter.ActionPoints + msg.delta);
-                        break;
-                    case 78:
-                    case 127:
-                    case 129:
-                        fighter.MovementPoints = (fighter.MovementPoints + msg.delta);
-                        break;
+                    switch (msg.actionId)
+                    {
+                        case 101:
+                        case 102:
+                        case 120:
+                            fighter.ActionPoints = (fighter.ActionPoints + msg.delta);
+                            break;
+                        case 78:
+                        case 127:
+                        case 129:
+                            fighter.MovementPoints = (fighter.MovementPoints + msg.delta);
+                            break;
+                    }
                 }
             }
         }
@@ -127,12 +136,15 @@ namespace BlueSheep.Engine.Handlers.Fight
             {
                 msg.Deserialize(reader);
             }
-            BFighter fighter = account.Fight.GetFighter(msg.targetId);
-            if (fighter != null)
+            if (account.Fight != null)
             {
-                //account.Log(new BotTextInformation("Ancienne cellid of " + fighter.Id + " = " + fighter.CellId));
-                fighter.CellId = msg.endCellId;
-                //account.Log(new BotTextInformation("Nouvelle cellid of " + fighter.Id+ " = " + fighter.CellId));
+                BFighter fighter = account.Fight.GetFighter(msg.targetId);
+                if (fighter != null)
+                {
+                    //account.Log(new BotTextInformation("Ancienne cellid of " + fighter.Id + " = " + fighter.CellId));
+                    fighter.CellId = msg.endCellId;
+                    //account.Log(new BotTextInformation("Nouvelle cellid of " + fighter.Id+ " = " + fighter.CellId));
+                }
             }
         }
         [MessageHandler(typeof(GameActionFightSpellCastMessage))]
@@ -143,40 +155,43 @@ namespace BlueSheep.Engine.Handlers.Fight
             {
                 msg.Deserialize(reader);
             }
-            BFighter fighter = (BFighter)account.Fight.GetFighter(msg.targetId);
-            if (fighter != null && account.Fight.Fighter != null && fighter.Id == account.Fight.Fighter.Id)
+            if (account.Fight != null)
             {
-                int spellLevel = -1;
-                BlueSheep.Common.Types.Spell spell = account.Spells.FirstOrDefault(s => s.Id == msg.spellId);
-                if (spell != null)
-                    spellLevel = spell.Level;
-                if (spellLevel != -1)
+                BFighter fighter = (BFighter)account.Fight.GetFighter(msg.targetId);
+                if (fighter != null && account.Fight.Fighter != null && fighter.Id == account.Fight.Fighter.Id)
                 {
-                    DataClass spellData = GameData.GetDataObject(D2oFileEnum.Spells, msg.spellId);
-                    if (spellData != null)
+                    int spellLevel = -1;
+                    BlueSheep.Common.Types.Spell spell = account.Spells.FirstOrDefault(s => s.Id == msg.spellId);
+                    if (spell != null)
+                        spellLevel = spell.Level;
+                    if (spellLevel != -1)
                     {
-                        uint spellLevelId = (uint)((ArrayList)spellData.Fields["spellLevels"])[spellLevel - 1];
-                        DataClass spellLevelData = GameData.GetDataObject(D2oFileEnum.SpellLevels, (int)spellLevelId);
-                        if (spellLevelData != null)
+                        DataClass spellData = GameData.GetDataObject(D2oFileEnum.Spells, msg.spellId);
+                        if (spellData != null)
                         {
-                            if ((int)spellLevelData.Fields["minCastInterval"] > 0 && !(account.Fight.LastTurnLaunchBySpell.ContainsKey(msg.spellId)))
-                                account.Fight.LastTurnLaunchBySpell.Add(msg.spellId, (int)spellLevelData.Fields["minCastInterval"]);
-                            if (account.Fight.TotalLaunchBySpell.ContainsKey(msg.spellId)) //Si on a déjà utilisé ce sort ce tour
-                                account.Fight.TotalLaunchBySpell[msg.spellId] += 1;
-                            else
-                                account.Fight.TotalLaunchBySpell.Add(msg.spellId, 1);
-                            if (account.Fight.TotalLaunchByCellBySpell.ContainsKey(msg.spellId)) //Si on a déjà utilisé ce sort ce tour
+                            uint spellLevelId = (uint)((ArrayList)spellData.Fields["spellLevels"])[spellLevel - 1];
+                            DataClass spellLevelData = GameData.GetDataObject(D2oFileEnum.SpellLevels, (int)spellLevelId);
+                            if (spellLevelData != null)
                             {
-                                if (account.Fight.TotalLaunchByCellBySpell[msg.spellId].ContainsKey(msg.destinationCellId)) //Si on a déjà utilisé ce sort sur cette case
-                                    account.Fight.TotalLaunchByCellBySpell[msg.spellId][msg.destinationCellId] += 1;
+                                if ((int)spellLevelData.Fields["minCastInterval"] > 0 && !(account.Fight.LastTurnLaunchBySpell.ContainsKey(msg.spellId)))
+                                    account.Fight.LastTurnLaunchBySpell.Add(msg.spellId, (int)spellLevelData.Fields["minCastInterval"]);
+                                if (account.Fight.TotalLaunchBySpell.ContainsKey(msg.spellId)) //Si on a déjà utilisé ce sort ce tour
+                                    account.Fight.TotalLaunchBySpell[msg.spellId] += 1;
                                 else
-                                    account.Fight.TotalLaunchByCellBySpell[msg.spellId].Add(msg.destinationCellId, 1);
-                            }
-                            else
-                            {
-                                Dictionary<int, int> tempdico = new Dictionary<int, int>();
-                                tempdico.Add(msg.destinationCellId, 1);
-                                account.Fight.TotalLaunchByCellBySpell.Add(msg.spellId, tempdico);
+                                    account.Fight.TotalLaunchBySpell.Add(msg.spellId, 1);
+                                if (account.Fight.TotalLaunchByCellBySpell.ContainsKey(msg.spellId)) //Si on a déjà utilisé ce sort ce tour
+                                {
+                                    if (account.Fight.TotalLaunchByCellBySpell[msg.spellId].ContainsKey(msg.destinationCellId)) //Si on a déjà utilisé ce sort sur cette case
+                                        account.Fight.TotalLaunchByCellBySpell[msg.spellId][msg.destinationCellId] += 1;
+                                    else
+                                        account.Fight.TotalLaunchByCellBySpell[msg.spellId].Add(msg.destinationCellId, 1);
+                                }
+                                else
+                                {
+                                    Dictionary<int, int> tempdico = new Dictionary<int, int>();
+                                    tempdico.Add(msg.destinationCellId, 1);
+                                    account.Fight.TotalLaunchByCellBySpell.Add(msg.spellId, tempdico);
+                                }
                             }
                         }
                     }
@@ -191,7 +206,8 @@ namespace BlueSheep.Engine.Handlers.Fight
             {
                 msg.Deserialize(reader);
             }
-            account.Fight.Fighters.Add(new BFighter(msg.summon.contextualId, msg.summon.disposition.cellId, msg.summon.stats.actionPoints, msg.summon.stats, msg.summon.alive, msg.summon.stats.lifePoints, msg.summon.stats.maxLifePoints, msg.summon.stats.movementPoints, (uint)msg.summon.teamId, 0));
+            if (account.Fight != null)
+                account.Fight.Fighters.Add(new BFighter(msg.summon.contextualId, msg.summon.disposition.cellId, msg.summon.stats.actionPoints, msg.summon.stats, msg.summon.alive, msg.summon.stats.lifePoints, msg.summon.stats.maxLifePoints, msg.summon.stats.movementPoints, (uint)msg.summon.teamId, 0));
         }
 
         [MessageHandler(typeof(GameActionFightTeleportOnSameMapMessage))]
@@ -202,9 +218,12 @@ namespace BlueSheep.Engine.Handlers.Fight
             {
                 msg.Deserialize(reader);
             }
-            BFighter fighter = (BFighter)account.Fight.GetFighter(msg.targetId);
-            if (fighter != null)
-                fighter.CellId = msg.cellId;
+            if (account.Fight != null)
+            {
+                BFighter fighter = (BFighter)account.Fight.GetFighter(msg.targetId);
+                if (fighter != null)
+                    fighter.CellId = msg.cellId;
+            }
         }
 
         [MessageHandler(typeof(GameEntitiesDispositionMessage))]
@@ -484,7 +503,8 @@ namespace BlueSheep.Engine.Handlers.Fight
             {
                 msg.Deserialize(reader);
             }
-            account.Fight.TurnId = msg.roundNumber;
+            if (account.Fight != null)
+                account.Fight.TurnId = msg.roundNumber;
         }
 
         [MessageHandler(typeof(GameFightTurnStartPlayingMessage))]
@@ -496,7 +516,8 @@ namespace BlueSheep.Engine.Handlers.Fight
                 msg.Deserialize(reader);
             }
             //account.Fight.PerformAutoTimeoutFight(100);
-            account.Fight.FightTurn();
+            if (account.Fight != null)
+                account.Fight.FightTurn();
         }
 
         [MessageHandler(typeof(GameFightPlacementPossiblePositionsMessage))]
@@ -508,10 +529,13 @@ namespace BlueSheep.Engine.Handlers.Fight
                 msg.Deserialize(reader);
             }
             account.SetStatus(Status.Fighting);
-            account.Fight.PlacementCells = msg.positionsForChallengers.ToList();
-            account.Fight.TurnId = 0;
-            if (account.Fight.m_Conf.Tactic != BlueSheep.Core.Fight.TacticEnum.Immobile)
-                account.Fight.PlaceCharacter();
+            if (account.Fight != null)
+            {
+                account.Fight.PlacementCells = msg.positionsForChallengers.ToList();
+                account.Fight.TurnId = 0;
+                if (account.Fight.m_Conf.Tactic != BlueSheep.Core.Fight.TacticEnum.Immobile)
+                    account.Fight.PlaceCharacter();
+            }
             //account.Fight.PerformAutoTimeoutFight(3000);
             //if (account.IsMITM)
             // account.Fight.PerformAutoTimeoutFight(3000);
@@ -549,7 +573,7 @@ namespace BlueSheep.Engine.Handlers.Fight
             {
                 msg.Deserialize(reader);
             }
-            if ((account.Fight.Fighter != null) && (account.Fight.Fighter.Id == msg.authorId) && (!account.IsMITM))
+            if ((account.Fight != null) && (account.Fight.Fighter != null) && (account.Fight.Fighter.Id == msg.authorId) && (!account.IsMITM))
             {
                 GameActionAcknowledgementMessage msg2 = new GameActionAcknowledgementMessage(true, msg.sequenceType);
                 account.SocketManager.Send(msg2);
@@ -583,8 +607,9 @@ namespace BlueSheep.Engine.Handlers.Fight
                     account.Log(new ActionTextInformation("Equipement rapide numero " + Convert.ToString(id)), 5);
                 }
                 account.Fight.PulseRegen();
-                account.SetStatus(Status.None);
             }
+            account.SetStatus(Status.None);
+
             //account.Path.Stop = false;
         }
 

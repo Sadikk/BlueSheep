@@ -4,6 +4,7 @@ using BlueSheep.Common.Protocol.Messages;
 using BlueSheep.Common.Types;
 using BlueSheep.Engine.Types;
 using BlueSheep.Interface;
+using BlueSheep.Interface.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,6 +85,8 @@ namespace BlueSheep.Core.Npc
                 MessagePackaging pack = new MessagePackaging(writer);
                 pack.Pack((int)msg.ProtocolID);
                 account.SocketManager.Send(pack.Writer.Content);
+                if (account.DebugMode.Checked)
+                    account.Log(new BotTextInformation("[SND] 5898 (NpcGenericActionRequestMessage)"), 0);
             }
         }
 

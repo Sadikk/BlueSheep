@@ -1769,6 +1769,7 @@
             this.MapPage.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
+            this.Disposed += new System.EventHandler(this.Form_Closed);
 
         }
 

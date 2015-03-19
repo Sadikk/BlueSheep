@@ -46,6 +46,8 @@
             this.ChoixPlacement = new BlueSheep.Interface.SadikCombo();
             this.ChoixTactique = new BlueSheep.Interface.SadikCombo();
             this.GroupBox2 = new System.Windows.Forms.GroupBox();
+            this.lstPopup = new System.Windows.Forms.ListBox();
+            this.MonsterTextBox = new System.Windows.Forms.TextBox();
             this.sadikLabel3 = new BlueSheep.Interface.SadikLabel();
             this.sadikLabel1 = new BlueSheep.Interface.SadikLabel();
             this.nudTargetLifePercent = new System.Windows.Forms.NumericUpDown();
@@ -71,8 +73,6 @@
             this.Descendre = new BlueSheep.Interface.SadikButton();
             this.DelBt = new BlueSheep.Interface.SadikButton();
             this.SaveIABt = new BlueSheep.Interface.SadikButton();
-            this.lstPopup = new System.Windows.Forms.ListBox();
-            this.MonsterTextBox = new System.Windows.Forms.TextBox();
             this.GroupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ChoixVersion)).BeginInit();
             this.GroupBox3.SuspendLayout();
@@ -221,6 +221,11 @@
             this.ChoixFarCells.Name = "ChoixFarCells";
             this.ChoixFarCells.Size = new System.Drawing.Size(31, 20);
             this.ChoixFarCells.TabIndex = 4;
+            this.ChoixFarCells.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
             // 
             // sadikLabel2
             // 
@@ -290,6 +295,26 @@
             this.GroupBox2.TabIndex = 1520;
             this.GroupBox2.TabStop = false;
             this.GroupBox2.Text = "Options";
+            // 
+            // lstPopup
+            // 
+            this.lstPopup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lstPopup.FormattingEnabled = true;
+            this.lstPopup.ItemHeight = 15;
+            this.lstPopup.Location = new System.Drawing.Point(226, 64);
+            this.lstPopup.Name = "lstPopup";
+            this.lstPopup.Size = new System.Drawing.Size(124, 79);
+            this.lstPopup.TabIndex = 27;
+            this.lstPopup.Visible = false;
+            // 
+            // MonsterTextBox
+            // 
+            this.MonsterTextBox.Font = new System.Drawing.Font("Verdana", 8F);
+            this.MonsterTextBox.Location = new System.Drawing.Point(226, 44);
+            this.MonsterTextBox.Name = "MonsterTextBox";
+            this.MonsterTextBox.Size = new System.Drawing.Size(213, 20);
+            this.MonsterTextBox.TabIndex = 15;
+            this.MonsterTextBox.Text = "Entrez le nom du monstre...";
             // 
             // sadikLabel3
             // 
@@ -574,26 +599,6 @@
             this.SaveIABt.TabIndex = 1525;
             this.SaveIABt.Text = "Sauvegarder l\'IA";
             this.SaveIABt.Click += new System.EventHandler(this.SaveIABt_Click);
-            // 
-            // lstPopup
-            // 
-            this.lstPopup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lstPopup.FormattingEnabled = true;
-            this.lstPopup.ItemHeight = 15;
-            this.lstPopup.Location = new System.Drawing.Point(226, 64);
-            this.lstPopup.Name = "lstPopup";
-            this.lstPopup.Size = new System.Drawing.Size(124, 79);
-            this.lstPopup.TabIndex = 27;
-            this.lstPopup.Visible = false;
-            // 
-            // MonsterTextBox
-            // 
-            this.MonsterTextBox.Font = new System.Drawing.Font("Verdana", 8F);
-            this.MonsterTextBox.Location = new System.Drawing.Point(226, 44);
-            this.MonsterTextBox.Name = "MonsterTextBox";
-            this.MonsterTextBox.Size = new System.Drawing.Size(213, 20);
-            this.MonsterTextBox.TabIndex = 15;
-            this.MonsterTextBox.Text = "Entrez le nom du monstre...";
             // 
             // IACreator
             // 

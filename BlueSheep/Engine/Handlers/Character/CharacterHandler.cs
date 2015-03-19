@@ -70,7 +70,7 @@ namespace BlueSheep.Engine.Handlers.Character
             {
                 msg.Deserialize(reader);
             }
-
+            account.ConfigManager.RecoverConfig();
             account.CharacterStats = msg.stats;
             account.CaracUC.Init();
             int percent = (msg.stats.lifePoints / msg.stats.maxLifePoints) * 100;

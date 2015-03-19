@@ -1338,6 +1338,7 @@
     <Compile Include="Common\Types\BEntity.cs" />
     <Compile Include="Common\Types\BFighter.cs" />
     <Compile Include="Common\Types\Bot.cs" />
+    <Compile Include="Common\Types\Config.cs" />
     <Compile Include="Common\Types\Food.cs" />
     <Compile Include="Common\Types\Group.cs" />
     <Compile Include="Common\Types\Lot.cs" />
@@ -1399,6 +1400,7 @@
     <Compile Include="Engine\Handlers\Security\SecurityHandler.cs" />
     <Compile Include="Engine\Network\SocketManager.cs" />
     <Compile Include="Engine\Treatment\Treatment.cs" />
+    <Compile Include="Engine\Types\ConfigManager.cs" />
     <Compile Include="Engine\Types\ConnectionInformations.cs" />
     <Compile Include="Engine\Types\InstanceInfo.cs" />
     <Compile Include="Engine\Types\Message.cs" />

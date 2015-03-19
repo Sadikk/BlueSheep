@@ -41,12 +41,15 @@
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.tabPage7 = new System.Windows.Forms.TabPage();
+            this.OpenBagCb = new BlueSheep.Interface.SadikCheckbox();
             this.sadikTabControl1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.g)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.GatherPie)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            this.tabPage7.SuspendLayout();
             this.SuspendLayout();
             // 
             // sadikTabControl1
@@ -54,6 +57,7 @@
             this.sadikTabControl1.Controls.Add(this.tabPage4);
             this.sadikTabControl1.Controls.Add(this.tabPage5);
             this.sadikTabControl1.Controls.Add(this.tabPage6);
+            this.sadikTabControl1.Controls.Add(this.tabPage7);
             this.sadikTabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.sadikTabControl1.Font = new System.Drawing.Font("Verdana", 8F);
             this.sadikTabControl1.ItemSize = new System.Drawing.Size(0, 30);
@@ -171,6 +175,27 @@
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Stats";
             // 
+            // tabPage7
+            // 
+            this.tabPage7.BackColor = System.Drawing.Color.White;
+            this.tabPage7.Controls.Add(this.OpenBagCb);
+            this.tabPage7.Location = new System.Drawing.Point(4, 34);
+            this.tabPage7.Name = "tabPage7";
+            this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage7.Size = new System.Drawing.Size(402, 245);
+            this.tabPage7.TabIndex = 3;
+            this.tabPage7.Text = "Config";
+            // 
+            // OpenBagCb
+            // 
+            this.OpenBagCb.Checked = false;
+            this.OpenBagCb.Font = new System.Drawing.Font("Verdana", 8F);
+            this.OpenBagCb.Location = new System.Drawing.Point(6, 6);
+            this.OpenBagCb.Name = "OpenBagCb";
+            this.OpenBagCb.Size = new System.Drawing.Size(140, 20);
+            this.OpenBagCb.TabIndex = 0;
+            this.OpenBagCb.Text = "Ouvrir automatiquement les sacs de ressources.";
+            // 
             // JobUC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -184,6 +209,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.GatherPie)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
+            this.tabPage7.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -200,5 +226,7 @@
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.TabPage tabPage6;
+        private System.Windows.Forms.TabPage tabPage7;
+        public SadikCheckbox OpenBagCb;
     }
 }

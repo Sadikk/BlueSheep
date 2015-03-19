@@ -265,6 +265,8 @@ namespace BlueSheep.Core.Map
                 MessagePackaging pack = new MessagePackaging(writer);
                 pack.Pack((int)msg.ProtocolID);
                 m_Account.SocketManager.Send(pack.Writer.Content);
+                if (m_Account.DebugMode.Checked)
+                    m_Account.Log(new BotTextInformation("[SND] 950 (GameMapMovementRequestMessage)"), 0);
             }
             m_Account.Wait(timetowait, timetowait + 100);
             using (BigEndianWriter writer = new BigEndianWriter())
@@ -354,6 +356,8 @@ namespace BlueSheep.Core.Map
                 pack.Pack((int)msg.ProtocolID);
                 m_Account.SocketManager.Send(pack.Writer.Content);
             }
+            if (m_Account.DebugMode.Checked)
+                m_Account.Log(new BotTextInformation("[SND] 5001 (InteractiveUseRequestMessage)"), 0);
         }
 
         public void UseElement(int id)
@@ -415,6 +419,8 @@ namespace BlueSheep.Core.Map
                 MessagePackaging pack = new MessagePackaging(writer);
                 pack.Pack((int)msg.ProtocolID);
                 m_Account.SocketManager.Send(pack.Writer.Content);
+                if (m_Account.DebugMode.Checked)
+                    m_Account.Log(new BotTextInformation("[SND] 950 (GameMapMovementRequestMessage)"), 0);
             }
             m_Account.Wait(timetowait, timetowait + 100);
             using (BigEndianWriter writer = new BigEndianWriter())

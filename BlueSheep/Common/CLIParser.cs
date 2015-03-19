@@ -706,6 +706,8 @@ namespace BlueSheep.Common
                         pack.Pack((int)msg.ProtocolID);
                         account.SocketManager.Send(pack.Writer.Content);
                         result.Add("à " + dest + " : " + message + "\n");
+                        if (account.DebugMode.Checked)
+                            account.Log(new BotTextInformation("[SND] 851 (ChatClientPrivateMessage)"), 0);
                     }
                 }
                 else

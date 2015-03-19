@@ -13,7 +13,7 @@ namespace BlueSheep.Core.Path
     public class PathManager
     {
         private AccountUC Account;
-        private string path;
+        public string path;
         public bool Stop;
         private string flag;
         private List<Condition> conditions;

@@ -106,9 +106,14 @@ namespace BlueSheep.Interface
             StreamReader sr = new StreamReader(fi.FullName);
             string line = null;
             string[] infos = new string[6];
-            for (int i = 0; i <= 5; i++)
+            for (int i = 0; i < 5; i++)
             {
                 line = sr.ReadLine();
+                if (line == null || line.Length < 5)
+                {
+                    MessageBox.Show("Malformated header. Check your path's syntax. " + fi.FullName);
+                    return;
+                }
                 line.Replace(" ", "");
                 switch (i)
                 {

@@ -34,6 +34,8 @@ namespace BlueSheep.Core.Misc
                 MessagePackaging pack = new MessagePackaging(writer);
                 pack.Pack((int)msg.ProtocolID);
                 account.SocketManager.Send(pack.Writer.Content);
+                if (account.DebugMode.Checked)
+                    account.Log(new BotTextInformation("[SND] 861 (ChatClientMultiMessage)"), 0);
             }
         }
 
@@ -47,6 +49,8 @@ namespace BlueSheep.Core.Misc
                 MessagePackaging pack = new MessagePackaging(writer);
                 pack.Pack((int)msg.ProtocolID);
                 account.SocketManager.Send(pack.Writer.Content);
+                if (account.DebugMode.Checked)
+                    account.Log(new BotTextInformation("[SND] 5001 (InteractiveUseRequestMessage)"), 0);
             }
         }
 

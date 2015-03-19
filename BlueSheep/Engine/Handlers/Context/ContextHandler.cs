@@ -801,6 +801,7 @@ namespace BlueSheep.Engine.Handlers.Context
             
         }
 
+        ////////////////////////////////// PACKET DELETED ///////////////////////////////////////////////
 
         //[MessageHandler(typeof(DisplayNumericalValueWithAgeBonusMessage))]
         //public static void DisplayNumericalValueWithAgeBonusTreatment(Message message, byte[] packetDatas, AccountUC account)
@@ -827,8 +828,6 @@ namespace BlueSheep.Engine.Handlers.Context
         //    }
         //}
 
-        //Packet disparu ?
-
         [MessageHandler(typeof(InteractiveUseErrorMessage))]
         public static void InteractiveUseErrorMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
@@ -839,7 +838,10 @@ namespace BlueSheep.Engine.Handlers.Context
                 msg.Deserialize(reader);
             }
             account.Log(new ErrorTextInformation("Erreur lors de l'utilisation de l'element numero " + msg.elemId + ". Si vous connaissez la raison, rapportez la sur le forum. Merci ! Poursuite du trajet..."), 0);
-            if (account.Path != null)
+            if (account.Gather.Id != -1 && account.PerformGather() == false)
+                if (account.Path != null)
+                    account.Path.PerformActionsStack();
+            else if (account.Path != null)
                 account.Path.PerformActionsStack();
         }
         #endregion

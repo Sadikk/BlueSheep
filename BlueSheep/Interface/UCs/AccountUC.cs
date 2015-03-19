@@ -51,7 +51,7 @@ namespace BlueSheep.Interface
         private Running m_Running;
         private Thread m_ConnectionThread;
         private Timer m_TimerConnectionThread;
-        public string FloodContent;
+        public string FloodContent = "";
         private List<Bot> m_Bots = new List<Bot>();
         public string loginstate;
         private DateTime m_NextMeal;
@@ -78,6 +78,7 @@ namespace BlueSheep.Interface
         public CaracUC CaracUC;
         public bool IsMITM;
         public Status state;
+        public ConfigManager ConfigManager;
         #endregion
 
         #region Properties
@@ -284,8 +285,13 @@ namespace BlueSheep.Interface
             CaracUC = new CaracUC(this);
             StatsPage.Controls.Add(CaracUC);
             CaracUC.Show();
-            
 
+            string path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlueSheep", "Accounts", AccountName);
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            //Config Manager
+            this.ConfigManager = new ConfigManager(this);
             
         }
 
@@ -300,11 +306,13 @@ namespace BlueSheep.Interface
 
         private void Form_Closed(object sender, EventArgs e)
         {
+            this.ConfigManager.SaveConfig();
             this.SocketManager.DisconnectFromGUI();
             if (IsMITM)
             {
                 this.SocketManager.DisconnectServer();
             }
+            
         }
 
         public void InitMITM()
@@ -744,7 +752,7 @@ namespace BlueSheep.Interface
                         DataClass d = GameData.GetDataObject(D2oFileEnum.Skills, i);
                         if ((int)d.Fields["gatheredRessourceItem"] == -1)
                             continue;
-                        if (j.Level > (int)d.Fields["levelMin"])
+                        if (j.Level >= (int)d.Fields["levelMin"])
                         {
                             string name = I18N.GetText((int)d.Fields["nameId"]);
                             string rname = I18N.GetText((int)GameData.GetDataObject(D2oFileEnum.Items, (int)d.Fields["gatheredRessourceItem"]).Fields["nameId"]);
@@ -1246,6 +1254,11 @@ namespace BlueSheep.Interface
 
         }
         #endregion
+
+        private void LVItems_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+
+        }
 
         
 

@@ -229,6 +229,17 @@ namespace BlueSheep.Engine.Handlers.Inventory
             System.Windows.Forms.ListViewItem li = new System.Windows.Forms.ListViewItem(row1);
             li.ToolTipText = i.Description;
             account.AddItem(li, account.LVItems);
+            if (i.Type == "Sac de ressource")
+            {
+                foreach (JobUC uc in account.JobsUC)
+                {
+                    if (uc.OpenBagCb.Checked)
+                    {
+                        account.Inventory.UseItem(i.UID);
+                        account.Log(new ActionTextInformation("Ouverture automatique d'un sac de récolte : " + i.Name), 2);
+                    }
+                }
+            }
             if (account.Running != null)
             {
                 foreach (Pet pet in account.petsList)

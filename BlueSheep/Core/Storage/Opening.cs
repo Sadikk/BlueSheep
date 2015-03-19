@@ -37,6 +37,8 @@ namespace BlueSheep.Core.Storage
 
                 account.SocketManager.Send(messagePackaging.Writer.Content);
                 account.LastPacketID.Clear();
+                if (account.DebugMode.Checked)
+                    account.Log(new BlueSheep.Interface.Text.BotTextInformation("[SND] 5001 (InteractiveUseRequestMessage)"), 0);
             }
         }
         #endregion

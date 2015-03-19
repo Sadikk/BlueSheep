@@ -30,6 +30,7 @@ namespace BlueSheep.Core.Fight
         public Dictionary<int, int> TotalLaunchBySpell = new Dictionary<int, int>();
         public Dictionary<int, Dictionary<int, int>> TotalLaunchByCellBySpell = new Dictionary<int, Dictionary<int, int>>();
         #endregion
+
         #region Public Fields
         public AccountUC m_Account;
         public List<BSpell> m_Spells;
@@ -56,6 +57,7 @@ namespace BlueSheep.Core.Fight
         public MonsterGroup followinggroup;
         public Stopwatch watch = new Stopwatch();
         #endregion
+
         #region Private Fields
         private Object clock = new Object();
         #endregion
@@ -72,6 +74,7 @@ namespace BlueSheep.Core.Fight
         public BFight(AccountUC account)
         {
             m_Account = account;
+            spells = new List<BSpell>();
         }
 
         public BFight(FightConfig myconf, List<BSpell> myspells, AccountUC account)
@@ -82,6 +85,7 @@ namespace BlueSheep.Core.Fight
             winLoseDic = new Dictionary<string, int>();
             winLoseDic.Add("Gagné", 0);
             winLoseDic.Add("Perdu", 0);
+            spells = new List<BSpell>();
             xpWon = new Dictionary<DateTime, int>();
             xpWon.Add(DateTime.Today, 0);
         }
@@ -729,16 +733,16 @@ namespace BlueSheep.Core.Fight
         private void LaunchSpell(int spellId, int cellId)
         {
 
-            foreach (BFighter fighter in Fighters)
-            {
-                if (fighter.CellId == cellId)
-                {
-                    GameActionFightCastOnTargetRequestMessage msg = new GameActionFightCastOnTargetRequestMessage((short)spellId, fighter.Id);
-                    m_Account.SocketManager.Send(msg);
-                    m_Account.Log(new ActionTextInformation("Lancement d'un sort en " + cellId), 5);
-                    return;
-                }
-            }
+            //foreach (BFighter fighter in Fighters)
+            //{
+            //    if (fighter.CellId == cellId)
+            //    {
+            //        GameActionFightCastOnTargetRequestMessage msg = new GameActionFightCastOnTargetRequestMessage((short)spellId, fighter.Id);
+            //        m_Account.SocketManager.Send(msg);
+            //        m_Account.Log(new ActionTextInformation("Lancement d'un sort en " + cellId), 5);
+            //        return;
+            //    }
+            //}
             using (BigEndianWriter writer = new BigEndianWriter())
             {
                 GameActionFightCastRequestMessage msg = new GameActionFightCastRequestMessage((short)spellId, (short)cellId);
@@ -748,6 +752,8 @@ namespace BlueSheep.Core.Fight
                 pack.Pack((int)msg.ProtocolID);
                 m_Account.SocketManager.Send(pack.Writer.Content);
                 m_Account.Log(new ActionTextInformation("Lancement d'un sort en " + cellId), 5);
+                if (m_Account.DebugMode.Checked)
+                    m_Account.Log(new BotTextInformation("[SND] 1005 (GameActionFightCastRequestMessage)"), 0);
             }
         }
 
@@ -799,6 +805,8 @@ namespace BlueSheep.Core.Fight
                         MessagePackaging pack = new MessagePackaging(writer);
                         pack.Pack((int)msg.ProtocolID);
                         m_Account.SocketManager.Send(pack.Writer.Content);
+                        if (m_Account.DebugMode.Checked)
+                            m_Account.Log(new BotTextInformation("[SND] 950 (GameMapMovementRequestMessage)"), 0);
                     }
                     return true;
                 }

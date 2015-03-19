@@ -49,6 +49,8 @@ namespace BlueSheep.Engine.Handlers.Basic
                     messagePackaging.Pack((int)basicLatencyStatsMessage.ProtocolID);
 
                     account.SocketManager.Send(messagePackaging.Writer.Content);
+                    if (account.DebugMode.Checked)
+                        account.Log(new BlueSheep.Interface.Text.BotTextInformation("[SND] 5663 (BasicLatencyStatsMessage)"), 0);
                 }
             }
             
