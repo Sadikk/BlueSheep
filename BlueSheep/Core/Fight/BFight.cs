@@ -616,11 +616,22 @@ namespace BlueSheep.Core.Fight
 
         public void LaunchFight(int id)
         {
-            using (BigEndianWriter writer = new BigEndianWriter())
+            /* Ajout temporaire (?) pour résoudre le bug du lancement de combat qui ne se faisait pas
+               parce que le groupe de mob bougeait */
+            MovementPath path = (new Pathfinder(m_Account.Map.Data, m_Account.Map)).FindPath(m_Account.Map.Character.CellId, followinggroup.m_cellId);
+            if (!(path == null))
             {
-                GameRolePlayAttackMonsterRequestMessage msg = new GameRolePlayAttackMonsterRequestMessage(id);
-                m_Account.SocketManager.Send(msg);
-                //m_Account.Log(new ActionTextInformation(id.ToString()));
+                using (BigEndianWriter writer = new BigEndianWriter())
+                {
+                    GameRolePlayAttackMonsterRequestMessage msg = new GameRolePlayAttackMonsterRequestMessage(id);
+                    m_Account.SocketManager.Send(msg);
+                    m_Account.Log(new ActionTextInformation("Launch Fight !"), 1);
+                }
+            }
+            else
+            {
+                m_Account.Log(new ActionTextInformation("Search Fight: le groupe de mob n'est pas au même emplacement.."), 1);
+                this.SearchFight();
             }
         }
 
