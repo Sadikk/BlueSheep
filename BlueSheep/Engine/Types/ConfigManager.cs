@@ -15,6 +15,7 @@ namespace BlueSheep.Engine.Types
     {
         #region Fields
         private AccountUC account;
+        public bool Restored = false;
         #endregion
 
         #region Constructors
@@ -61,6 +62,7 @@ namespace BlueSheep.Engine.Types
             {
                 account.Log(new BotTextInformation("Aucune config pour ce personnage."), 0);
             }
+            Restored = true;
         }
 
         public void SaveConfig()

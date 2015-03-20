@@ -299,6 +299,7 @@ namespace BlueSheep.Core.Fight
 
             if (NearMonster == null)
             {
+                EndTurn();
                 return;
             }
 
@@ -688,9 +689,10 @@ namespace BlueSheep.Core.Fight
                     pack.Pack((int)msg2.ProtocolID);
                     m_Account.SocketManager.Send(pack.Writer.Content);
                 }
-                m_Account.Wait(time * 1000, (time + 1) * 1000);
                 m_Account.Log(new GeneralTextInformation(String.Format("Régénération pendant {0} secondes.", time)), 2);
+                m_Account.Wait(time * 1000, (time + 1) * 1000);
             }
+            // TODO : Continue path after this.
         }
 
         public void LockFight()

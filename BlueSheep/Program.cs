@@ -44,7 +44,9 @@ namespace BlueSheep
                Application.Exit();
             }
 
-
+            /* ChangeLog 
+             * - Fix : Déchargement du trajet à la fin d'un combat
+             * */
         }
 
     }
