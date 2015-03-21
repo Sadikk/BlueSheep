@@ -739,10 +739,14 @@ namespace BlueSheep.Engine.Handlers.Context
             {
                 msg.Deserialize(reader);
             }
+            GameRolePlayHumanoidInformations info = (GameRolePlayHumanoidInformations)msg.informations;
             if (account.StartStopFloodingBox.Checked == true && account.PrivateEnterBox.Checked == true && msg.informations is GameRolePlayHumanoidInformations)
             {
-                GameRolePlayHumanoidInformations info = (GameRolePlayHumanoidInformations)msg.informations;
-                account.Flood.SendPrivateTo(info.name);
+                account.Flood.SendPrivateTo(info.name); 
+            }
+            if(account.IsMemoryCheck.Checked == true && msg.informations is GameRolePlayHumanoidInformations)
+            {
+                account.Flood.SaveNameInMemory(info.name);
             }
         }
 

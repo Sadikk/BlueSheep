@@ -79,6 +79,7 @@ namespace BlueSheep.Interface
         public bool IsMITM;
         public Status state;
         public ConfigManager ConfigManager;
+        public List<string> listOfPlayers;
         #endregion
 
         #region Properties
@@ -267,7 +268,7 @@ namespace BlueSheep.Interface
             Inventory = new Inventory(this);
             Spells = new List<Spell>();
             Npc = new Npc(this);
-            Flood = new Core.Misc.Flood(this);
+            
             Jobs = new List<Job>();
             Gather = new Gather(this);
 
@@ -292,6 +293,27 @@ namespace BlueSheep.Interface
 
             //Config Manager
             this.ConfigManager = new ConfigManager(this);
+            string pathPlayers = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlueSheep", "Accounts", AccountName, "Flood");
+            if (!Directory.Exists(pathPlayers))
+                Directory.CreateDirectory(pathPlayers);
+            listOfPlayers = new List<string>();
+            if (File.Exists(pathPlayers + "\\Players.txt"))
+           {
+               var sr = new StreamReader(pathPlayers + "\\Players.txt");
+               while(!sr.EndOfStream)
+               {
+                   listOfPlayers.Add(sr.ReadLine());
+               }
+               PlayerListLb.Items.AddRange(listOfPlayers.ToArray());
+               sr.Close();
+               Log(new BotTextInformation("(ADVANCED FLOOD) Players chargés."), 5);
+           }
+            else
+            {
+                
+                listOfPlayers.Add("null");
+            }
+            Flood = new Core.Misc.Flood(this, listOfPlayers);
             
         }
 
@@ -1260,6 +1282,81 @@ namespace BlueSheep.Interface
 
         }
 
+        private void sadikCheckbox1_CheckedChanged(object sender)
+        {
+
+        }
+
+       
+        private void RemovePlayerBt_Click(object sender, EventArgs e)
+        {
+          
+            string pathPlayers = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlueSheep", "Accounts", this.AccountName, "Flood");
+            if (File.Exists(pathPlayers + "\\Players.txt"))
+            {
+                supprimerLigne(pathPlayers + "\\Players.txt", PlayerListLb.SelectedItem.ToString());
+            }
+            if (PlayerListLb.SelectedItem != null)
+            {
+                PlayerListLb.Items.Remove(PlayerListLb.SelectedItem);
+            }
+        }
+        
+        private void supprimerLigne(string path, string ligne) {
+         
+            string texte = null;
+            string ligneActuelle = null;
+            StreamReader sr = new StreamReader(path);
+        
+            while ((sr.Peek() != -1)) 
+            {
+                ligneActuelle = sr.ReadLine();
+                if (!(ligneActuelle == ligne)) 
+                {
+                    texte = (texte + (ligneActuelle + "\r\n"));
+                }
+            }
+            sr.Close();
+         
+            StreamWriter sr2 = new StreamWriter(path);
+            sr2.Write(texte);
+            sr2.Close();
+        }
+        private void ClearListeBt_Click(object sender, EventArgs e)
+        {
+            if(PlayerListLb.Items.Count != 0)
+            {
+                PlayerListLb.Items.Clear();
+            }
+            string pathPlayers = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlueSheep", "Accounts", this.AccountName, "Flood");
+            if(File.Exists(pathPlayers + "\\Players.txt"))
+            {
+                var sw = new StreamWriter(pathPlayers + "\\Players.txt");
+                sw.Write("");
+                sw.Close();
+            }
+        }
+
+        private void FloodPlayersBt_Click(object sender, EventArgs e)
+        {
+            this.FloodContent = this.FloodContentRbox.Text;
+            foreach(var elem in PlayerListLb.Items)
+            {
+                try
+                {
+                    Flood.SendPrivateTo((string)elem);
+                }
+                catch (Exception)
+                {
+                    this.Log(new ErrorTextInformation("Impossible d'envoyer le message à: " + (string)elem), 3);
+                }
+            }
+        }
+
+      
+
+       
+    
         
 
         
