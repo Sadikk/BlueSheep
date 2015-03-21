@@ -55,6 +55,8 @@ namespace BlueSheep.Engine.Network
         #region Public methods
         public void DisconnectFromGUI()
         {
+            if (account.Path != null)
+                account.Path.Stop();
             if (m_ReceptionThread != null)
                 m_ReceptionThread.Abort();
             Disconnect();

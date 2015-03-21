@@ -27,7 +27,7 @@ namespace BlueSheep.Core
         }
         public JobUC Current_Job;
         public Dictionary<string, int> Stats = new Dictionary<string, int>();
-        private InteractiveElement Current_El;
+        public InteractiveElement Current_El;
         public int Id
         {
             get
@@ -115,7 +115,8 @@ namespace BlueSheep.Core
                         SkillInstanceUid = UsableElement.Skills[0].skillInstanceUid;
                         Current_El = UsableElement.Element;
                         //resourceName = UsableElement.Element.TypeId;
-                        if (GetRessourceDistance((int)UsableElement.Element.Id) == 1 || IsFishing)
+                        int distance = GetRessourceDistance((int)UsableElement.Element.Id);
+                        if (distance == 1 || (IsFishing && account.Inventory.WeaponRange >= distance))
                         {
                             if (Moved)
                             {
@@ -130,7 +131,7 @@ namespace BlueSheep.Core
                             account.SetStatus(Status.Gathering);
                             return true;
                         }
-                        if ((account.Inventory.HasFishingRod == false && account.Map.MoveToElement((int)UsableElement.Element.Id, 1)) || (account.Inventory.HasFishingRod == true && account.Map.MoveToElement((int)UsableElement.Element.Id, account.Inventory.WeaponRange)))
+                        else if ((account.Inventory.HasFishingRod == false && account.Map.MoveToElement((int)UsableElement.Element.Id, 1)) || (account.Inventory.HasFishingRod == true && account.Map.MoveToElement((int)UsableElement.Element.Id, account.Inventory.WeaponRange)))
                         {
                             account.SetStatus(Status.Gathering);
                             Id = (int)UsableElement.Element.Id;

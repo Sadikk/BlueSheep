@@ -6,26 +6,30 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BlueSheep.Core.Path
 {
     public class PathManager
     {
+        #region Fields
         private AccountUC Account;
         public string path;
-        public bool Stop;
+        //public bool Stop;
         private string flag;
         private List<Condition> conditions;
         public List<Action> ActionsStack;
         public Action Current_Action;
-        //public string Current_Move;
         public string Current_Map;
         public string Current_Flag
         {
             get { return flag; }
             internal set { flag = value; }
         }
+        public Thread Thread;
+        public bool Launched;
+
         public static readonly IList<String> flags = new ReadOnlyCollection<string>
         (new List<String> {"<Move>","<Fight>","<Gather>","<Dialog>"});
 
@@ -37,6 +41,7 @@ namespace BlueSheep.Core.Path
 
         public static readonly IList<Char> operateurs = new ReadOnlyCollection<char>
         (new List<Char> { '<', '>', '=' });
+        #endregion
 
         #region Constructeurs
         public PathManager(AccountUC account, string Path, string name)
@@ -44,66 +49,25 @@ namespace BlueSheep.Core.Path
             Account = account;
             path = Path;
             Account.PathDownBt.Text = name;
+            Thread = new Thread(new ThreadStart(ParsePath));
         }
         #endregion
 
         #region Public methods
-
-        public void ParsePath()
+        public void Start()
         {
-            if (!File.Exists(path))
-                return;
-            StreamReader sr = new StreamReader(path);
-            string line = "";
-            conditions = new List<Condition>();
-            ActionsStack = new List<Action>();
-
-            while (sr.Peek() > 0)
+            if (!this.Launched)
             {
-                if (Stop == true)
-                {
-                    sr.Close();
-                    return;
-                }
-                line = sr.ReadLine();
-                if (line == "" || line == string.Empty || line == null || line.StartsWith("#"))
-                    continue;
-                if (Account.Map.Data == null)
-                {
-                    sr.Close();
-                    Account.Log(new ErrorTextInformation("Le bot n'a pas encore reçu les informations de la map, veuillez patienter. Si le problème persiste, rapportez le bug sur le forum : http://forum.bluesheepbot.com"),0);
-                    return;
-                }
-                if (line.Contains("+Condition "))
-                {
-                    ParseCondition(line);
-                    continue;
-                }
-                if ((line.Contains(Account.Map.X.ToString() + "," + Account.Map.Y.ToString() + ":") || line.Contains(Account.Map.Id.ToString() + ":")) && CheckConditions(false))
-                {
-                    Current_Map = Account.Map.X.ToString() + "," + Account.Map.Y.ToString();
-                    AnalyseLine(line);
-                    return;
-                }
-                foreach (string f in flags)
-                {
-                    if (line.Contains(f))
-                    {
-                        flag = f;
-                        continue;
-                    }
-                }
-                foreach (string f in Endflags)
-                {
-                    if (line.Contains(f))
-                    {
-                        conditions.Clear();
-                        flag = "";
-                        continue;
-                    }
-                }   
+                Thread = new Thread(new ThreadStart(ParsePath));
+                Thread.Start();
             }
-            sr.Close();
+            Launched = true;
+        }
+
+        public void Stop()
+        {
+            this.Thread.Interrupt();
+            Launched = false;
         }
 
         public void SearchReplies(string question)
@@ -154,6 +118,7 @@ namespace BlueSheep.Core.Path
         #endregion
 
         #region Private methods
+
         private void AnalyseLine(string line)
         {
             if (Account.Map.Data == null)
@@ -161,8 +126,6 @@ namespace BlueSheep.Core.Path
                 Account.Log(new ErrorTextInformation("Le bot n'a pas encore reçu les informations de la map, veuillez patienter. Si le problème persiste, rapportez le bug sur le forum : http://forum.bluesheepbot.com"),0);
                 return;
             }
-            if (Stop == true)
-                return;
             if (line.Contains("#"))
                 return;
             if (CheckConditions(true) && flag != "")
@@ -182,12 +145,12 @@ namespace BlueSheep.Core.Path
                     if (Account.IsMaster == true && Account.MyGroup != null)
                     {
                         PerformActionsStack();
-                        Account.Path.Stop = true;
+                        //Account.Path.Stop = true;
                     }
                     else if (Account.IsSlave == false)
                     {
                         PerformActionsStack();
-                        Account.Path.Stop = true;
+                        //Account.Path.Stop = true;
                     }
                     else
                     {
@@ -200,13 +163,13 @@ namespace BlueSheep.Core.Path
                     {
                         if (Account.Fight.SearchFight() == false)
                             PerformActionsStack();
-                        Account.Path.Stop = true;
+                        //Account.Path.Stop = true;
                     }
                     else if (Account.IsSlave == false && Account.Fight != null)
                     {
                         if (Account.Fight.SearchFight() == false)
                             PerformActionsStack();
-                        Account.Path.Stop = true;
+                       //Account.Path.Stop = true;
                     }
                     else
                     {
@@ -218,7 +181,7 @@ namespace BlueSheep.Core.Path
                     //Account.Log(new ErrorTextInformation("La récolte n'est pas encore implémentée, veuillez attendre la mise à jour. Tenez vous au courant sur http://forum.bluesheepbot.com "),0);
                     if (Account.PerformGather() == false)
                         PerformActionsStack();
-                    Account.Path.Stop = true;
+                    //Account.Path.Stop = true;
                     break;
                 //case "<Bank>":
                 //    //On rajoute la condition pods et on effectue l'action
@@ -312,6 +275,63 @@ namespace BlueSheep.Core.Path
             }
 
             return true;
+        }
+
+        private void ParsePath()
+        {
+            if (!File.Exists(path))
+                return;
+            StreamReader sr = new StreamReader(path);
+            string line = "";
+            conditions = new List<Condition>();
+            ActionsStack = new List<Action>();
+
+            while (sr.Peek() > 0)
+            {
+                //if (Stop == true)
+                //{
+                //    sr.Close();
+                //    return;
+                //}
+                line = sr.ReadLine();
+                if (line == "" || line == string.Empty || line == null || line.StartsWith("#"))
+                    continue;
+                if (Account.Map.Data == null)
+                {
+                    sr.Close();
+                    Account.Log(new ErrorTextInformation("Le bot n'a pas encore reçu les informations de la map, veuillez patienter. Si le problème persiste, rapportez le bug sur le forum : http://forum.bluesheepbot.com"), 0);
+                    return;
+                }
+                if (line.Contains("+Condition "))
+                {
+                    ParseCondition(line);
+                    continue;
+                }
+                if ((line.Contains(Account.Map.X.ToString() + "," + Account.Map.Y.ToString() + ":") || line.Contains(Account.Map.Id.ToString() + ":")) && CheckConditions(false))
+                {
+                    Current_Map = Account.Map.X.ToString() + "," + Account.Map.Y.ToString();
+                    AnalyseLine(line);
+                    return;
+                }
+                foreach (string f in flags)
+                {
+                    if (line.Contains(f))
+                    {
+                        flag = f;
+                        continue;
+                    }
+                }
+                foreach (string f in Endflags)
+                {
+                    if (line.Contains(f))
+                    {
+                        conditions.Clear();
+                        flag = "";
+                        continue;
+                    }
+                }
+            }
+            sr.Close();
         }
         #endregion
 

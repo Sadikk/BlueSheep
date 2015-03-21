@@ -103,7 +103,7 @@ namespace BlueSheep.Engine.Handlers.Context
                 if (a is GameRolePlayNpcInformations)
                     account.Npc.Npcs.Add(a.contextualId, ((GameRolePlayNpcInformations)a).npcId);
             }
-            if (account.Path != null)
+            if (account.Path != null && account.Path.Launched)
             {
                 if (account.Path.Current_Flag == "<Fight>" && account.state != Enums.Status.Fighting && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString())
                 {
@@ -116,8 +116,8 @@ namespace BlueSheep.Engine.Handlers.Context
                     account.Path.PerformActionsStack();
                 else if (account.Path != null & account.Path.Current_Map != account.Map.X.ToString() + "," + account.Map.Y.ToString() || account.Map.Id != account.Map.LastMapId)
                 {
-                    account.Path.Stop = false;
-                    account.Path.ParsePath();
+                    //account.Path.Stop = false;
+                    account.Path.Start();
                 }
             }
             if (account.petsList.Count != 0 && account.checkBoxBegin.Checked == true)
@@ -216,7 +216,7 @@ namespace BlueSheep.Engine.Handlers.Context
                 if (a is GameRolePlayNpcInformations)
                     account.Npc.Npcs.Add(a.contextualId, ((GameRolePlayNpcInformations)a).npcId);
             }
-            if (account.Path != null)
+            if (account.Path != null && account.Path.Launched)
             {
                 if (account.Path.Current_Flag == "<Fight>" && account.state != Enums.Status.Fighting && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString())
                 {
@@ -229,8 +229,8 @@ namespace BlueSheep.Engine.Handlers.Context
                     account.Path.PerformActionsStack();
                 else if ((account.Path.Current_Map != account.Map.X.ToString() + "," + account.Map.Y.ToString()) || account.Map.Id != account.Map.LastMapId)
                 {
-                    account.Path.Stop = false;
-                    account.Path.ParsePath();
+                    //account.Path.Stop = false;
+                    account.Path.Start();
                 }
             }
             account.ActualizeMap();
@@ -317,8 +317,8 @@ namespace BlueSheep.Engine.Handlers.Context
                     account.Path.PerformActionsStack();
                 else if (account.Path != null & account.Path.Current_Map != account.Map.X.ToString() + "," + account.Map.Y.ToString() || account.Map.Id != account.Map.LastMapId)
                 {
-                    account.Path.Stop = false;
-                    account.Path.ParsePath();
+                    //account.Path.Stop = false;
+                    account.Path.Start();
                 }
             }
         }
@@ -668,7 +668,7 @@ namespace BlueSheep.Engine.Handlers.Context
                 msg.Deserialize(reader);
             }
             if (account.Map.StatedElements.Count > 0)
-                account.Map.StatedElements[msg.statedElement.elementId].State = (uint)msg.statedElement.elementState;
+                account.Map.StatedElements[msg.statedElement.elementId].State = (uint)msg.statedElement.elementState; 
         }
         
         [MessageHandler(typeof(PurchasableDialogMessage))]
@@ -787,18 +787,14 @@ namespace BlueSheep.Engine.Handlers.Context
             {
                 msg.Deserialize(reader);
             }
-                if (account.Gather.resourceName == "Unknown")
-                    return;
-                account.SetStatus(Status.None);
-                account.Log(new ActionTextInformation("Ressource récoltée : " + account.Gather.resourceName + " +" + msg.baseQuantity), 3);
+                if (account.Gather.Current_El == null)
+                    return;              
+                account.Log(new ActionTextInformation("Ressource récoltée : " + account.Gather.resourceName + " +" + msg.baseQuantity), 3);                
                 if (account.Gather.Stats.ContainsKey(account.Gather.resourceName))
                     account.Gather.Stats[account.Gather.resourceName] += msg.baseQuantity;
                 else
-                    account.Gather.Stats.Add(account.Gather.resourceName, msg.baseQuantity);
-                account.Gather.Current_Job.ActualizeStats(account.Gather.Stats);
-                if (account.PerformGather() == false && account.Path != null)
-                    account.Path.PerformActionsStack();
-            
+                    account.Gather.Stats.Add(account.Gather.resourceName, msg.baseQuantity);             
+                account.Gather.Current_Job.ActualizeStats(account.Gather.Stats);               
         }
 
         ////////////////////////////////// PACKET DELETED ///////////////////////////////////////////////
@@ -842,6 +838,22 @@ namespace BlueSheep.Engine.Handlers.Context
                 if (account.Path != null)
                     account.Path.PerformActionsStack();
             else if (account.Path != null)
+                account.Path.PerformActionsStack();
+        }
+
+        [MessageHandler(typeof(InteractiveUseEndedMessage))]
+        public static void InteractiveUseEndedMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
+        {
+            InteractiveUseEndedMessage msg = (InteractiveUseEndedMessage)message;
+
+            using (BigEndianReader reader = new BigEndianReader(packetDatas))
+            {
+                msg.Deserialize(reader);
+            }
+            if (account.Gather.Id == -1)
+                return;
+            account.SetStatus(Status.None);
+            if (account.PerformGather() == false && account.Path != null)
                 account.Path.PerformActionsStack();
         }
         #endregion

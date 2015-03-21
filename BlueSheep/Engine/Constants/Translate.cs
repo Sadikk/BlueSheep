@@ -1,7 +1,9 @@
-﻿using System;
+﻿using BlueSheep.Interface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 
 namespace BlueSheep.Engine.Constants
 {
@@ -15,6 +17,14 @@ namespace BlueSheep.Engine.Constants
         #endregion
 
         #region Public Methods
+        public static void TranslateUC(UserControl uc)
+        {
+            foreach (Control c in uc.Controls)
+            {
+                c.Text = GetTranslation(c.Text, MainForm.ActualMainForm.Lang);
+            }
+        }
+
         public static string GetTranslation(string content, string langue)
         {
             switch (langue)

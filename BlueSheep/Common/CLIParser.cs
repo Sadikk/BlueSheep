@@ -817,17 +817,19 @@ namespace BlueSheep.Common
                 if (path != "null")
                 {
                     account.Path = new Core.Path.PathManager(account, path, name);
-                    account.Path.Stop = true;
+                    account.Path.Stop();
                     result.Add("Trajet chargé : " + name);
                 }
                 if (start)
                 {
-                    account.Path.ParsePath();
+                   account.Path.Start();
+                    //account.Path.ParsePath();
                     result.Add("Lancement du trajet.");
                 }
                 if (stop)
                 {
-                    account.Path.Stop = true;
+                    //account.Path.Stop = true;
+                    account.Path.Stop();
                     result.Add("Arrêt du trajet...");
                 }
             }

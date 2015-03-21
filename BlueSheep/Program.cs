@@ -46,6 +46,9 @@ namespace BlueSheep
 
             /* ChangeLog 
              * - Fix : Déchargement du trajet à la fin d'un combat
+             * - Fix : Bug pêcheur qui s'arrête
+             * - Intellisense : AutoMajuscule + Fix masquage
+             * - Fix : Error element id pêcheur
              * */
         }
 
