@@ -157,7 +157,7 @@ namespace BlueSheep.Interface
             {
                 //Account.selectedfile = FilesList.SelectedItems[0].SubItems[3].Text;
                 Account.Path = new Core.Path.PathManager(Account, FilesList.SelectedItems[0].SubItems[5].Text, FilesList.SelectedItems[0].SubItems[0].Text);
-                Account.Path.Stop = true;
+                //Account.Path.Stop = true;
                 Account.Log(new BotTextInformation("Trajet chargé : " + FilesList.SelectedItems[0].Text),0);
                 if (Account.Fight == null)
                 {

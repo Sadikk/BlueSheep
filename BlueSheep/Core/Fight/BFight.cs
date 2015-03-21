@@ -568,7 +568,7 @@ namespace BlueSheep.Core.Fight
 
         public bool SearchFight()
         {
-            m_Account.Path.Stop = true;
+            //m_Account.Path.Stop = true;
             int minNumber = (int)m_Account.nudMinMonstersNumber.Value;
             int maxNumber = (int)m_Account.nudMaxMonstersNumber.Value;
             int minLevel = (int)m_Account.nudMinMonstersLevel.Value;
@@ -594,7 +594,7 @@ namespace BlueSheep.Core.Fight
                     if (m_Account.Map.MoveToCell(monsters.m_cellId))
                     {
                         m_Account.SetStatus(Status.Moving);
-                        m_Account.Path.Stop = true;
+                        //m_Account.Path.Stop = true;
                         m_Account.Log(new ActionTextInformation(string.Format("Lancement d'un combat contre {0} monstres de niveau {1} ({2})", monsters.monstersCount, monsters.monstersLevel, monsters.monstersName(true))),1);
                         return true;
                     }

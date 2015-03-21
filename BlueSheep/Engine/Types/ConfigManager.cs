@@ -41,7 +41,7 @@ namespace BlueSheep.Engine.Types
                 }
 
                 account.Path = new Core.Path.PathManager(account, conf.m_Path, "Unknown");
-                account.Path.Stop = true;
+                //account.Path.Stop = true;
                 account.Log(new BotTextInformation("Trajet chargé : " + "Unknown"), 0);
                 if (account.Fight == null)
                 {

@@ -198,8 +198,6 @@ namespace BlueSheep.Core
         public void NoFood()
         {
            account.Log(new ActionTextInformation("Aucune nourriture disponible pour " +
-                                                                      //MainForm.ActualMainForm.MainRunning
-                                                                      //    .CurrentBot
                                                                         BlueSheep.Common.Data.I18N.GetText((int)account.petsList[m_CurrentPetIndex].Datas
                                                                           .Fields["nameId"]) +
                                                                       "."),0);

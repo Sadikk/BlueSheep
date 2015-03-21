@@ -51,6 +51,7 @@
             this.litPopup.Location = new System.Drawing.Point(148, 82);
             this.litPopup.Name = "litPopup";
             this.litPopup.Size = new System.Drawing.Size(27, 64);
+            this.litPopup.Sorted = true;
             this.litPopup.TabIndex = 30;
             this.litPopup.Visible = false;
             // 

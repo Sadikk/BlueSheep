@@ -12,7 +12,8 @@ namespace BlueSheep.Core.Path
         LastMapId,
         Level,
         Pods,
-        PodsPercent
+        PodsPercent,
+        Alive
     }
 
 }

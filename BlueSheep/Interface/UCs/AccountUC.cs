@@ -530,9 +530,8 @@ namespace BlueSheep.Interface
         {
             if (Path != null)
             {
-                Path.Stop = false;
                 Log(new BotTextInformation("Lancement du trajet"),1);
-                Path.ParsePath();
+                Path.Start();
             }
             else
                 Log(new ErrorTextInformation("Aucun trajet chargé"),3);
@@ -542,9 +541,10 @@ namespace BlueSheep.Interface
         {
             if (Path != null)
             {
-                Path = null;
-                PathDownBt.Text = "Trajet";
-                this.Log(new BotTextInformation("Trajet déchargé"),1);
+                Path.Stop();
+                //Path = null;
+                //PathDownBt.Text = "Trajet";
+                this.Log(new BotTextInformation("Trajet arrêté"),1);
             }
         }
 
@@ -1020,6 +1020,7 @@ namespace BlueSheep.Interface
 
                Log(new GeneralTextInformation("Prochain repas dans " + difference.Hour + " heure(s) " +
                     difference.Minute + " minute(s)."),3);
+               this.SocketManager.DisconnectFromGUI();
 
                 if (m_TimerConnectionThread == null)
                     m_TimerConnectionThread = new Timer(TimerConnectionThreadFinished, null,

@@ -293,10 +293,10 @@ namespace BlueSheep.Engine.Handlers.Fight
                 }                  
                 account.Fight.followinggroup = null;
             }
-            if (account.Path != null)
-            {
-                account.Path.Stop = true;
-            }
+            //if (account.Path != null)
+            //{
+            //    account.Path.Stop = true;
+            //}
         }
 
         [MessageHandler(typeof(GameFightLeaveMessage))]

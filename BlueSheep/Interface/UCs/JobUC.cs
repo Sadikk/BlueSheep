@@ -44,6 +44,8 @@ namespace BlueSheep.Interface
             gg.Columns[1].Width = 200;
             gg.Columns.Add("RecipeId", "Id");
             gg.ReadOnly = true;
+
+            BlueSheep.Engine.Constants.Translate.TranslateUC(this);
         }
         #endregion
 

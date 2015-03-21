@@ -28,28 +28,28 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.sadikTabControl1 = new BlueSheep.Interface.SadikTabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.tabPage7 = new System.Windows.Forms.TabPage();
+            this.OpenBagCb = new BlueSheep.Interface.SadikCheckbox();
             this.g = new System.Windows.Forms.DataGridView();
             this.gg = new System.Windows.Forms.DataGridView();
             this.GatherPie = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.tabPage7 = new System.Windows.Forms.TabPage();
-            this.OpenBagCb = new BlueSheep.Interface.SadikCheckbox();
             this.sadikTabControl1.SuspendLayout();
+            this.tabPage7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.g)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gg)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.GatherPie)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
-            this.tabPage7.SuspendLayout();
             this.SuspendLayout();
             // 
             // sadikTabControl1
@@ -97,6 +97,27 @@
             this.tabPage6.TabIndex = 2;
             this.tabPage6.Text = "Stats";
             // 
+            // tabPage7
+            // 
+            this.tabPage7.BackColor = System.Drawing.Color.White;
+            this.tabPage7.Controls.Add(this.OpenBagCb);
+            this.tabPage7.Location = new System.Drawing.Point(4, 34);
+            this.tabPage7.Name = "tabPage7";
+            this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage7.Size = new System.Drawing.Size(402, 245);
+            this.tabPage7.TabIndex = 3;
+            this.tabPage7.Text = "Config";
+            // 
+            // OpenBagCb
+            // 
+            this.OpenBagCb.Checked = false;
+            this.OpenBagCb.Font = new System.Drawing.Font("Verdana", 8F);
+            this.OpenBagCb.Location = new System.Drawing.Point(6, 6);
+            this.OpenBagCb.Name = "OpenBagCb";
+            this.OpenBagCb.Size = new System.Drawing.Size(304, 20);
+            this.OpenBagCb.TabIndex = 0;
+            this.OpenBagCb.Text = "Ouvrir automatiquement les sacs de ressources.";
+            // 
             // g
             // 
             this.g.BackgroundColor = System.Drawing.Color.LightCyan;
@@ -127,18 +148,18 @@
             this.GatherPie.BackSecondaryColor = System.Drawing.Color.Cyan;
             this.GatherPie.BorderlineColor = System.Drawing.Color.Black;
             this.GatherPie.BorderSkin.PageColor = System.Drawing.Color.Transparent;
-            chartArea1.Name = "ChartArea1";
-            this.GatherPie.ChartAreas.Add(chartArea1);
+            chartArea2.Name = "ChartArea1";
+            this.GatherPie.ChartAreas.Add(chartArea2);
             this.GatherPie.Dock = System.Windows.Forms.DockStyle.Fill;
-            legend1.Name = "Legend1";
-            this.GatherPie.Legends.Add(legend1);
+            legend2.Name = "Legend1";
+            this.GatherPie.Legends.Add(legend2);
             this.GatherPie.Location = new System.Drawing.Point(3, 3);
             this.GatherPie.Name = "GatherPie";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.GatherPie.Series.Add(series1);
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            this.GatherPie.Series.Add(series2);
             this.GatherPie.Size = new System.Drawing.Size(419, 323);
             this.GatherPie.TabIndex = 0;
             this.GatherPie.Text = "chart1";
@@ -175,27 +196,6 @@
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Stats";
             // 
-            // tabPage7
-            // 
-            this.tabPage7.BackColor = System.Drawing.Color.White;
-            this.tabPage7.Controls.Add(this.OpenBagCb);
-            this.tabPage7.Location = new System.Drawing.Point(4, 34);
-            this.tabPage7.Name = "tabPage7";
-            this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage7.Size = new System.Drawing.Size(402, 245);
-            this.tabPage7.TabIndex = 3;
-            this.tabPage7.Text = "Config";
-            // 
-            // OpenBagCb
-            // 
-            this.OpenBagCb.Checked = false;
-            this.OpenBagCb.Font = new System.Drawing.Font("Verdana", 8F);
-            this.OpenBagCb.Location = new System.Drawing.Point(6, 6);
-            this.OpenBagCb.Name = "OpenBagCb";
-            this.OpenBagCb.Size = new System.Drawing.Size(140, 20);
-            this.OpenBagCb.TabIndex = 0;
-            this.OpenBagCb.Text = "Ouvrir automatiquement les sacs de ressources.";
-            // 
             // JobUC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -204,12 +204,12 @@
             this.Name = "JobUC";
             this.Size = new System.Drawing.Size(410, 283);
             this.sadikTabControl1.ResumeLayout(false);
+            this.tabPage7.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.g)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gg)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.GatherPie)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
-            this.tabPage7.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

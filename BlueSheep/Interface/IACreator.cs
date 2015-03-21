@@ -124,7 +124,7 @@ namespace BlueSheep.Interface
 
         private void ChoixTactique_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (ChoixTactique.SelectedText == "Fuyard")
+            if (ChoixTactique.SelectedItem == "Fuyard")
             {
                 sadikLabel12.Show();
                 ChoixFarCells.Show();
@@ -188,6 +188,18 @@ namespace BlueSheep.Interface
                 ResumeIA.Items[0].Selected = true;
             }
         }
+
+        private void MonsterTextBox_GotFocus(object sender, EventArgs e)
+        {
+            if (MonsterTextBox.Text == "Nom du monstre")
+                MonsterTextBox.Text = "";
+        }
+
+        private void MonsterTextBox_LostFocus(object sender, EventArgs e)
+        {
+            if (MonsterTextBox.Text == "")
+                MonsterTextBox.Text = "Nom du monstre";
+        }
         #endregion
 
         #region Private methods
@@ -234,9 +246,9 @@ namespace BlueSheep.Interface
                 ChoixSorts.Items.Add(spell.GetName());
             }
             SpellsList = new List<BSpell>();
-            ChoixTactique.SelectedIndex = 1;
-            ChoixPlacement.SelectedIndex = 1;
-            ChoixCible.SelectedIndex = 1;
+            ChoixTactique.SelectedIndex = 0;
+            ChoixPlacement.SelectedIndex = 0;
+            ChoixCible.SelectedIndex = 0;
             //ChoixMonsterName.Hide();
             //sadikLabel3.Hide();
             MonsterTextBox.Text = "Nom du monstre";
@@ -284,5 +296,7 @@ namespace BlueSheep.Interface
         }
 
         #endregion
+
+        
     }
 }

@@ -301,27 +301,29 @@
             this.lstPopup.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lstPopup.FormattingEnabled = true;
             this.lstPopup.ItemHeight = 15;
-            this.lstPopup.Location = new System.Drawing.Point(226, 64);
+            this.lstPopup.Location = new System.Drawing.Point(228, 42);
             this.lstPopup.Name = "lstPopup";
-            this.lstPopup.Size = new System.Drawing.Size(124, 79);
+            this.lstPopup.Size = new System.Drawing.Size(124, 49);
             this.lstPopup.TabIndex = 27;
             this.lstPopup.Visible = false;
             // 
             // MonsterTextBox
             // 
             this.MonsterTextBox.Font = new System.Drawing.Font("Verdana", 8F);
-            this.MonsterTextBox.Location = new System.Drawing.Point(226, 44);
+            this.MonsterTextBox.Location = new System.Drawing.Point(228, 22);
             this.MonsterTextBox.Name = "MonsterTextBox";
             this.MonsterTextBox.Size = new System.Drawing.Size(213, 20);
             this.MonsterTextBox.TabIndex = 15;
             this.MonsterTextBox.Text = "Entrez le nom du monstre...";
+            this.MonsterTextBox.GotFocus += new System.EventHandler(this.MonsterTextBox_GotFocus);
+            this.MonsterTextBox.LostFocus += new System.EventHandler(this.MonsterTextBox_LostFocus);
             // 
             // sadikLabel3
             // 
             this.sadikLabel3.AutoSize = true;
             this.sadikLabel3.Font = new System.Drawing.Font("Verdana", 8F);
             this.sadikLabel3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(135)))), ((int)(((byte)(135)))), ((int)(((byte)(135)))));
-            this.sadikLabel3.Location = new System.Drawing.Point(6, 47);
+            this.sadikLabel3.Location = new System.Drawing.Point(8, 25);
             this.sadikLabel3.Name = "sadikLabel3";
             this.sadikLabel3.Size = new System.Drawing.Size(214, 13);
             this.sadikLabel3.TabIndex = 14;
@@ -332,7 +334,7 @@
             this.sadikLabel1.AutoSize = true;
             this.sadikLabel1.Font = new System.Drawing.Font("Verdana", 8F);
             this.sadikLabel1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(135)))), ((int)(((byte)(135)))), ((int)(((byte)(135)))));
-            this.sadikLabel1.Location = new System.Drawing.Point(6, 20);
+            this.sadikLabel1.Location = new System.Drawing.Point(8, 45);
             this.sadikLabel1.Name = "sadikLabel1";
             this.sadikLabel1.Size = new System.Drawing.Size(365, 13);
             this.sadikLabel1.TabIndex = 13;
@@ -340,7 +342,7 @@
             // 
             // nudTargetLifePercent
             // 
-            this.nudTargetLifePercent.Location = new System.Drawing.Point(377, 18);
+            this.nudTargetLifePercent.Location = new System.Drawing.Point(380, 43);
             this.nudTargetLifePercent.Name = "nudTargetLifePercent";
             this.nudTargetLifePercent.Size = new System.Drawing.Size(50, 20);
             this.nudTargetLifePercent.TabIndex = 11;

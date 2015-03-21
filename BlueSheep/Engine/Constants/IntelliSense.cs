@@ -35,6 +35,7 @@ namespace BlueSheep.Engine.Constants
             {
                 lstControl.DataSource = lstTemp;
                 lstControl.Show();
+                lstControl.BringToFront();
             }
             else
             {
@@ -83,12 +84,13 @@ namespace BlueSheep.Engine.Constants
             //listbox keyup event
             lstControl.KeyUp += (s, kueArgs) =>
             {
-                if (kueArgs.KeyCode == Keys.Enter)
+                if (kueArgs.KeyCode == Keys.Tab)
                 {
-                    string StrLS = GetLastString(txtControl.Text);
-                    int LIOLS = txtControl.Text.LastIndexOf(StrLS);
-                    string TempStr = txtControl.Text.Remove(LIOLS);
-                    txtControl.Text = TempStr + ((ListBox)s).SelectedItem.ToString();
+                    //string StrLS = GetLastString(txtControl.Text);
+                    //int LIOLS = txtControl.Text.LastIndexOf(StrLS);
+                    //string TempStr = txtControl.Text.Remove(LIOLS);
+                    //txtControl.Text = TempStr + ((ListBox)s).SelectedItem.ToString();
+                    txtControl.Text = ((ListBox)s).SelectedItem.ToString();
                     txtControl.Select(txtControl.Text.Length, 0);
                     txtControl.Focus();
                     lstControl.Hide();
@@ -106,6 +108,8 @@ namespace BlueSheep.Engine.Constants
         {
             //string[] strArray = s.Split(' ');
             //return strArray[strArray.Length - 1];
+            if (s.Length != 0)
+                s= s[0].ToString().ToUpper() + s.Substring(1).ToLower();
             return s;
         }
 
