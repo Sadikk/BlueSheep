@@ -77,6 +77,11 @@ namespace BlueSheep.Core.Path
                                 return false;
                     }
                     return false;
+                case ConditionEnum.Alive:
+                    if (account.CharacterStats.energyPoints <= 0)
+                        return true;
+                    else
+                        return false;
                 case ConditionEnum.PodsPercent:
                     if (m_delta == "%PODS%")
                         m_delta = account.GestItemsUC.NUDBank.Value;
