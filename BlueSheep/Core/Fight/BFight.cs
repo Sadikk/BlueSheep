@@ -16,6 +16,7 @@ using BlueSheep.Data.Pathfinding;
 using System.Collections;
 using BlueSheep.Common.Data.D2o;
 using System.Diagnostics;
+using BlueSheep.Common.Protocol.DataCenter;
 
 namespace BlueSheep.Core.Fight
 {
@@ -254,6 +255,7 @@ namespace BlueSheep.Core.Fight
             //}
             if (target != null && target.LifePoints / target.MaxLifePoints * 100 <= spells[0].TargetLife)
             {
+                //ComputeDamage(spells[0].SpellId, target);
                 m_Account.Log(new BotTextInformation("Cible en vue à la cellule " + target.CellId + " !"), 5);
                 if (m_Conf.Tactic == TacticEnum.Immobile)
                 {
@@ -435,7 +437,28 @@ namespace BlueSheep.Core.Fight
             }
         }
 
-
+        public int ComputeDamage(int spellId, BFighter target)
+        {
+            DataClass spellData = GameData.GetDataObject(D2oFileEnum.Spells, spellId);
+            ArrayList ids = (ArrayList)spellData.Fields["spellLevels"];
+            int level = m_Account.Spells.FirstOrDefault(Spell => Spell.Id == spellId).Level;
+            int id = Convert.ToInt32(ids[level - 1]);
+            DataClass spellLevelsData = GameData.GetDataObject(D2oFileEnum.SpellLevels, id);
+            ArrayList effects = (ArrayList)spellLevelsData.Fields["effects"];
+            int minDam = 0;
+            int maxDam= 0;
+            foreach (var effect in effects)
+            {
+                DataClass data = (DataClass)effect;
+                minDam += (int)data.Fields["diceNum"];
+                maxDam += (int)data.Fields["diceSide"];
+                maxDam = minDam >= maxDam ? minDam : maxDam;
+            }
+            int baseDam = (maxDam + minDam) / 2;
+            int totalDam = baseDam + (baseDam * m_Account.CharacterStats.permanentDamagePercent.@base) + m_Account.CharacterStats.allDamagesBonus;
+            // TODO check is this is puissance.
+            // totaux - res fixes  - (totaux * %res/100)
+        }
 
         public void EndTurn()
         {
