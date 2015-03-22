@@ -16,7 +16,6 @@ using BlueSheep.Data.Pathfinding;
 using System.Collections;
 using BlueSheep.Common.Data.D2o;
 using System.Diagnostics;
-using BlueSheep.Common.Protocol.DataCenter;
 
 namespace BlueSheep.Core.Fight
 {
@@ -37,6 +36,7 @@ namespace BlueSheep.Core.Fight
         public List<BSpell> m_Spells;
         public FightConfig m_Conf;
         List<BSpell> spells;
+       
 
         public BFighter NearMonster;
         public List<BFighter> Fighters = new List<BFighter>();
@@ -224,7 +224,7 @@ namespace BlueSheep.Core.Fight
 
         public bool PerformSpellsStack()
         {
-            
+            m_Account.Wait(200, 400);
             Relaunch--;              /* On baisse le relaunch */
             if (Relaunch == 0)       /* Si on l'a lancé le nombre de fois qu'il fallait, on passe au sort suivant */
                 spells.RemoveAt(0);
@@ -297,40 +297,43 @@ namespace BlueSheep.Core.Fight
 
         public void PerformMove()
         {
-            NearMonster = NearestMonster();
+           
+                NearMonster = NearestMonster();
 
-            if (NearMonster == null)
-            {
-                EndTurn();
-                return;
-            }
-
-            // EndMove
-            if (Fighter.MovementPoints > 0 && m_Conf.Tactic != TacticEnum.Immobile)
-            {
-                int distance = new MapPoint(Fighter.CellId).DistanceToCell(new MapPoint(NearMonster.CellId));
-                if (m_Conf.Tactic == TacticEnum.Fuyard)
+                if (NearMonster == null)
                 {
-                    if (distance > m_Conf.FarCells)
-                    {
-                        MoveToCell(NearCell());
-                    }
-                    else
-                    {
-                        MoveToCell(FarCell());
-                    }
+                    EndTurn();
+                    return;
                 }
-                else if (m_Conf.Tactic == TacticEnum.Barbare && !IsHandToHand())
-                    MoveToCell(NearCell());
 
-                m_Account.Log(new BotTextInformation("EndMove"), 5);
-            }
+                // EndMove
+                if (Fighter.MovementPoints > 0 && m_Conf.Tactic != TacticEnum.Immobile)
+                {
+                    int distance = new MapPoint(Fighter.CellId).DistanceToCell(new MapPoint(NearMonster.CellId));
+                    if (m_Conf.Tactic == TacticEnum.Fuyard)
+                    {
+                        if (distance > m_Conf.FarCells)
+                        {
+                            MoveToCell(NearCell());
+                        }
+                        else
+                        {
+                            MoveToCell(FarCell());
+                        }
+                    }
+                    else if (m_Conf.Tactic == TacticEnum.Barbare && !IsHandToHand())
+                        MoveToCell(NearCell());
 
-            EndTurn();
+                    m_Account.Log(new BotTextInformation("EndMove"), 5);
+                }
+
+                EndTurn();
+            
         }
 
         public void FightTurn()
         {
+            this.IsFighterTurn = true;
             m_Account.Log(new BotTextInformation("FightTurn"), 5);
             spells = new List<BSpell>();
             try
@@ -455,13 +458,15 @@ namespace BlueSheep.Core.Fight
                 maxDam = minDam >= maxDam ? minDam : maxDam;
             }
             int baseDam = (maxDam + minDam) / 2;
-            int totalDam = baseDam + (baseDam * m_Account.CharacterStats.permanentDamagePercent.@base) + m_Account.CharacterStats.allDamagesBonus;
+           // int totalDam = baseDam + (baseDam * m_Account.CharacterStats.permanentDamagePercent.@base) + m_Account.CharacterStats.allDamagesBonus;
             // TODO check is this is puissance.
             // totaux - res fixes  - (totaux * %res/100)
+            return 0;
         }
 
         public void EndTurn()
         {
+            m_Account.Log(new BotTextInformation("ATTENTION ENTRER METHODE ENDTURN"), 4);
             GameFightTurnFinishMessage msg = new GameFightTurnFinishMessage();
             m_Account.SocketManager.Send(msg);
             IsFighterTurn = false;
@@ -816,7 +821,7 @@ namespace BlueSheep.Core.Fight
                                 num = nearestCellInDirection.CellId;
                             }
                         }
-                        direction = (direction + 2);
+                        direction += 2;
                         if (direction > 7)
                         {
                             if (num == -1)

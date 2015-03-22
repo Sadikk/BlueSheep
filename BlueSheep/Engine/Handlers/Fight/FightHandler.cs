@@ -416,6 +416,7 @@ namespace BlueSheep.Engine.Handlers.Fight
             }
             if (msg.id == account.CharacterBaseInformations.id)
             {
+       
                 int num4 = 0;
                 List<int> list = new List<int>();
                 account.Fight.IsFighterTurn = false;
@@ -455,6 +456,7 @@ namespace BlueSheep.Engine.Handlers.Fight
                 fighter.ActionPoints = fighter.GameFightMinimalStats.maxActionPoints;
                 fighter.MovementPoints = fighter.GameFightMinimalStats.maxMovementPoints;
             }
+          
         }
 
         [MessageHandler(typeof(GameFightTurnStartMessage))]
@@ -577,7 +579,8 @@ namespace BlueSheep.Engine.Handlers.Fight
             {
                 GameActionAcknowledgementMessage msg2 = new GameActionAcknowledgementMessage(true, msg.sequenceType);
                 account.SocketManager.Send(msg2);
-                account.Fight.PerformSpellsStack();
+                if(account.Fight.IsFighterTurn)
+                    account.Fight.PerformSpellsStack();
                     //account.Fight.PerformMove();
             }
         }
