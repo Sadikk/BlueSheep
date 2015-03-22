@@ -31,8 +31,8 @@ namespace BlueSheep
                         System.Threading.Thread.Sleep(1000);
                     }
                     reg.SetValue("Version", 0.9);
-                    reg.SetValue("Minor", 1);
-                    Application.Run(new MainForm("0.9.1"));
+                    reg.SetValue("Minor", 2);
+                    Application.Run(new MainForm("0.9.2"));
                 }
                 catch (Exception ex)
                 { MessageBox.Show(ex.Message + ex.StackTrace); }
@@ -44,12 +44,6 @@ namespace BlueSheep
                Application.Exit();
             }
 
-            /* ChangeLog 
-             * - Fix : Déchargement du trajet à la fin d'un combat
-             * - Fix : Bug pêcheur qui s'arrête
-             * - Intellisense : AutoMajuscule + Fix masquage
-             * - Fix : Error element id pêcheur
-             * */
         }
 
     }

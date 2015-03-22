@@ -391,16 +391,16 @@ namespace BlueSheep.Engine.Handlers.Context
             switch (msg.msgId)
             {
                 case 89:
-                    account.Log(new DofAlertTextInformation("Bienvenue sur DOFUS, dans le Monde des Douze !" + System.Environment.NewLine + "Il est interdit de transmettre votre identifiant ou votre mot de passe."),1);
+                    account.Log(new DofAlertTextInformation("Bienvenue sur DOFUS, dans le Monde des Douze !" + System.Environment.NewLine + "Il est interdit de transmettre votre identifiant ou votre mot de passe."), 1);
                     break;
                 case 153:
-                    account.Log(new DofInfoCanal("Votre adresse ip actuelle est " + msg.parameters[0]),0);
+                    account.Log(new DofInfoCanal("Votre adresse ip actuelle est " + msg.parameters[0]), 0);
                     break;
                 case 171:
-                    account.Log(new ErrorTextInformation(string.Format("Impossible de lancer ce sort, vous avez une portée de {0} à {1}, et vous visez à {2} !", msg.parameters[0], msg.parameters[1],msg.parameters[2])),4);
+                    account.Log(new ErrorTextInformation(string.Format("Impossible de lancer ce sort, vous avez une portée de {0} à {1}, et vous visez à {2} !", msg.parameters[0], msg.parameters[1], msg.parameters[2])), 4);
                     break;
                 case 34:
-                    account.Log(new ErrorTextInformation(string.Format("Vous avez perdu {0} points d'énergie", msg.parameters[0])),0);
+                    account.Log(new ErrorTextInformation(string.Format("Vous avez perdu {0} points d'énergie", msg.parameters[0])), 0);
                     account.Log(new ErrorTextInformation("Combat perdu"), 0);
                     if (account.Fight != null)
                     {
@@ -408,23 +408,18 @@ namespace BlueSheep.Engine.Handlers.Context
                         account.ActualizeFightStats(account.Fight.winLoseDic, account.Fight.xpWon);
                     }
                     break;
-                //default:
-                //    DataClass data = GameData.GetDataObjects(D2oFileEnum.InfoMessages)[msg.msgId];
-                //    account.Log(new DofInfoCanal(I18N.GetText((int)data.Fields["textId"])));
-                //    break;
             }
-                        //string textId = I18N.GetText(msg.msgType * 10000 + msg.msgId);
-                        //if (msg.parameters != null)
-                        //{
-                        //    if (msg.parameters[0] != null && msg.parameters[0].IndexOf("~") != -1)
-                        //    {
-                        //        params = msg.parameters[0].split("~");
-                        //    }
-                        //    else
-                        //    {
-                        //        params = msg.parameters;
-                        //    }
-                        //}
+            //default:
+
+
+            //DataClass data = GameData.GetDataObjects(D2oFileEnum.InfoMessages)[msg.msgType * 10000 + msg.msgId];
+            //string text = I18N.GetText((int)data.Fields["textId"]);
+            //for (int i = 0; i < msg.parameters.Length; i++)
+            //{
+            //    var parameter = msg.parameters[i];
+            //    text = text.Replace("%" + (i + 1), parameter);
+            //}
+            //account.Log(new DofAlertTextInformation(text), 0);
         }
 
         [MessageHandler(typeof(ChatServerMessage))]

@@ -16,7 +16,6 @@ using BlueSheep.Data.Pathfinding;
 using System.Collections;
 using BlueSheep.Common.Data.D2o;
 using System.Diagnostics;
-using BlueSheep.Common.Protocol.DataCenter;
 
 namespace BlueSheep.Core.Fight
 {
@@ -255,7 +254,6 @@ namespace BlueSheep.Core.Fight
             //}
             if (target != null && target.LifePoints / target.MaxLifePoints * 100 <= spells[0].TargetLife)
             {
-                //ComputeDamage(spells[0].SpellId, target);
                 m_Account.Log(new BotTextInformation("Cible en vue à la cellule " + target.CellId + " !"), 5);
                 if (m_Conf.Tactic == TacticEnum.Immobile)
                 {
@@ -319,9 +317,13 @@ namespace BlueSheep.Core.Fight
                     {
                         MoveToCell(FarCell());
                     }
+                    m_Account.Wait(1000, 1000);
                 }
                 else if (m_Conf.Tactic == TacticEnum.Barbare && !IsHandToHand())
+                {
                     MoveToCell(NearCell());
+                    m_Account.Wait(1000, 1000);
+                }
 
                 m_Account.Log(new BotTextInformation("EndMove"), 5);
             }
@@ -338,18 +340,9 @@ namespace BlueSheep.Core.Fight
                 if (GetFighters(true).Count > 0)
                 {
                     // Spells
-                    foreach (BSpell spell in m_Spells)
-                    {
-                        if (spell.Turns != TurnId & spell.Turns != -1)
-                        {
-                            continue;
-                        }
-                        else
-                            spells.Add(spell);
-                    }
-                    spells = spells.OrderBy(o => o.Turns).ToList();
-                    spells.Reverse();
+                    spells = GetSpells();
                     PerformSpellsStack();
+                    //Test();
                 }
 
 
@@ -437,6 +430,58 @@ namespace BlueSheep.Core.Fight
             }
         }
 
+        private void Test()
+        {
+            spells = GetSpells();
+            if (spells.Count > 0)
+            {
+                foreach (BSpell spell in spells)
+                {
+                    BFighter target = GetTarget(spell.Target);
+                Launch:
+                    SpellInabilityReason reason = CanLaunchSpell(spell.SpellId, this.Fighter.CellId, target.CellId);
+                    switch (reason)
+                    {
+                        case SpellInabilityReason.ActionPoints:
+                        case SpellInabilityReason.Cooldown:
+                        case SpellInabilityReason.TooManyLaunch:
+                            continue;
+                        case SpellInabilityReason.MaxRange: /* Hors de portée, on se rapproche */
+                            MoveToCell(NearCell());
+                            break;
+                        case SpellInabilityReason.MinRange: /* Trop près, on s'eloigne */
+                        case SpellInabilityReason.LineOfSight:
+                            MoveToCell(FarCell());
+                            break;
+                        case SpellInabilityReason.None:
+                            int RelaunchNeeded = TargetWillDie(target, spell.SpellId, spell.Relaunch); /* On récup le nombre de lancer nécessaire pour tuer la cible */
+                            if (RelaunchNeeded == 0)
+                            {
+                                int i = 0;
+                                while (i <= spell.Relaunch)
+                                {
+                                    LaunchSpell(spell.SpellId, target.CellId);
+                                }
+                            }
+                            else
+                            {
+                                int i = 0;
+                                while (i <= RelaunchNeeded)
+                                {
+                                    LaunchSpell(spell.SpellId, target.CellId);
+                                }
+                                List<BFighter> nfighters = Fighters;
+                                nfighters.Remove(target);
+                                target = NearestMonster(nfighters);
+                                goto Launch;
+                            }
+                            break;
+                    }
+                }
+                PerformMove();
+            }
+        }
+
         public int ComputeDamage(int spellId, BFighter target)
         {
             DataClass spellData = GameData.GetDataObject(D2oFileEnum.Spells, spellId);
@@ -447,17 +492,87 @@ namespace BlueSheep.Core.Fight
             ArrayList effects = (ArrayList)spellLevelsData.Fields["effects"];
             int minDam = 0;
             int maxDam= 0;
+            int totalDam = 0;
+            int result = 0;
+
             foreach (var effect in effects)
             {
                 DataClass data = (DataClass)effect;
                 minDam += (int)data.Fields["diceNum"];
                 maxDam += (int)data.Fields["diceSide"];
                 maxDam = minDam >= maxDam ? minDam : maxDam;
+                int baseDam = (maxDam + minDam) / 2;
+                int power = m_Account.CharacterStats.permanentDamagePercent.@base + m_Account.CharacterStats.permanentDamagePercent.additionnal + m_Account.CharacterStats.permanentDamagePercent.objectsAndMountBonus;
+                int damages = m_Account.CharacterStats.allDamagesBonus.@base + m_Account.CharacterStats.allDamagesBonus.additionnal + m_Account.CharacterStats.allDamagesBonus.objectsAndMountBonus;
+                SpellCategory category = GetCategory((int)data.Fields["effectId"]);
+                int res = 0;
+                int pres = 0;
+
+                switch (category)
+                {
+                    case SpellCategory.DamagesAir:
+                        damages += m_Account.CharacterStats.airDamageBonus.@base + m_Account.CharacterStats.airDamageBonus.additionnal + m_Account.CharacterStats.airDamageBonus.objectsAndMountBonus;
+                        res += target.GameFightMinimalStats.airElementReduction;
+                        pres += target.GameFightMinimalStats.airElementResistPercent;
+                        break;
+                    case SpellCategory.DamagesEarth:
+                        damages += m_Account.CharacterStats.earthDamageBonus.@base + m_Account.CharacterStats.earthDamageBonus.additionnal + m_Account.CharacterStats.earthDamageBonus.objectsAndMountBonus;
+                        res += target.GameFightMinimalStats.earthElementReduction;
+                        pres += target.GameFightMinimalStats.earthElementResistPercent;
+                        break;
+                    case SpellCategory.DamagesFire:
+                        damages += m_Account.CharacterStats.fireDamageBonus.@base + m_Account.CharacterStats.fireDamageBonus.additionnal + m_Account.CharacterStats.fireDamageBonus.objectsAndMountBonus;
+                        res += target.GameFightMinimalStats.fireElementReduction;
+                        pres += target.GameFightMinimalStats.fireElementResistPercent;
+                        break;
+                    case SpellCategory.DamagesNeutral:
+                        damages += m_Account.CharacterStats.neutralDamageBonus.@base + m_Account.CharacterStats.neutralDamageBonus.additionnal + m_Account.CharacterStats.neutralDamageBonus.objectsAndMountBonus;
+                        res += target.GameFightMinimalStats.neutralElementReduction;
+                        pres += target.GameFightMinimalStats.neutralElementResistPercent;
+                        break;
+                    case SpellCategory.DamagesWater:
+                        damages += m_Account.CharacterStats.waterDamageBonus.@base + m_Account.CharacterStats.waterDamageBonus.additionnal + m_Account.CharacterStats.waterDamageBonus.objectsAndMountBonus;
+                        res += target.GameFightMinimalStats.waterElementReduction;
+                        pres += target.GameFightMinimalStats.waterElementResistPercent;
+                        break;                 
+                }
+                
+
+               totalDam += baseDam + (baseDam * power) + damages; /* Dommages de base + (Dommages de base * puissance) + dommages fixes */
+               result += totalDam - res - (totalDam * (pres / 100)); /* Dommages - resistances fixes - (dommages * %res/100) */
+            }         
+            return (int)(result * 0.8);
+        }
+
+        private int TargetWillDie(BFighter target, int spellId, int relaunch = 1)
+        {
+            /* Return how many launch is needed to kill the target. 0 if he will not die */
+            int dam = ComputeDamage(spellId, target);
+            int i = 1;
+            while (i <= relaunch)
+            {
+                if ((dam * i) >= target.GameFightMinimalStats.lifePoints)
+                    return i;
+                else i++;
             }
-            int baseDam = (maxDam + minDam) / 2;
-            int totalDam = baseDam + (baseDam * m_Account.CharacterStats.permanentDamagePercent.@base) + m_Account.CharacterStats.allDamagesBonus;
-            // TODO check is this is puissance.
-            // totaux - res fixes  - (totaux * %res/100)
+            return 0;
+        }
+
+        private List<BSpell> GetSpells()
+        {
+            List<BSpell> spells = new List<BSpell>();
+            foreach (BSpell spell in m_Spells)
+            {
+                if (spell.Turns != TurnId & spell.Turns != -1)
+                {
+                    continue;
+                }
+                else
+                    spells.Add(spell);
+            }
+            spells = spells.OrderBy(o => o.Turns).ToList();
+            spells.Reverse();
+            return spells;
         }
 
         public void EndTurn()
@@ -583,6 +698,7 @@ namespace BlueSheep.Core.Fight
             }
             return null;
         }
+
 
         public BFighter GetFighter(int fighterId)
         {
@@ -755,6 +871,40 @@ namespace BlueSheep.Core.Fight
             return num;
         }
 
+        private SpellCategory GetCategory(int effectId)
+        {
+            switch (effectId)
+            {
+                case 96:
+                    // water
+                   return SpellCategory.DamagesWater;
+                case 97:
+                    //earth
+                   return SpellCategory.DamagesEarth;
+                case 98:
+                    //air
+                   return SpellCategory.DamagesAir;
+                case 99:
+                    //fire
+                    return SpellCategory.DamagesFire;
+                case 100:
+                    return SpellCategory.DamagesNeutral;
+                    //neutral
+                case 623:
+                    return SpellCategory.Invocation;
+                case 81:
+                case 143:
+                case 108:
+                    return SpellCategory.Healing;
+                case 120:
+                    return SpellCategory.Buff;
+                case 4:
+                    return SpellCategory.Teleport;
+                default:
+                    return SpellCategory.None;
+            }
+        }
+
         private bool IsFreeCell(int cellId)
         {
             return !Fighters.Any(f => f != null && f.CellId == cellId);
@@ -913,6 +1063,31 @@ namespace BlueSheep.Core.Fight
             BFighter Fighterr = null;
             int SavDistance = -1;
             foreach (BFighter TestFighter in Fighters)
+            {
+                if (TestFighter.TeamId == Fighter.TeamId || TestFighter.IsAlive == false)
+                    continue;
+                MapPoint TestFighterPoint = new MapPoint(TestFighter.CellId);
+                int dist = new SimplePathfinder(m_Account.Map.Data).FindPath(CharacterPoint.CellId, TestFighterPoint.CellId).Cells.Count();
+                dist += CharacterPoint.DistanceToCell(TestFighterPoint);
+                if (((dist < SavDistance) || (SavDistance == -1)) && TestFighter != this.Fighter)
+                {
+                    SavDistance = dist;
+                    Fighterr = TestFighter;
+                }
+            }
+            if (Fighterr == null)
+            {
+                return null;
+            }
+            return Fighterr;
+        }
+
+        private BFighter NearestMonster(List<BFighter> LFighters)
+        {
+            MapPoint CharacterPoint = new MapPoint(this.Fighter.CellId);
+            BFighter Fighterr = null;
+            int SavDistance = -1;
+            foreach (BFighter TestFighter in LFighters)
             {
                 if (TestFighter.TeamId == Fighter.TeamId || TestFighter.IsAlive == false)
                     continue;

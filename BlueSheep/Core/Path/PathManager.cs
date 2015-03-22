@@ -43,6 +43,8 @@ namespace BlueSheep.Core.Path
         (new List<Char> { '<', '>', '=' });
         #endregion
 
+        public string pathBot;
+
         #region Constructeurs
         public PathManager(AccountUC account, string Path, string name)
         {
@@ -51,16 +53,14 @@ namespace BlueSheep.Core.Path
             Account.PathDownBt.Text = name;
             Thread = new Thread(new ThreadStart(ParsePath));
         }
+
         #endregion
 
         #region Public methods
         public void Start()
         {
-            if (!this.Launched)
-            {
-                Thread = new Thread(new ThreadStart(ParsePath));
-                Thread.Start();
-            }
+            Thread = new Thread(new ThreadStart(ParsePath));
+            Thread.Start();
             Launched = true;
         }
 

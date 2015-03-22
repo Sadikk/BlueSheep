@@ -1351,6 +1351,7 @@
     <Compile Include="Core\Fight\Entity.cs" />
     <Compile Include="Core\Fight\FightConfig.cs" />
     <Compile Include="Core\Fight\PlacementEnum.cs" />
+    <Compile Include="Core\Fight\SpellCategory.cs" />
     <Compile Include="Core\Fight\TacticEnum.cs" />
     <Compile Include="Core\Fight\TeamEnum.cs" />
     <Compile Include="Core\Job\Gather.cs" />

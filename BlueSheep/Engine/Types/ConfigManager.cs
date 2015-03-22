@@ -37,12 +37,14 @@ namespace BlueSheep.Engine.Types
                     account.Fight = new BFight(conf.m_Conf, conf.m_Spells, account);
                     //account.Fight.winLoseDic = conf.m_winLoseDic;
                     //account.Fight.xpWon = conf.m_xpWon;
-                    account.NomIA.Text = "AUTO IA - Name Unknown";
+                    account.NomIA.Text = conf.m_IA;
                 }
 
-                account.Path = new Core.Path.PathManager(account, conf.m_Path, "Unknown");
-                //account.Path.Stop = true;
-                account.Log(new BotTextInformation("Trajet chargé : " + "Unknown"), 0);
+                account.Path = new Core.Path.PathManager(account, conf.m_Path, conf.m_BotPath);
+                if (conf.m_BotPath != null)
+                    account.Log(new BotTextInformation("Trajet chargé : " + conf.m_BotPath), 0);
+                else
+                    account.Log(new BotTextInformation("Trajet chargé : UNKNOWN"), 0);
                 if (account.Fight == null)
                 {
                     account.Log(new ErrorTextInformation("WARNING : T'as chargé aucune IA, fait gaffe mon coco :p"), 0);
@@ -52,8 +54,12 @@ namespace BlueSheep.Engine.Types
                 {
                     account.FloodContentRbox.Text = conf.m_FloodContent;
                 }
+                if (conf.m_L1R != null)
+                {
+                    Dictionary<string, int> ressources = conf.m_L1R.ToDictionary(x => x, x => conf.m_L2R[conf.m_L1R.IndexOf(x)]);
+                    account.Gather.Stats = ressources;
+                }
 
-                //account.Gather.Stats = conf.m_Ressources;
                 account.Log(new BotTextInformation("Configuration restauré."), 0);
 
 
@@ -69,6 +75,7 @@ namespace BlueSheep.Engine.Types
         {
             FightConfig fconf = null;
             List<BSpell> lspells = new List<BSpell>();
+            string ia = "Aucune IA";
             //Dictionary<DateTime, int> exp = new Dictionary<DateTime,int>();
             //Dictionary<string,int> winLose = new Dictionary<string,int>();
 
@@ -76,6 +83,7 @@ namespace BlueSheep.Engine.Types
             {
                 fconf = account.Fight.m_Conf;
                 lspells = account.Fight.m_Spells;
+                ia = account.NomIA.Text;
                 //exp = account.Fight.xpWon;
                 //winLose = account.Fight.winLoseDic;
             }
@@ -92,9 +100,17 @@ namespace BlueSheep.Engine.Types
                 flood = account.FloodContent;
             }
 
-            //Dictionary<string, int> ressources = account.Gather.Stats;
+            string pathBot = "";
+            if (account.Path.pathBot != null)
+                pathBot = account.Path.pathBot;
 
-            Config conf = new Config(fconf, lspells, path, flood);//, ressources, exp, winLose);
+            
+
+            Dictionary<string, int> ressources = account.Gather.Stats;
+            List<string> L1R = ressources.Keys.ToList();
+            List<int> L2R = ressources.Values.ToList();
+
+            Config conf = new Config(fconf, lspells, path, flood, pathBot, ia,L1R,L2R);//, ressources, exp, winLose);
 
             string spath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlueSheep", "Accounts", account.AccountName, account.CharacterBaseInformations.name + ".xml");
             Serialize(conf, spath);

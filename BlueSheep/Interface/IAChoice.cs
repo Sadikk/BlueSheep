@@ -204,6 +204,7 @@ namespace BlueSheep.Interface
                 string path = FilesList.SelectedItems[0].SubItems[4].Text;
                 File.Delete(path);
                 FilesList.Items.Remove(FilesList.SelectedItems[0]);
+                
             }
 
         }
