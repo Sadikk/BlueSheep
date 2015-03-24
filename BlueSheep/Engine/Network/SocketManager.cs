@@ -103,6 +103,7 @@ namespace BlueSheep.Engine.Network
         }
         public void Disconnect()
         {
+            
             m_ForcedDisconnect = true;
             if ((m_Socket != null) && (Connected()))
             {
@@ -111,8 +112,11 @@ namespace BlueSheep.Engine.Network
             }
             //if (m_TimerInactivity != null)
             // m_TimerInactivity.Dispose();
-            account.Log(new ConnectionTextInformation("Déconnecté du serveur."), 0);
-            account.SetStatus(Status.Disconnected);
+            if (!account.Disposing)
+            {
+                account.SetStatus(Status.Disconnected);
+                account.Log(new ConnectionTextInformation("Déconnecté du serveur."), 0);
+            }
             //account.Dispose();
             //MainForm.ActualMainForm.ActualizeAccountInformations();
         }

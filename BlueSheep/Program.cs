@@ -43,7 +43,11 @@ namespace BlueSheep
                System.Windows.Forms.MessageBox.Show("Veuillez lancer BlueSheep via l'updater !");
                Application.Exit();
             }
-
+            /* Changelog :
+             * - + condition alive
+             * - + update des hp en combat
+             * - Fix : Bug à la fermeture
+             */
         }
 
     }

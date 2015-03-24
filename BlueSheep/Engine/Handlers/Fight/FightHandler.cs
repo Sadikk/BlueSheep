@@ -640,6 +640,32 @@ namespace BlueSheep.Engine.Handlers.Fight
             }
            
         }
+
+        [MessageHandler(typeof(GameActionFightLifePointsGainMessage))]
+        public static void GameActionFightLifePointsGainMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
+        {
+            GameActionFightLifePointsGainMessage msg = (GameActionFightLifePointsGainMessage)message;
+            using (BigEndianReader reader = new BigEndianReader(packetDatas))
+            {
+                msg.Deserialize(reader);
+            }
+            /* Credit : Apokah */
+            if (account.Fight != null && account.state == Status.Fighting)
+            {
+                BFighter fighter = account.Fight.GetFighter(msg.targetId);
+                if (msg.actionId == 108) // HP Récupérés (delta = combien on a récupérés)
+                {
+                    account.Fight.Fighters[account.Fight.Fighters.IndexOf(fighter)].LifePoints += msg.delta;
+                    if (fighter.Id == account.Fight.Fighter.Id)
+                    {
+                        account.ModifBar(2, account.Fight.Fighter.MaxLifePoints, account.Fight.Fighter.LifePoints, "Vitalité");
+                    }
+                }
+            }
+           
+
+           
+        }
         #endregion
     }
 }

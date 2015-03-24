@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -59,9 +60,10 @@ namespace BlueSheep.Core.Path
         #region Public methods
         public void Start()
         {
-            Thread = new Thread(new ThreadStart(ParsePath));
-            Thread.Start();
-            Launched = true;
+            TestParse();
+            //Thread = new Thread(new ThreadStart(ParsePath));
+            //Thread.Start();
+            //Launched = true;
         }
 
         public void Stop()
@@ -220,6 +222,9 @@ namespace BlueSheep.Core.Path
                         case "%Pods":
                             e = ConditionEnum.PodsPercent;
                             break;
+                        case "Alive":
+                            e = ConditionEnum.Alive;
+                            break;
                     }
                     line = line.Remove(0,line.IndexOf(op) + 1);
                     Condition c = new Condition(e, line, op, Account);
@@ -332,6 +337,36 @@ namespace BlueSheep.Core.Path
                 }
             }
             sr.Close();
+        }
+
+        private void TestParse()
+        {
+            if (!File.Exists(path))
+                return;
+            string text = File.ReadAllText(path);
+
+            var lines = File.ReadLines(path);
+            List<string> targetMaps = lines.Where(line => line.StartsWith(Account.Map.X + "," + Account.Map.Y)).ToList();
+            Console.Write(lines);
+            //Regex regex = new Regex(Account.Map.X + "," + Account.Map.Y + @".*?$");
+            //MatchCollection result = regex.Matches(text);
+            //foreach (Match m in result)
+            //{
+
+            //} 
+        }
+
+        private List<Condition> GetConditions(int currentPos)
+        {
+            var lines = File.ReadLines(path);
+            List<string> condLines = lines.Where(line => line.StartsWith("+Condition")).ToList();
+            Regex regex = new Regex(@"+Condition.*?$");
+            MatchCollection result = regex.Matches(File.ReadAllText(path));
+            foreach (Match m in result)
+            {
+
+            }
+            return null;
         }
         #endregion
 

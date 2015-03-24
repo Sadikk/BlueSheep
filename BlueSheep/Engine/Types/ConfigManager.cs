@@ -89,7 +89,7 @@ namespace BlueSheep.Engine.Types
             }
 
             string path = "";
-            if (account.Path != null)
+            if (account.Path != null && !string.IsNullOrEmpty(account.Path.path))
             {
                 path = account.Path.path;
             }
@@ -110,10 +110,14 @@ namespace BlueSheep.Engine.Types
             List<string> L1R = ressources.Keys.ToList();
             List<int> L2R = ressources.Values.ToList();
 
-            Config conf = new Config(fconf, lspells, path, flood, pathBot, ia,L1R,L2R);//, ressources, exp, winLose);
+            if (fconf != null)
+            {
+                Config conf = new Config(fconf, lspells, path, flood, pathBot, ia, L1R, L2R);//, ressources, exp, winLose);
 
-            string spath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlueSheep", "Accounts", account.AccountName, account.CharacterBaseInformations.name + ".xml");
-            Serialize(conf, spath);
+                string spath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlueSheep", "Accounts", account.AccountName, account.CharacterBaseInformations.name + ".xml");
+                Serialize(conf, spath);
+            }
+            
         }
 
         public void DeleteConfig()

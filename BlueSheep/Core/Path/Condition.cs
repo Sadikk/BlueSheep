@@ -55,6 +55,8 @@ namespace BlueSheep.Core.Path
                                 return true;
                             else
                                 return false;
+                        default:
+                            return false;
                     }
                     return false;
                 case ConditionEnum.Pods:
@@ -75,13 +77,21 @@ namespace BlueSheep.Core.Path
                                 return true;
                             else
                                 return false;
+                        default:
+                            return false;
                     }
                     return false;
                 case ConditionEnum.Alive:
-                    if (account.CharacterStats.energyPoints <= 0)
-                        return true;
-                    else
-                        return false;
+                    switch (m_operateur)
+                    {
+                        case '=':
+                            if ((account.CharacterStats.energyPoints <= 0) == Convert.ToBoolean(m_delta))
+                                return true;
+                            else
+                                return false;
+                        default:
+                            return false;
+                    }
                 case ConditionEnum.PodsPercent:
                     if (m_delta == "%PODS%")
                         m_delta = account.GestItemsUC.NUDBank.Value;
@@ -102,6 +112,8 @@ namespace BlueSheep.Core.Path
                                 return true;
                             else
                                 return false;
+                        default:
+                            return false;
                     }
                     return false;
 
