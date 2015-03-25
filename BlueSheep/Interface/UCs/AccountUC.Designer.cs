@@ -1593,6 +1593,7 @@
             this.StartStopFloodingBox.Size = new System.Drawing.Size(190, 15);
             this.StartStopFloodingBox.TabIndex = 1;
             this.StartStopFloodingBox.Text = "Lancer/Arrêter le flood.";
+            this.StartStopFloodingBox.CheckedChanged += new BlueSheep.Interface.SadikCheckbox.CheckedChangedEventHandler(this.StartStopFloodingBox_CheckedChanged);
             // 
             // FloodContentRbox
             // 
@@ -1602,6 +1603,7 @@
             this.FloodContentRbox.Size = new System.Drawing.Size(212, 103);
             this.FloodContentRbox.TabIndex = 0;
             this.FloodContentRbox.Text = "";
+            this.FloodContentRbox.TextChanged += new System.EventHandler(this.FloodContentRbox_TextChanged);
             // 
             // groupBox5
             // 

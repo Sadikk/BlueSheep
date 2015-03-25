@@ -572,23 +572,6 @@ namespace BlueSheep.Interface
                 SearcherLogBox.Text = saveFileDialog1.FileName;
         }
 
-        private void StartStopFloodingBox_CheckedChanged(object sender)
-        {
-            if (StartStopFloodingBox.Checked == false)
-            {
-                Flood.stop = true;
-                Log(new BotTextInformation("Flood arrêté"),1);
-                return;
-            }
-            Log(new BotTextInformation("Flood activé"),1);
-            if (CommerceBox.Checked)
-                Flood.StartFlooding(5, IsRandomingSmileyBox.Checked, IsRandomingNumberBox.Checked, FloodContentRbox.Text, (int)NUDFlood.Value);
-            if (RecrutementBox.Checked)
-                Flood.StartFlooding(6, IsRandomingSmileyBox.Checked, IsRandomingNumberBox.Checked, FloodContentRbox.Text, (int)NUDFlood.Value);
-            if (GeneralBox.Checked)
-                Flood.StartFlooding(0, IsRandomingSmileyBox.Checked, IsRandomingNumberBox.Checked, FloodContentRbox.Text, (int)NUDFlood.Value);
-        }
-
         public void ActualizeInventory()
         {
             this.BeginInvoke(new MethodInvoker(LVItems.Items.Clear));
@@ -1352,6 +1335,23 @@ namespace BlueSheep.Interface
                     this.Log(new ErrorTextInformation("Impossible d'envoyer le message à: " + (string)elem), 3);
                 }
             }
+        }
+
+        private void StartStopFloodingBox_CheckedChanged(object sender)
+        {
+            if (StartStopFloodingBox.Checked == false)
+            {
+                Flood.stop = true;
+                Log(new BotTextInformation("Flood arrêté"), 1);
+                return;
+            }
+            Log(new BotTextInformation("Flood activé"), 1);
+            if (CommerceBox.Checked)
+                Flood.StartFlooding(5, IsRandomingSmileyBox.Checked, IsRandomingNumberBox.Checked, FloodContentRbox.Text, (int)NUDFlood.Value);
+            if (RecrutementBox.Checked)
+                Flood.StartFlooding(6, IsRandomingSmileyBox.Checked, IsRandomingNumberBox.Checked, FloodContentRbox.Text, (int)NUDFlood.Value);
+            if (GeneralBox.Checked)
+                Flood.StartFlooding(0, IsRandomingSmileyBox.Checked, IsRandomingNumberBox.Checked, FloodContentRbox.Text, (int)NUDFlood.Value);
         }
 
       
