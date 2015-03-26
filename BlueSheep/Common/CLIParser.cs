@@ -602,6 +602,7 @@ namespace BlueSheep.Common
                     ls.Add("EXAMPLE:");
                     ls.Add("1. > /gather -launch");
                     ls.Add("   - Launch the gathering");
+                    return ls;
             }
             return ls = new List<string>() { ""};
         }
@@ -948,11 +949,12 @@ namespace BlueSheep.Common
                 }
                 if (stats)
                 {
-                   // Dictionary<string,int> stats = account.Gather.stats;
-                  //  for (int i = 0; i<stats.Values.Count;i++)
-                   // {
-                     //   result.Add(String.Format("[{1}] : {2}", stats.Keys[i], stats.Values[i]));
-                    //}
+                    Dictionary<string,int> newStats = account.Gather.Stats;
+                    foreach (KeyValuePair<string, int> key in newStats)
+                    {
+                        result.Add(String.Format("[{1}] : {2}", key.Key, key.Value));
+                    }
+                   
                 }
             }
             catch (Exception ex)
@@ -964,11 +966,13 @@ namespace BlueSheep.Common
                 return Usage("gather");
             else
                 return result;
-        }        #endregion
+        }
+
     }
+        #endregion
 
-        
 
-        
-    
+
+
+
 }
