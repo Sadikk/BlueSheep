@@ -130,6 +130,12 @@ namespace BlueSheep.Common
                     DefineSwitches(new string[] { "-launch", "-lock", "-l", "-v", "-t", "-me"});
                     ParseArguments(DeleteCommand(split));
                     return Fight();
+                case "/gather":
+                    DefineRequiredParameters(new string[] {});
+                    DefineOptionalParameter(new string[] {});
+                    DefineSwitches(new string[] {"-launch","-stats"});
+                    ParseArguments(DeleteCommand(split));
+                    return Gather();
             }
             return Usage();
         }
@@ -587,7 +593,15 @@ namespace BlueSheep.Common
                     ls.Add("2. > /fight -launch");
                     ls.Add("   - Research and launch a fight on the map.");
                     return ls;
-
+                case "gather":
+                    ls.Add("/gather [-launch] [-stats]");
+                    ls.Add("Interface to manage gather.");
+                    ls.Add("OPTIONS:");
+                    ls.Add("  - launch  : Perfo gathering on the map.");
+                    ls.Add("  - stats  : Display gathering stats.");                
+                    ls.Add("EXAMPLE:");
+                    ls.Add("1. > /gather -launch");
+                    ls.Add("   - Launch the gathering");
             }
             return ls = new List<string>() { ""};
         }
@@ -916,7 +930,41 @@ namespace BlueSheep.Common
             else
                 return result;
         }
-        #endregion
+        
+         /// <summary>
+        /// Interface to manage gather.
+        /// </summary>
+        private List<string> Gather()
+        {
+            bool launch = IsSwitchOn("-launch");
+            bool stats = IsSwitchOn("-stats");
+  
+            try
+            {
+                if (launch)
+                {
+                    account.PerformGather();
+                    result.Add("Récolte de la map...");
+                }
+                if (stats)
+                {
+                   // Dictionary<string,int> stats = account.Gather.stats;
+                  //  for (int i = 0; i<stats.Values.Count;i++)
+                   // {
+                     //   result.Add(String.Format("[{1}] : {2}", stats.Keys[i], stats.Values[i]));
+                    //}
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Add("[ERROR] " + ex.Message + "\n");
+                return result;
+            }
+            if (!(result.Count > 0))
+                return Usage("gather");
+            else
+                return result;
+        }        #endregion
     }
 
         
