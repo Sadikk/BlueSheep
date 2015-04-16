@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace BlueSheep.Interface
 {
-    public partial class DofusPathForm : Form
+    public partial class DofusPathForm : MetroFramework.Forms.MetroForm
     {
         /// <summary>
         /// Selection form of the dofus path.

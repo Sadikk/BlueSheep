@@ -894,7 +894,7 @@ namespace BlueSheep.Interface
     }
 
     [DefaultEvent("CheckedChanged")]
-    class SadikRadioButton : Control
+    public class SadikRadioButton : Control
     {
 
         public event CheckedChangedEventHandler CheckedChanged;

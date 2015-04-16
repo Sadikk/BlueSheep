@@ -53,7 +53,7 @@ namespace BlueSheep.Core.Inventory
                     if (weapon == null)
                         return false;
 
-                    DataClass fishingRod = GameData.GetDataObject(D2oFileEnum.Items,weapon.GID);
+                    DataClass fishingRod = GameData.GetDataObject(D2oFileEnum.Items, weapon.GID);
                     return (int)fishingRod.Fields["typeId"] == 20  && (int)fishingRod.Fields["useAnimationId"] == 18 ? true : false;
             }
         }
@@ -64,6 +64,15 @@ namespace BlueSheep.Core.Inventory
             {
                 Item weapon = Items.FirstOrDefault(i => i.Position == (int)InventoryPositionEnum.Weapon);
                 return weapon != null ? (int)GameData.GetDataObject(D2oFileEnum.Items,weapon.GID).Fields["range"] : 1;
+            }
+        }
+
+        public Item Weapon
+        {
+            get
+            {
+                Item weapon = Items.FirstOrDefault(i => i.Position == (int)InventoryPositionEnum.Weapon);
+                return weapon;
             }
         }
 
@@ -128,11 +137,11 @@ namespace BlueSheep.Core.Inventory
         {
             foreach (int i in items)
             {
-                Account.Log(new ActionTextInformation("Objet mis dans le coffre : " + GetItemFromUID(i).Name + " (x" + GetItemFromUID(i).Quantity + ")."), 2);
+                Account.Log(new ActionTextInformation("Objet transféré : " + GetItemFromUID(i).Name + " (x" + GetItemFromUID(i).Quantity + ")."), 2);
             }
             ExchangeObjectTransfertListFromInvMessage msg = new ExchangeObjectTransfertListFromInvMessage(items.ToArray());
             Account.SocketManager.Send(msg);
-            Account.Log(new BotTextInformation("Trajet : Tous les objets mis dans le coffre."), 3);
+            Account.Log(new BotTextInformation("Trajet : Tous les objets transférés."), 3);
             //Account.Npc.CloseDialog();
             //Don't need, dialog closed with the GetItems() method.
             //Account.Busy = false;
@@ -150,8 +159,33 @@ namespace BlueSheep.Core.Inventory
                 Account.SocketManager.Send(msg);
                 Account.Log(new BotTextInformation("Trajet : Tous les objets pris du coffre."), 3);
             }
-            Account.Npc.CloseDialog();
-            
+            Account.Npc.CloseDialog();   
+        }
+
+        public void ExchangeReady()
+        {
+            Account.SocketManager.Send(new ExchangeReadyMessage(true, 1));
+            Account.Log(new ActionTextInformation("Echange prêt"), 5);
+        }
+
+        public void RequestExchange(string name)
+        {
+            int targetId = Account.MapData.Players.Find(p=> p.name == name).contextualId;
+            if (targetId != 0)
+            {
+                Account.SocketManager.Send(new ExchangePlayerRequestMessage(1, targetId));
+                Account.Log(new ActionTextInformation("Demande d'échange"), 5);
+            }
+            else
+            {
+                Account.Log(new ErrorTextInformation("Le joueur " + name + " ne semble pas être sur la map."), 5);
+            }
+        }
+
+        public void AcceptExchange()
+        {
+            Account.SocketManager.Send(new ExchangeAcceptMessage());
+            Account.Log(new ActionTextInformation("Echange accepté"), 5);
         }
 #endregion
 

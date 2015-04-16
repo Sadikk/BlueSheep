@@ -17,9 +17,9 @@ namespace BlueSheep.Core.Path
         #region Fields
         private AccountUC Account;
         public string path;
-        //public bool Stop;
         private string flag;
-        private List<Condition> conditions;
+        public bool Relaunch = false;
+        private List<PathCondition> conditions;
         public List<Action> ActionsStack;
         public Action Current_Action;
         public string Current_Map;
@@ -28,8 +28,10 @@ namespace BlueSheep.Core.Path
             get { return flag; }
             internal set { flag = value; }
         }
+        public string pathBot;
         public Thread Thread;
         public bool Launched;
+        private bool Stop;
 
         public static readonly IList<String> flags = new ReadOnlyCollection<string>
         (new List<String> {"<Move>","<Fight>","<Gather>","<Dialog>"});
@@ -38,40 +40,50 @@ namespace BlueSheep.Core.Path
         (new List<String> { "</Move>", "</Fight>", "</Gather>", "</Dialog>" });
 
         public static readonly IList<String> Actions = new ReadOnlyCollection<string>
-        (new List<String> { "npc(","cell(", "object(", "zaap(", "zaapi(", "use(", "move(" });
+        (new List<String> { "exchange(", "npc(","cell(", "object(", "zaap(", "zaapi(", "use(", "move(" });
 
         public static readonly IList<Char> operateurs = new ReadOnlyCollection<char>
         (new List<Char> { '<', '>', '=' });
         #endregion
 
-        public string pathBot;
+        
 
-        #region Constructeurs
+        #region Constructors
         public PathManager(AccountUC account, string Path, string name)
         {
             Account = account;
             path = Path;
             Account.PathDownBt.Text = name;
-            Thread = new Thread(new ThreadStart(ParsePath));
         }
 
         #endregion
 
         #region Public methods
+        /// <summary>
+        /// Start the path's parsing
+        /// </summary>
         public void Start()
         {
-            TestParse();
-            //Thread = new Thread(new ThreadStart(ParsePath));
-            //Thread.Start();
-            //Launched = true;
+            Launched = true;
+            Stop = false;
+            ParsePath();
+            Account.WatchDog.StartPathDog();
         }
 
-        public void Stop()
+        /// <summary>
+        /// Stop the path and clear the current actions stack.
+        /// </summary>
+        public void StopPath()
         {
-            this.Thread.Interrupt();
+            Stop = true;
             Launched = false;
+            ClearStack();
+            Account.WatchDog.StopPathDog();
         }
 
+        /// <summary>
+        /// Search for the answer of a given npc's question in the path and send it.
+        /// </summary>
         public void SearchReplies(string question)
         {
             if (Account.Npc != null)
@@ -106,95 +118,151 @@ namespace BlueSheep.Core.Path
             }
         }
 
-        public void PerformActionsStack()
+        /// <summary>
+        /// Perform the action associed with the current path's flag.
+        /// </summary>
+        public void PerformFlag()
         {
-            if (ActionsStack.Count() == 0)
+            if (Account.state == Engine.Enums.Status.Fighting)
                 return;
-            for (int i = 0; i < ActionsStack.Count(); i++)
-            {
-                Current_Action = ActionsStack[i];
-                ActionsStack[i].PerformAction();           
-            }
-            ActionsStack.Clear();
-        }
-        #endregion
-
-        #region Private methods
-
-        private void AnalyseLine(string line)
-        {
-            if (Account.Map.Data == null)
-            {
-                Account.Log(new ErrorTextInformation("Le bot n'a pas encore reçu les informations de la map, veuillez patienter. Si le problème persiste, rapportez le bug sur le forum : http://forum.bluesheepbot.com"),0);
-                return;
-            }
-            if (line.Contains("#"))
-                return;
-            if (CheckConditions(true) && flag != "")
-            {
-                //string[] move = line.Split(' ');
-                ParseAction(line);
-                PerformFlag(flag);
-            }
-        }
-
-        private void PerformFlag(string flag)
-        {
-            switch (flag)
+            switch (Current_Flag)
             {
                 case "<Move>":
                     //Aucune action spécifique au flag, on éxécute directement les actions
                     if (Account.IsMaster == true && Account.MyGroup != null)
                     {
                         PerformActionsStack();
-                        //Account.Path.Stop = true;
                     }
                     else if (Account.IsSlave == false)
                     {
                         PerformActionsStack();
-                        //Account.Path.Stop = true;
                     }
                     else
                     {
-                        Account.Log(new ErrorTextInformation("Impossible d'enclencher le déplacement. (mûle ?)"),0);
+                        Account.Log(new ErrorTextInformation("Impossible d'enclencher le déplacement. (mûle ?)"), 0);
                     }
                     break;
                 case "<Fight>":
                     //On lance un combat, les actions seront effectuées après le combat
                     if (Account.IsMaster == true && Account.MyGroup != null && Account.Fight != null)
                     {
-                        if (Account.Fight.SearchFight() == false)
+                        if (!Account.Fight.SearchFight())
                             PerformActionsStack();
-                        //Account.Path.Stop = true;
                     }
                     else if (Account.IsSlave == false && Account.Fight != null)
                     {
                         if (Account.Fight.SearchFight() == false)
                             PerformActionsStack();
-                       //Account.Path.Stop = true;
                     }
                     else
                     {
-                        Account.Log(new ErrorTextInformation("Impossible d'enclencher le déplacement. (mûle ? Aucune IA ?)"),0);
+                        Account.Log(new ErrorTextInformation("Impossible d'enclencher le déplacement. (mûle ? Aucune IA ?)"), 0);
                     }
                     break;
                 case "<Gather>":
                     //On récolte la map, les actions seront effectuées après la récolte
-                    //Account.Log(new ErrorTextInformation("La récolte n'est pas encore implémentée, veuillez attendre la mise à jour. Tenez vous au courant sur http://forum.bluesheepbot.com "),0);
-                    if (Account.PerformGather() == false)
+                    if (!Account.PerformGather())
                         PerformActionsStack();
-                    //Account.Path.Stop = true;
                     break;
-                //case "<Bank>":
-                //    //On rajoute la condition pods et on effectue l'action
-                //    Condition c = new Condition(ConditionEnum.PodsPercent, (int)Account.NUDPods.Value, '>', Account);
-                //    if (c.CheckCondition() == true)
-                //        PerformActionsStack();
-                //    Account.Path.Stop = true;
-                //    break;
+            }
+            Account.WatchDog.Update();
+        }
+
+        /// <summary>
+        /// Clear the current action stack.
+        /// </summary>
+        public void ClearStack()
+        {
+            if (ActionsStack != null)
+                ActionsStack.Clear();
+        }
+
+        /// <summary>
+        /// Parse the path's file.
+        /// </summary>
+        public void ParsePath()
+        {
+            if (!File.Exists(path))
+                return;
+            StreamReader sr = new StreamReader(path);
+            string line = "";
+            conditions = new List<PathCondition>();
+            ActionsStack = new List<Action>();
+
+            while (sr.Peek() > 0)
+            {
+                line = sr.ReadLine();
+                if (line == "" || line == string.Empty || line == null || line.StartsWith("#"))
+                    continue;
+                if (line.Contains("+Condition "))
+                {
+                    ParseCondition(line);
+                    continue;
+                }
+                if (((line.Contains(Account.MapData.Pos + ":") && CheckMinusNumber(line)) || line.Contains(Account.MapData.Id.ToString() + ":")) && CheckConditions(false))
+                {
+                    Current_Map = Account.MapData.Pos;
+                    AnalyseLine(line);
+                    sr.Close(); 
+                    return;
+                }
+                foreach (string f in flags)
+                {
+                    if (line.Contains(f))
+                    {
+                        flag = f;
+                        continue;
+                    }
+                }
+                foreach (string f in Endflags)
+                {
+                    if (line.Contains(f))
+                    {
+                        conditions.Clear();
+                        flag = "";
+                        continue;
+                    }
+                }
+            }
+            sr.Close();
+            Lost();
+        }
+
+        /// <summary>
+        /// Pull the last action from the stack and perform it.
+        /// </summary>
+        public void PerformActionsStack()
+        {
+            if (ActionsStack.Count() == 0 || Stop)
+                return;
+            while (ActionsStack.Count() > 0)
+            {
+                Current_Action = ActionsStack[0];
+                ActionsStack[0].PerformAction();
+                ActionsStack.Remove(Current_Action);
+            }
+        }
+        #endregion
+
+        #region Private methods
+
+        /// <summary>
+        /// Parse the line with the current pos.
+        /// </summary>
+        private void AnalyseLine(string line)
+        {
+            if (line.Contains("#"))
+                return;
+            if (CheckConditions(true) && flag != "")
+            {
+                ParseAction(line);
+                PerformFlag();
             }
         }
 
+        /// <summary>
+        /// Parse a condition's line
+        /// </summary>
         private void ParseCondition(string line)
         {
             line = line.Remove(0, 10);
@@ -203,37 +271,40 @@ namespace BlueSheep.Core.Path
             {
                 if (line.IndexOf(op) != -1)
                 {
-                    ConditionEnum e = ConditionEnum.Null;
+                    PathConditionEnum e = PathConditionEnum.Null;
                     string b = line.Substring(0, line.IndexOf(op));
                     switch (b)
                     {
                         case "Aucune":
-                            e = ConditionEnum.Null;
+                            e = PathConditionEnum.Null;
                             break;
                         case "LastMap":
-                            e = ConditionEnum.LastMapId;
+                            e = PathConditionEnum.LastMapId;
                             break;
                         case "Level":
-                            e = ConditionEnum.Level;
+                            e = PathConditionEnum.Level;
                             break;
                         case "Pods":
-                            e = ConditionEnum.Pods;
+                            e = PathConditionEnum.Pods;
                             break;
                         case "%Pods":
-                            e = ConditionEnum.PodsPercent;
+                            e = PathConditionEnum.PodsPercent;
                             break;
                         case "Alive":
-                            e = ConditionEnum.Alive;
+                            e = PathConditionEnum.Alive;
                             break;
                     }
                     line = line.Remove(0,line.IndexOf(op) + 1);
-                    Condition c = new Condition(e, line, op, Account);
+                    PathCondition c = new PathCondition(e, line, op, Account);
                     conditions.Add(c);
                     return;
                 }
             }
         }
 
+        /// <summary>
+        /// Parse an action's line
+        /// </summary>
         private void ParseAction(string line)
         {
             if (line.IndexOf(':') != -1)
@@ -267,9 +338,12 @@ namespace BlueSheep.Core.Path
 
         }
 
+        /// <summary>
+        /// Check if all the conditions in the conditions are respected or not.
+        /// </summary>
         private bool CheckConditions(bool analysed)
         {
-            foreach (Condition c in conditions)
+            foreach (PathCondition c in conditions)
             {
                 if (c.CheckCondition() == false)
                 {
@@ -282,91 +356,25 @@ namespace BlueSheep.Core.Path
             return true;
         }
 
-        private void ParsePath()
+        /// <summary>
+        /// Check if the line is with the same number of '-' char as the position.
+        /// </summary>
+        private bool CheckMinusNumber(string line)
         {
-            if (!File.Exists(path))
-                return;
-            StreamReader sr = new StreamReader(path);
-            string line = "";
-            conditions = new List<Condition>();
-            ActionsStack = new List<Action>();
-
-            while (sr.Peek() > 0)
-            {
-                //if (Stop == true)
-                //{
-                //    sr.Close();
-                //    return;
-                //}
-                line = sr.ReadLine();
-                if (line == "" || line == string.Empty || line == null || line.StartsWith("#"))
-                    continue;
-                if (Account.Map.Data == null)
-                {
-                    sr.Close();
-                    Account.Log(new ErrorTextInformation("Le bot n'a pas encore reçu les informations de la map, veuillez patienter. Si le problème persiste, rapportez le bug sur le forum : http://forum.bluesheepbot.com"), 0);
-                    return;
-                }
-                if (line.Contains("+Condition "))
-                {
-                    ParseCondition(line);
-                    continue;
-                }
-                if ((line.Contains(Account.Map.X.ToString() + "," + Account.Map.Y.ToString() + ":") || line.Contains(Account.Map.Id.ToString() + ":")) && CheckConditions(false))
-                {
-                    Current_Map = Account.Map.X.ToString() + "," + Account.Map.Y.ToString();
-                    AnalyseLine(line);
-                    return;
-                }
-                foreach (string f in flags)
-                {
-                    if (line.Contains(f))
-                    {
-                        flag = f;
-                        continue;
-                    }
-                }
-                foreach (string f in Endflags)
-                {
-                    if (line.Contains(f))
-                    {
-                        conditions.Clear();
-                        flag = "";
-                        continue;
-                    }
-                }
-            }
-            sr.Close();
+            if (!line.Contains(','))
+                return true;
+            line = line.Remove(line.IndexOf(':'));
+            int n = line.ToList().FindAll(c => c == '-').Count;
+            int comp = Account.MapData.Pos.ToList().FindAll(c => c == '-').Count;
+            return n == comp;
         }
 
-        private void TestParse()
+        /// <summary>
+        /// Alert the user that we are lost.
+        /// </summary>
+        private void Lost()
         {
-            if (!File.Exists(path))
-                return;
-            string text = File.ReadAllText(path);
-
-            var lines = File.ReadLines(path);
-            List<string> targetMaps = lines.Where(line => line.StartsWith(Account.Map.X + "," + Account.Map.Y)).ToList();
-            Console.Write(lines);
-            //Regex regex = new Regex(Account.Map.X + "," + Account.Map.Y + @".*?$");
-            //MatchCollection result = regex.Matches(text);
-            //foreach (Match m in result)
-            //{
-
-            //} 
-        }
-
-        private List<Condition> GetConditions(int currentPos)
-        {
-            var lines = File.ReadLines(path);
-            List<string> condLines = lines.Where(line => line.StartsWith("+Condition")).ToList();
-            Regex regex = new Regex(@"+Condition.*?$");
-            MatchCollection result = regex.Matches(File.ReadAllText(path));
-            foreach (Match m in result)
-            {
-
-            }
-            return null;
+            Account.Log(new ErrorTextInformation("Aucune action disponible dans le trajet, le bot est perdu."), 0);
         }
         #endregion
 

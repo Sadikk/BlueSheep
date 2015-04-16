@@ -11,18 +11,9 @@ namespace BlueSheep.Core.Storage
         public void Init(AccountUC account)
         {
             LeaveDialogRequestMessage leaveDialogRequestMessage = new LeaveDialogRequestMessage();
+            account.SocketManager.Send(leaveDialogRequestMessage);
+            account.LastPacketID.Clear();
 
-            using (BigEndianWriter writer = new BigEndianWriter())
-            {
-                leaveDialogRequestMessage.Serialize(writer);
-
-                MessagePackaging messagePackaging = new MessagePackaging(writer);
-
-                messagePackaging.Pack((int)leaveDialogRequestMessage.ProtocolID);
-
-                account.SocketManager.Send(messagePackaging.Writer.Content);
-                account.LastPacketID.Clear();
-            }
         }
         #endregion
     }

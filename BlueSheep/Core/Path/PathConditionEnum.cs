@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BlueSheep.Core.Path
 {
-    public enum ConditionEnum
+    public enum PathConditionEnum
     {
         Null,
         LastMapId,

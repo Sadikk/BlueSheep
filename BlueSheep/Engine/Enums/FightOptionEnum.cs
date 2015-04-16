@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace BlueSheep.Engine.Enums
 {
-
         public enum FightOptionEnum
         {
             /// <summary>Demande de l'aide</summary>

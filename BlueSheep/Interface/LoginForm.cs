@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace BlueSheep.Interface
 {
-    public partial class LoginForm : Form
+    public partial class LoginForm : MetroFramework.Forms.MetroForm
     {
         /// <summary>
         /// Old login form. WARNING : DEPRECATED.

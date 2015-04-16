@@ -32,8 +32,8 @@ namespace BlueSheep.Common.Protocol.Messages
         {
         }
         
-        public IdentificationAccountForceMessage(bool autoconnect, bool useCertificate, bool useLoginToken, Types.VersionExtended version, string lang, sbyte[] credentials, short serverId, double sessionOptionalSalt, string forcedAccountLogin)
-         : base(autoconnect, useCertificate, useLoginToken, version, lang, credentials, serverId, sessionOptionalSalt)
+        public IdentificationAccountForceMessage(bool autoconnect, bool useCertificate, bool useLoginToken, Types.VersionExtended version, string lang, sbyte[] credentials, short serverId, double sessionOptionalSalt, string forcedAccountLogin, List<short> failedAttempts)
+         : base(autoconnect, useCertificate, useLoginToken, version, lang, credentials, serverId, sessionOptionalSalt, failedAttempts)
         {
             this.forcedAccountLogin = forcedAccountLogin;
         }

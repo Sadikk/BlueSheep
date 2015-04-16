@@ -13,7 +13,7 @@ using System.Windows.Forms;
 
 namespace BlueSheep.Interface
 {
-    public partial class GestGroupe : Form
+    public partial class GestGroupe : MetroFramework.Forms.MetroForm
     {
         /// <summary>
         /// Group manager.
@@ -73,17 +73,18 @@ namespace BlueSheep.Interface
             {
                 Group group = SearchGroups(item.Text);
                 List<AccountUC> listaccounts = new List<AccountUC>();
-                foreach (AccountUC account in group.accounts)
-                {
-                    //AccountUC acc = new AccountUC(account.Name, account.Password);
-                    listaccounts.Add(account);
-                }
-                GroupForm frm = new GroupForm(listaccounts);
-                foreach (AccountUC account in frm.listAccounts)
-                {
-                    account.Init();
-                }
+                //foreach (AccountUC account in group.accounts)
+                //{
+                //    //AccountUC acc = new AccountUC(account.Name, account.Password);
+                //    listaccounts.Add(account);
+                //}
+                GroupForm frm = new GroupForm(group.accounts, group.name);
+                //foreach (AccountUC account in frm.listAccounts)
+                //{
+                //    account.Init();
+                //}
                 frm.Show();
+                MainForm.ActualMainForm.AddForm(frm);
             }
             this.Close();
         }
@@ -91,15 +92,13 @@ namespace BlueSheep.Interface
         private void DelBt_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < listViewGroups.SelectedItems.Count; i++)
-            //parcours des comptes sélectionnés
+            //parcours des groupes sélectionnés
             {
-                ListViewItem listViewItem2 = listViewAccounts.SelectedItems[i];
+                ListViewItem listViewItem2 = listViewGroups.SelectedItems[i];
                 string ApplicationDataPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
                 string combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Groups", listViewItem2.Text + ".bs");
                 File.Delete(combinedPath);
-                // Sauvegarde des comptes
-                listViewAccounts.Items.Remove(listViewItem2);
-
+                listViewGroups.Items.Remove(listViewItem2);
             }
         }
 
@@ -110,7 +109,6 @@ namespace BlueSheep.Interface
                 List<AccountUC> listaccounts = new List<AccountUC>();
                 foreach (ListViewItem account in listViewAccounts.SelectedItems)
                 {
-
                     listaccounts.Add(new AccountUC(account.SubItems[0].Text, account.SubItems[1].Text, false));
                 }
                 if (NameBox.Text.Length > 0)
@@ -143,26 +141,17 @@ namespace BlueSheep.Interface
 
         private void LoadGroups()
         {
-            //if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\groups.bs"))
-            //{
-            //    StreamReader reader = new StreamReader(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\groups.bs");
-            //    while (reader.Peek() > 0)
-            //    {
-            //        string line = reader.ReadLine();
-            //    }
+            AccountsFileInteractions accountsFileInteractions = new AccountsFileInteractions();
 
-                AccountsFileInteractions accountsFileInteractions = new AccountsFileInteractions();
+            accountsFileInteractions.RecoverGroups();
 
-                accountsFileInteractions.RecoverGroups();
-
-                foreach (Group Groupobject in accountsFileInteractions.Groups)
-                {
-                    string[] row1 = { Groupobject.name };
-                    ListViewItem li = new ListViewItem(row1);
-                    listViewGroups.Items.Add(li);
-                    groups.Add(Groupobject);
-                }
-            //}
+            foreach (Group Groupobject in accountsFileInteractions.Groups)
+            {
+                string[] row1 = { Groupobject.name };
+                ListViewItem li = new ListViewItem(row1);
+                listViewGroups.Items.Add(li);
+                groups.Add(Groupobject);
+            }
         }
 
         

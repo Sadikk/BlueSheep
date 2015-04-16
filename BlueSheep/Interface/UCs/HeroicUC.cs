@@ -11,7 +11,7 @@
     using System.Runtime.CompilerServices;
     using System.Windows.Forms;
 
-    public class HeroicUC : UserControl
+    public class HeroicUC : MetroFramework.Controls.MetroUserControl
     {
         /// <summary>
         /// Represents the heroic mode tab of the main accountUC.
@@ -127,13 +127,8 @@
                                 targetCellId = -1,
                                 targetId = targetid
                             };
-            using (BigEndianWriter writer = new BigEndianWriter())
-            {
-                packet.Serialize(writer);
-                MessagePackaging pack = new MessagePackaging(writer);
-                pack.Pack((int)packet.ProtocolID);
-                account.SocketManager.Send(pack.Writer.Content);
-            }
+
+                account.SocketManager.Send(packet);
         }
 
         private void Run()

@@ -25,111 +25,7 @@ namespace BlueSheep.Engine.Handlers.Context
         [MessageHandler(typeof(MapComplementaryInformationsDataInHouseMessage))]
         public static void MapComplementaryInformationsDataInHouseMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
-            MapComplementaryInformationsDataInHouseMessage msg = (MapComplementaryInformationsDataInHouseMessage)message;
-
-            using (BigEndianReader reader = new BigEndianReader(packetDatas))
-            {
-                msg.Deserialize(reader);
-            }
-            if (account.Map.Data != null)
-                account.Map.LastMapId = account.Map.Id;
-            foreach (InteractiveElement interactiveElement in msg.interactiveElements)
-            {
-                if (interactiveElement.elementTypeId == 85)
-                    account.Safe = interactiveElement;
-            }
-            account.Map.SubAreaId = msg.subAreaId;
-            account.Map.Data = MapsManager.FromId(msg.mapId);
-            DataClass subArea = GameData.GetDataObject(D2oFileEnum.SubAreas, (int)msg.subAreaId);
-            string mapName = I18N.GetText((int)GameData.GetDataObject(D2oFileEnum.Areas, (int)subArea.Fields["areaId"]).Fields["nameId"]);
-            string subAreaName = I18N.GetText((int)subArea.Fields["nameId"]);
-            account.ModifBar(5, 0, 0, "[" + account.Map.X + ";" + account.Map.Y + "]" + " " + mapName + " (" + subAreaName + ")");
-            account.Map.Entities.Clear();
-            account.Map.List.Clear();
-            account.Map.Players = new Dictionary<int, Common.Protocol.Types.GameRolePlayCharacterInformations>();
-            foreach (GameRolePlayActorInformations actor in msg.actors)
-            {
-                account.Map.Entities.Add(new BlueSheep.Core.Fight.Entity(actor.contextualId, actor.disposition.cellId));
-                if (actor is GameRolePlayGroupMonsterInformations)
-                {
-                    GameRolePlayGroupMonsterInformations a = (GameRolePlayGroupMonsterInformations)actor;
-                    account.Map.List.Add(new MonsterGroup(a.staticInfos, a.disposition.cellId, a.contextualId));
-                }
-                else if (actor is GameRolePlayCharacterInformations)
-                {
-                    GameRolePlayCharacterInformations a = (GameRolePlayCharacterInformations)actor;
-                    account.Map.Players.Add(a.contextualId, a);
-                }
-
-            }
-            account.Map.StatedElements.Clear();
-            foreach (var statedElementDofus in msg.statedElements)
-            {
-                if (!(account.Map.StatedElements.ContainsKey(statedElementDofus.elementId)))
-                    account.Map.StatedElements.Add(statedElementDofus.elementId, new BlueSheep.Core.Map.Elements.StatedElement((uint)statedElementDofus.elementCellId, (uint)statedElementDofus.elementId, (uint)statedElementDofus.elementState));
-            }
-            account.Map.InteractiveElements.Clear();
-            account.Map.Doors.Clear();
-            account.Enable(true);
-            foreach (var element in msg.interactiveElements)
-            {
-                account.Map.InteractiveElements.Add(element.elementId, new BlueSheep.Core.Map.Elements.InteractiveElement((uint)element.elementId, element.elementTypeId, new List<InteractiveElementSkill>(element.enabledSkills), new List<InteractiveElementSkill>(element.disabledSkills)));
-                InteractiveElement interactiveElement = element;
-                List<int> listDoorSkillId = new List<int>(new[] { 184, 183, 187, 198, 114 });
-                List<int> listDoorTypeId = new List<int>(new[] { -1, 128, 168, 16 });
-                if (listDoorTypeId.Contains(interactiveElement.elementTypeId) && (interactiveElement.enabledSkills.Length > 0) && (listDoorSkillId.Contains(interactiveElement.enabledSkills[0].skillId)))
-                {
-                    foreach (var layer in ((BlueSheep.Data.D2p.Map)account.Map.Data).Layers)
-                    {
-                        foreach (var cell in layer.Cells)
-                        {
-                            foreach (var layerElement in cell.Elements)
-                            {
-                                if (layerElement is GraphicalElement)
-                                {
-                                    GraphicalElement graphicalElement = (GraphicalElement)layerElement;
-                                    if ((graphicalElement.Identifier == interactiveElement.elementId) && !(account.Map.Doors.ContainsKey(cell.CellId)))
-                                        account.Map.Doors.Add(cell.CellId, new BlueSheep.Core.Map.Elements.InteractiveElement((uint)element.elementId, element.elementTypeId, new List<InteractiveElementSkill>(element.enabledSkills), new List<InteractiveElementSkill>(element.disabledSkills)));
-                                }
-                            }
-                        }
-                    }
-                }
-
-            }
-            account.Npc.Npcs.Clear();
-            foreach (GameRolePlayActorInformations a in msg.actors)
-            {
-                if (a is GameRolePlayNpcInformations)
-                    account.Npc.Npcs.Add(a.contextualId, ((GameRolePlayNpcInformations)a).npcId);
-            }
-            if (account.Path != null && account.Path.Launched)
-            {
-                if (account.Path.Current_Flag == "<Fight>" && account.state != Enums.Status.Fighting && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString())
-                {
-                    if (account.Fight.SearchFight() == false)
-                    {
-                        account.Path.PerformActionsStack();
-                    }
-                }
-                else if (account.Path != null & account.state != Enums.Status.Fighting && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString())
-                    account.Path.PerformActionsStack();
-                else if (account.Path != null & account.Path.Current_Map != account.Map.X.ToString() + "," + account.Map.Y.ToString() || account.Map.Id != account.Map.LastMapId)
-                {
-                    //account.Path.Stop = false;
-                    account.Path.Start();
-                }
-            }
-            if (account.petsList.Count != 0 && account.checkBoxBegin.Checked == true)
-            {
-                account.StartFeeding();
-            }
-            else if (account.checkBoxBegin.Checked == true)
-            {
-                account.Log(new ErrorTextInformation("Aucun familier dans l'inventaire."),0);
-                account.checkBoxBegin.Checked = false;
-            }
-            account.ActualizeMap();
+            MapComplementaryInformationsDataMessageTreatment(message, packetDatas, account);
         }
 
         [MessageHandler(typeof(MapComplementaryInformationsDataMessage))]
@@ -141,186 +37,21 @@ namespace BlueSheep.Engine.Handlers.Context
             {
                 msg.Deserialize(reader);
             }
-            if (account.petsList.Count != 0 && account.checkBoxBegin.Checked == true)
-            {
-                account.StartFeeding();
-            }
-            else if (account.checkBoxBegin.Checked == true)
-            {
-                account.Log(new ErrorTextInformation("Aucun familier dans l'inventaire."),0);
-                account.checkBoxBegin.Checked = false;
-            }
-            if (account.Map.Data != null)
-                account.Map.LastMapId = account.Map.Id;
-            account.Map.SubAreaId = msg.subAreaId;
-            account.Map.Data = MapsManager.FromId(msg.mapId);
+            account.Gather.ClearError();
+            account.MapData.Clear();
+            account.MapData.ParseLocation(msg.mapId, msg.subAreaId);
+            account.MapData.ParseStatedElements(msg.statedElements);
+            account.MapData.ParseActors(msg.actors);
+            account.MapData.ParseInteractiveElements(msg.interactiveElements);
             account.Enable(true);
-            DataClass subArea = GameData.GetDataObject(D2oFileEnum.SubAreas, (int)msg.subAreaId);
-            string mapName = I18N.GetText((int)GameData.GetDataObject(D2oFileEnum.Areas, (int)subArea.Fields["areaId"]).Fields["nameId"]);
-            string subAreaName = I18N.GetText((int)subArea.Fields["nameId"]);
-            account.ModifBar(5, 0, 0, "[" + account.Map.X + ";" + account.Map.Y + "]" + " " + mapName + " (" + subAreaName + ")");
-            account.Map.Entities.Clear();
-            account.Map.List.Clear();
-            account.Map.Players = new Dictionary<int, Common.Protocol.Types.GameRolePlayCharacterInformations>();
-            foreach (GameRolePlayActorInformations actor in msg.actors)
-            {
-                account.Map.Entities.Add(new BlueSheep.Core.Fight.Entity(actor.contextualId, actor.disposition.cellId));
-                if (actor is GameRolePlayGroupMonsterInformations)
-                {
-                    GameRolePlayGroupMonsterInformations a = (GameRolePlayGroupMonsterInformations)actor;
-                    account.Map.List.Add(new MonsterGroup(a.staticInfos, a.disposition.cellId, a.contextualId));
-                }
-                else if (actor is GameRolePlayCharacterInformations)
-                {
-                    GameRolePlayCharacterInformations a = (GameRolePlayCharacterInformations)actor;
-                    account.Map.Players.Add(a.contextualId, a);
-                }
-
-            }
-            account.Map.StatedElements.Clear();
-            foreach (var statedElementDofus in msg.statedElements)
-            {
-                if (!(account.Map.StatedElements.ContainsKey(statedElementDofus.elementId)))
-                    account.Map.StatedElements.Add(statedElementDofus.elementId, new BlueSheep.Core.Map.Elements.StatedElement((uint)statedElementDofus.elementCellId, (uint)statedElementDofus.elementId, (uint)statedElementDofus.elementState));
-            }
-            account.Map.InteractiveElements.Clear();
-            account.Map.Doors.Clear();
-            foreach (var element in msg.interactiveElements)
-            {
-                account.Map.InteractiveElements.Add(element.elementId, new BlueSheep.Core.Map.Elements.InteractiveElement((uint)element.elementId, element.elementTypeId, new List<InteractiveElementSkill>(element.enabledSkills), new List<InteractiveElementSkill>(element.disabledSkills)));
-                InteractiveElement interactiveElement = element;
-                List<int> listDoorSkillId = new List<int>(new[] { 184, 183, 187, 198, 114 });
-                List<int> listDoorTypeId = new List<int>(new[] { -1, 128, 168, 16 });
-                if (listDoorTypeId.Contains(interactiveElement.elementTypeId) && (interactiveElement.enabledSkills.Length > 0) && (listDoorSkillId.Contains(interactiveElement.enabledSkills[0].skillId)))
-                {
-                    foreach (var layer in ((BlueSheep.Data.D2p.Map)account.Map.Data).Layers)
-                    {
-                        foreach (var cell in layer.Cells)
-                        {
-                            foreach (var layerElement in cell.Elements)
-                            {
-                                if (layerElement is GraphicalElement)
-                                {
-                                    GraphicalElement graphicalElement = (GraphicalElement)layerElement;
-                                    if ((graphicalElement.Identifier == interactiveElement.elementId) && !(account.Map.Doors.ContainsKey(cell.CellId)))
-                                        account.Map.Doors.Add(cell.CellId, new BlueSheep.Core.Map.Elements.InteractiveElement((uint)element.elementId, element.elementTypeId, new List<InteractiveElementSkill>(element.enabledSkills), new List<InteractiveElementSkill>(element.disabledSkills)));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            account.Npc.Npcs.Clear();
-            foreach (GameRolePlayActorInformations a in msg.actors)
-            {
-                if (a is GameRolePlayNpcInformations)
-                    account.Npc.Npcs.Add(a.contextualId, ((GameRolePlayNpcInformations)a).npcId);
-            }
-            if (account.Path != null && account.Path.Launched)
-            {
-                if (account.Path.Current_Flag == "<Fight>" && account.state != Enums.Status.Fighting && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString())
-                {
-                    if (account.Fight.SearchFight() == false)
-                    {
-                        account.Path.PerformActionsStack();
-                    }
-                }
-                else if (account.state != Enums.Status.Fighting && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString() && account.Map.LastMapId == account.Map.Id)
-                    account.Path.PerformActionsStack();
-                else if ((account.Path.Current_Map != account.Map.X.ToString() + "," + account.Map.Y.ToString()) || account.Map.Id != account.Map.LastMapId)
-                {
-                    //account.Path.Stop = false;
-                    account.Path.Start();
-                }
-            }
+            account.MapData.DoAction();
             account.ActualizeMap();
-            account.Map.LastMapId = account.Map.Id;
         }
 
         [MessageHandler(typeof(MapComplementaryInformationsWithCoordsMessage))]
         public static void MapComplementaryInformationsWithCoordsMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
-            MapComplementaryInformationsWithCoordsMessage msg = (MapComplementaryInformationsWithCoordsMessage)message;
-
-            using (BigEndianReader reader = new BigEndianReader(packetDatas))
-            {
-                msg.Deserialize(reader);
-            }
-            account.Map.SubAreaId = msg.subAreaId;
-            account.Map.Data = MapsManager.FromId(msg.mapId);
-            DataClass subArea = GameData.GetDataObject(D2oFileEnum.SubAreas, (int)msg.subAreaId);
-            string mapName = I18N.GetText((int)GameData.GetDataObject(D2oFileEnum.Areas, (int)subArea.Fields["areaId"]).Fields["nameId"]);
-            string subAreaName = I18N.GetText((int)subArea.Fields["nameId"]);
-            account.ModifBar(5, 0, 0, "[" + msg.worldX + ";" + msg.worldY + "]" + " " + mapName + " (" + subAreaName + ")");
-            account.Map.Entities.Clear();
-            account.Map.List.Clear();
-            account.Enable(true);
-            foreach (GameRolePlayActorInformations actor in msg.actors)
-            {
-                account.Map.Entities.Add(new BlueSheep.Core.Fight.Entity(actor.contextualId, actor.disposition.cellId));
-                if (actor is GameRolePlayGroupMonsterInformations)
-                {
-                    GameRolePlayGroupMonsterInformations a = (GameRolePlayGroupMonsterInformations)actor;
-                    account.Map.List.Add(new MonsterGroup(a.staticInfos, a.disposition.cellId, a.contextualId));
-                }
-
-            }
-            account.Map.StatedElements.Clear();
-            foreach (var statedElementDofus in msg.statedElements)
-            {
-                if (!(account.Map.StatedElements.ContainsKey(statedElementDofus.elementId)))
-                    account.Map.StatedElements.Add(statedElementDofus.elementId, new BlueSheep.Core.Map.Elements.StatedElement((uint)statedElementDofus.elementCellId, (uint)statedElementDofus.elementId, (uint)statedElementDofus.elementState));
-            }
-            account.Map.InteractiveElements.Clear();
-            account.Map.Doors.Clear();
-            foreach (var element in msg.interactiveElements)
-            {
-                account.Map.InteractiveElements.Add(element.elementId, new BlueSheep.Core.Map.Elements.InteractiveElement((uint)element.elementId, element.elementTypeId, new List<InteractiveElementSkill>(element.enabledSkills), new List<InteractiveElementSkill>(element.disabledSkills)));
-                InteractiveElement interactiveElement = element;
-                List<int> listDoorSkillId = new List<int>(new[] { 184, 183, 187, 198, 114 });
-                List<int> listDoorTypeId = new List<int>(new[] { -1, 128, 168, 16 });
-                if (listDoorTypeId.Contains(interactiveElement.elementTypeId) && (interactiveElement.enabledSkills.Length > 0) && (listDoorSkillId.Contains(interactiveElement.enabledSkills[0].skillId)))
-                {
-                    foreach (var layer in ((BlueSheep.Data.D2p.Map)account.Map.Data).Layers)
-                    {
-                        foreach (var cell in layer.Cells)
-                        {
-                            foreach (var layerElement in cell.Elements)
-                            {
-                                if (layerElement is GraphicalElement)
-                                {
-                                    GraphicalElement graphicalElement = (GraphicalElement)layerElement;
-                                    if ((graphicalElement.Identifier == interactiveElement.elementId) && !(account.Map.Doors.ContainsKey(cell.CellId)))
-                                        account.Map.Doors.Add(cell.CellId, new BlueSheep.Core.Map.Elements.InteractiveElement((uint)element.elementId, element.elementTypeId, new List<InteractiveElementSkill>(element.enabledSkills), new List<InteractiveElementSkill>(element.disabledSkills)));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            account.Npc.Npcs.Clear();
-            foreach (GameRolePlayActorInformations a in msg.actors)
-            {
-                if (a is GameRolePlayNpcInformations)
-                    account.Npc.Npcs.Add(a.contextualId, ((GameRolePlayNpcInformations)a).npcId);
-            }
-            if (account.Path != null)
-            {
-                if (account.Path.Current_Flag == "<Fight>" && account.state != Enums.Status.Fighting && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString())
-                {
-                    if (account.Fight.SearchFight() == false)
-                    {
-                        account.Path.PerformActionsStack();
-                    }
-                }
-                else if (account.Path != null & account.state != Enums.Status.Fighting && account.Path.Current_Map == account.Map.X.ToString() + "," + account.Map.Y.ToString())
-                    account.Path.PerformActionsStack();
-                else if (account.Path != null & account.Path.Current_Map != account.Map.X.ToString() + "," + account.Map.Y.ToString() || account.Map.Id != account.Map.LastMapId)
-                {
-                    //account.Path.Stop = false;
-                    account.Path.Start();
-                }
-            }
+            MapComplementaryInformationsDataMessageTreatment(message, packetDatas, account);
         }
 
         [MessageHandler(typeof(CurrentMapMessage))]
@@ -334,10 +65,10 @@ namespace BlueSheep.Engine.Handlers.Context
             }
 
             account.MapID = currentMapMessage.mapId;
-            if (account.MapID == account.Map.LastMapId && account.Fight != null)
+            if (account.MapID == account.MapData.LastMapId && account.Fight != null)
             {
-                account.Fight.winLoseDic["Gagné"]++;
-                account.ActualizeFightStats(account.Fight.winLoseDic, account.Fight.xpWon);
+                account.FightData.winLoseDic["Gagné"]++;
+                account.ActualizeFightStats(account.FightData.winLoseDic, account.FightData.xpWon);
             }
             if (!account.IsMITM)
             {
@@ -380,7 +111,7 @@ namespace BlueSheep.Engine.Handlers.Context
         }
 
         [MessageHandler(typeof(TextInformationMessage))]
-        public static void TextInformationTreatment(Message message, byte[] packetDatas, AccountUC account)
+        public static void TextInformationMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
             TextInformationMessage msg = (TextInformationMessage)message;
 
@@ -390,36 +121,36 @@ namespace BlueSheep.Engine.Handlers.Context
             }
             switch (msg.msgId)
             {
-                case 89:
-                    account.Log(new DofAlertTextInformation("Bienvenue sur DOFUS, dans le Monde des Douze !" + System.Environment.NewLine + "Il est interdit de transmettre votre identifiant ou votre mot de passe."), 1);
-                    break;
-                case 153:
-                    account.Log(new DofInfoCanal("Votre adresse ip actuelle est " + msg.parameters[0]), 0);
-                    break;
-                case 171:
-                    account.Log(new ErrorTextInformation(string.Format("Impossible de lancer ce sort, vous avez une portée de {0} à {1}, et vous visez à {2} !", msg.parameters[0], msg.parameters[1], msg.parameters[2])), 4);
-                    break;
+                //case 89:
+                //    account.Log(new DofAlertTextInformation("Bienvenue sur DOFUS, dans le Monde des Douze !" + System.Environment.NewLine + "Il est interdit de transmettre votre identifiant ou votre mot de passe."), 1);
+                //    break;
+                //case 153:
+                //    account.Log(new DofInfoCanal("Votre adresse ip actuelle est " + msg.parameters[0]), 0);
+                //    break;
+                //case 171:
+                //    account.Log(new ErrorTextInformation(string.Format("Impossible de lancer ce sort, vous avez une portée de {0} à {1}, et vous visez à {2} !", msg.parameters[0], msg.parameters[1], msg.parameters[2])), 4);
+                //    break;
                 case 34:
-                    account.Log(new ErrorTextInformation(string.Format("Vous avez perdu {0} points d'énergie", msg.parameters[0])), 0);
-                    account.Log(new ErrorTextInformation("Combat perdu"), 0);
+                    //account.Log(new ErrorTextInformation(string.Format("Vous avez perdu {0} points d'énergie", msg.parameters[0])), 0);
+                    //account.Log(new ErrorTextInformation("Combat perdu"), 0);
                     if (account.Fight != null)
                     {
-                        account.Fight.winLoseDic["Perdu"]++;
-                        account.ActualizeFightStats(account.Fight.winLoseDic, account.Fight.xpWon);
+                        account.FightData.winLoseDic["Perdu"]++;
+                        account.ActualizeFightStats(account.FightData.winLoseDic, account.FightData.xpWon);
                     }
                     break;
             }
             //default:
 
 
-            //DataClass data = GameData.GetDataObjects(D2oFileEnum.InfoMessages)[msg.msgType * 10000 + msg.msgId];
-            //string text = I18N.GetText((int)data.Fields["textId"]);
-            //for (int i = 0; i < msg.parameters.Length; i++)
-            //{
-            //    var parameter = msg.parameters[i];
-            //    text = text.Replace("%" + (i + 1), parameter);
-            //}
-            //account.Log(new DofAlertTextInformation(text), 0);
+            DataClass data = GameData.GetDataObject(D2oFileEnum.InfoMessages, msg.msgType * 10000 + msg.msgId);
+            string text = I18N.GetText((int)data.Fields["textId"]);
+            for (int i = 0; i < msg.parameters.Length; i++)
+            {
+                var parameter = msg.parameters[i];
+                text = text.Replace("%" + (i + 1), parameter);
+            }
+            account.Log(new DofAlertTextInformation(text), 0);
         }
 
         [MessageHandler(typeof(ChatServerMessage))]
@@ -457,42 +188,42 @@ namespace BlueSheep.Engine.Handlers.Context
             }
         }
 
-        [MessageHandler(typeof(GameMapMovementConfirmMessage))]
-        public static void GameMapMovementConfirmMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
-        {
-            GameMapMovementConfirmMessage msg = (GameMapMovementConfirmMessage)message;
+        //[MessageHandler(typeof(GameMapMovementConfirmMessage))]
+        //public static void GameMapMovementConfirmMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
+        //{
+        //    GameMapMovementConfirmMessage msg = (GameMapMovementConfirmMessage)message;
 
-            using (BigEndianReader reader = new BigEndianReader(packetDatas))
-            {
-                msg.Deserialize(reader);
-            }
-           BlueSheep.Core.Fight.Entity Character = null;
-            foreach (BlueSheep.Core.Fight.Entity e in account.Map.Entities)
-            {
-                if (e.Id == account.CharacterBaseInformations.id)
-                    Character = e;
-            }
-            int mapChangeData = ((BlueSheep.Data.D2p.Map)account.Map.Data).Cells[Character.CellId].MapChangeData;
-                if (mapChangeData != 0)
-                {
-                    int neighbourId = 0;
-                    if (neighbourId == -2)
-                    {
-                        if ((mapChangeData & 64) > 0)
-                            neighbourId = ((BlueSheep.Data.D2p.Map)account.Map.Data).TopNeighbourId;
-                        if ((mapChangeData & 16) > 0)
-                            neighbourId = ((BlueSheep.Data.D2p.Map)account.Map.Data).LeftNeighbourId;
-                        if ((mapChangeData & 4) > 0)
-                            neighbourId = ((BlueSheep.Data.D2p.Map)account.Map.Data).BottomNeighbourId;
-                        if ((mapChangeData & 1) > 0)
-                            neighbourId = ((BlueSheep.Data.D2p.Map)account.Map.Data).RightNeighbourId;
-                    }
-                    if (neighbourId >= 0)
-                        account.Map.LaunchChangeMap(neighbourId);
-                }
-                account.SetStatus(Status.None);
+        //    using (BigEndianReader reader = new BigEndianReader(packetDatas))
+        //    {
+        //        msg.Deserialize(reader);
+        //    }
+        //    BlueSheep.Core.Fight.Entity Character = null;
+        //    foreach (BlueSheep.Core.Fight.Entity e in account.Map.Entities)
+        //    {
+        //        if (e.Id == account.CharacterBaseInformations.id)
+        //            Character = e;
+        //    }
+        //    int mapChangeData = ((BlueSheep.Data.D2p.Map)account.Map.Data).Cells[Character.CellId].MapChangeData;
+        //    if (mapChangeData != 0)
+        //    {
+        //        int neighbourId = 0;
+        //        if (neighbourId == -2)
+        //        {
+        //            if ((mapChangeData & 64) > 0)
+        //                neighbourId = ((BlueSheep.Data.D2p.Map)account.Map.Data).TopNeighbourId;
+        //            if ((mapChangeData & 16) > 0)
+        //                neighbourId = ((BlueSheep.Data.D2p.Map)account.Map.Data).LeftNeighbourId;
+        //            if ((mapChangeData & 4) > 0)
+        //                neighbourId = ((BlueSheep.Data.D2p.Map)account.Map.Data).BottomNeighbourId;
+        //            if ((mapChangeData & 1) > 0)
+        //                neighbourId = ((BlueSheep.Data.D2p.Map)account.Map.Data).RightNeighbourId;
+        //        }
+        //        if (neighbourId >= 0)
+        //            account.Map.LaunchChangeMap(neighbourId);
+        //    }
+        //    account.SetStatus(Status.None);
 
-        }
+        //}
 
         [MessageHandler(typeof(GameMapMovementMessage))]
         public static void GameMapMovementMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
@@ -503,54 +234,17 @@ namespace BlueSheep.Engine.Handlers.Context
             {
                 msg.Deserialize(reader);
             }
-                List<uint> keys = new List<uint>();
-                foreach (short s in msg.keyMovements)
-                {
-                    keys.Add((uint)s);
-                }
-                MovementPath clientMovement = MapMovementAdapter.GetClientMovement(keys);
-                BlueSheep.Core.Fight.Entity entity = null;
-                foreach (BlueSheep.Core.Fight.Entity en in account.Map.Entities)
-                {
-                    if (en.Id == msg.actorId)
-                        entity = en;
-                }
-                if (entity != null)
-                    (account.Map.Entities[account.Map.Entities.IndexOf(entity)]).CellId = clientMovement.CellEnd.CellId;
-                
-                //GameRolePlayGroupMonsterInformations e = null;
-                foreach (MonsterGroup en in account.Map.List)
-                {
-                        if (en.m_contextualId == msg.actorId)
-                        {
-                            en.m_cellId = clientMovement.CellEnd.CellId;
-                        }
-                    
-                }
-                //if (e != null)
-                //{
-                //    account.Map.List.RemoveAt(i);
-                //    account.Map.List.Add(new GameRolePlayGroupMonsterInformations(msg.actorId, e.look, new EntityDispositionInformations((short)clientMovement.CellEnd.CellId, e.disposition.direction), e.keyRingBonus, e.hasHardcoreDrop, e.hasAVARewardToken, e.staticInfos, e.ageBonus, e.lootShare, e.alignmentSide));
-                //}
-                //if (msg.actorId == account.Map.Character.Id)
-                //{
-                //    account.Wait(100, 200);
-                //    using (BigEndianWriter writer = new BigEndianWriter())
-                //    {
-                //        GameMapMovementConfirmMessage newmsg = new GameMapMovementConfirmMessage();
-                //        newmsg.Serialize(writer);
-                //        MessagePackaging pack = new MessagePackaging(writer);
-                //        pack.Pack((int)newmsg.ProtocolID);
-                //        account.SocketManager.Send(pack.Writer.Content);
-                //    }
-                //}
-                //    if (account.Fight.flag != 0)
-                //    {
-                //        account.Fight.LaunchFight(account.Fight.flag);
-                //    }
-                //}
-                
-            
+            List<uint> keys = new List<uint>();
+            foreach (short s in msg.keyMovements)
+            {
+                keys.Add((uint)s);
+            }
+            MovementPath clientMovement = MapMovementAdapter.GetClientMovement(keys);
+            account.MapData.UpdateEntityCell(msg.actorId, clientMovement.CellEnd.CellId);
+            if (account.Map.Moving && msg.actorId == account.MapData.Character.contextualId)
+            {
+                account.Map.ConfirmMove();
+            }
         }
 
         [MessageHandler(typeof(GameMapNoMovementMessage))]
@@ -562,9 +256,28 @@ namespace BlueSheep.Engine.Handlers.Context
             {
                 msg.Deserialize(reader);
             }
-
-            if (account.Fight != null && account.Fight.IsFollowingGroup())
-                account.Fight.LaunchFight(account.Fight.followinggroup.m_contextualId);
+            //if (account.Fight != null && account.FightData.IsFollowingGroup)
+            //{
+            //    account.Fight.LaunchFight(account.FightData.followingGroup.m_contextualId);
+            //    return;
+            //}
+            //if (account.Path != null)
+            //{
+            //    account.SetStatus(Status.None);
+            //    account.Log(new DebugTextInformation("[Path] NoMovement : Continue the path..."), 0);
+            //    account.Path.PerformActionsStack();
+            //}
+            //account.Map.Moving = false;
+            //account.Map.ConfirmMove();
+            if (account.Path != null)
+                account.Path.PerformActionsStack();
+                
+            //else if (account.Map.Moving)
+            //{
+            //    account.SetStatus(Status.None);
+            //    if (account.Path != null)
+            //        account.Path.ParsePath();
+            //}
 
         }
 
@@ -578,8 +291,7 @@ namespace BlueSheep.Engine.Handlers.Context
                 msg.Deserialize(reader);
             }
             account.Log(new ErrorTextInformation("Y a un popup sur l'écran, surement un modo :s"), 0);
-            account.SocketManager.DisconnectFromGUI();
-
+            account.SocketManager.Disconnect("Alerte au modo ! Alerte au modo !");
         }
 
         [MessageHandler(typeof(PartyInvitationMessage))]
@@ -616,7 +328,7 @@ namespace BlueSheep.Engine.Handlers.Context
             {
                 msg.Deserialize(reader);
             }
-            if (msg.fightMap.mapId == account.Map.Id && msg.memberName == account.MyGroup.GetMaster().CharacterBaseInformations.name)
+            if (msg.fightMap.mapId == account.MapData.Id && msg.memberName == account.MyGroup.GetMaster().CharacterBaseInformations.name)
             {
                 account.Wait(500, 1500);
                 using (BigEndianWriter writer = new BigEndianWriter())
@@ -645,11 +357,7 @@ namespace BlueSheep.Engine.Handlers.Context
                 account.House.SkillInstanceID = EnabledSkills[1].skillInstanceUid;
                 account.House.UseHouse();
             }
-            if (account.Map.InteractiveElements.Count > 0)
-            {
-                account.Map.InteractiveElements.Remove(msg.interactiveElement.elementId);
-                account.Map.InteractiveElements.Add(msg.interactiveElement.elementId, new Core.Map.Elements.InteractiveElement((uint)msg.interactiveElement.elementId, msg.interactiveElement.elementTypeId,new List<InteractiveElementSkill>(msg.interactiveElement.enabledSkills), new List<InteractiveElementSkill>(msg.interactiveElement.disabledSkills)));
-            }
+            account.MapData.UpdateInteractiveElement(msg.interactiveElement);
 
         }
 
@@ -662,8 +370,7 @@ namespace BlueSheep.Engine.Handlers.Context
             {
                 msg.Deserialize(reader);
             }
-            if (account.Map.StatedElements.Count > 0)
-                account.Map.StatedElements[msg.statedElement.elementId].State = (uint)msg.statedElement.elementState; 
+            account.MapData.UpdateStatedElement(msg.statedElement);
         }
         
         [MessageHandler(typeof(PurchasableDialogMessage))]
@@ -686,9 +393,7 @@ namespace BlueSheep.Engine.Handlers.Context
                 {
                     account.Log(new ErrorTextInformation("Prix trop élevé..."),2);
                 }
-
             }
-
         }
 
         [MessageHandler(typeof(HousePropertiesMessage))]
@@ -705,10 +410,10 @@ namespace BlueSheep.Engine.Handlers.Context
                 if (account.SearcherLogBox.Text.Length > 0)
                 {
                     StreamWriter SourceFile = new StreamWriter(account.SearcherLogBox.Text, true);
-                    SourceFile.WriteLine("Maison abandonnée en : " + "[" + account.Map.X + ";" + account.Map.Y + "]");
+                    SourceFile.WriteLine("Maison abandonnée en : " + "[" + account.MapData.X + ";" + account.MapData.Y + "]");
                     SourceFile.Close();
                 }
-                account.Log(new BotTextInformation("Maison abandonnée en : " + "[" + account.Map.X + ";" + account.Map.Y + "]"),1);
+                account.Log(new BotTextInformation("Maison abandonnée en : " + "[" + account.MapData.X + ";" + account.MapData.Y + "]"),1);
             }
         }
 
@@ -721,8 +426,7 @@ namespace BlueSheep.Engine.Handlers.Context
             {
                 msg.Deserialize(reader);
             }
-            account.Map.Entities.RemoveAll(f => f.Id == msg.id);
-            account.Map.List.RemoveAll(f => f.m_contextualId == msg.id);
+            account.MapData.Remove(msg.id);
         }
 
         [MessageHandler(typeof(GameRolePlayShowActorMessage))]
@@ -734,16 +438,16 @@ namespace BlueSheep.Engine.Handlers.Context
             {
                 msg.Deserialize(reader);
             }
-           
-            if (account.StartStopFloodingBox.Checked == true && account.PrivateEnterBox.Checked == true && msg.informations is GameRolePlayHumanoidInformations)
+
+            if (account.FloodUC.StartStopFloodingBox.Checked == true && account.FloodUC.PrivateEnterBox.Checked == true && msg.informations is GameRolePlayCharacterInformations)
             {
-                GameRolePlayHumanoidInformations info = (GameRolePlayHumanoidInformations)msg.informations;
-                account.Flood.SendPrivateTo(info.name); 
+                GameRolePlayCharacterInformations infos = (GameRolePlayCharacterInformations)msg.informations;
+                account.Flood.SendPrivateTo(infos); 
             }
-            if(account.IsMemoryCheck.Checked == true && msg.informations is GameRolePlayHumanoidInformations)
+            if (account.FloodUC.IsMemoryCheck.Checked == true && msg.informations is GameRolePlayCharacterInformations)
             {
-                GameRolePlayHumanoidInformations info = (GameRolePlayHumanoidInformations)msg.informations;
-                account.Flood.SaveNameInMemory(info.name);
+                GameRolePlayCharacterInformations infos = (GameRolePlayCharacterInformations)msg.informations;
+                account.Flood.SaveNameInMemory(infos);
             }
         }
 
@@ -761,8 +465,6 @@ namespace BlueSheep.Engine.Handlers.Context
                 List<int> items = account.GestItemsUC.GetItemsToTransfer();
                 account.Inventory.TransferItems(items);
                 account.Inventory.GetItems(account.GestItemsUC.GetItemsToGetFromBank());
-
-
             }
         }
 
@@ -774,9 +476,7 @@ namespace BlueSheep.Engine.Handlers.Context
             using (BigEndianReader reader = new BigEndianReader(packetDatas))
             {
                 msg.Deserialize(reader);
-            }
-            
-            
+            }     
         }
 
         [MessageHandler(typeof(ObtainedItemMessage))]
@@ -788,14 +488,14 @@ namespace BlueSheep.Engine.Handlers.Context
             {
                 msg.Deserialize(reader);
             }
-                if (account.Gather.Current_El == null)
-                    return;              
-                account.Log(new ActionTextInformation("Ressource récoltée : " + account.Gather.resourceName + " +" + msg.baseQuantity), 3);                
-                if (account.Gather.Stats.ContainsKey(account.Gather.resourceName))
-                    account.Gather.Stats[account.Gather.resourceName] += msg.baseQuantity;
-                else
-                    account.Gather.Stats.Add(account.Gather.resourceName, msg.baseQuantity);             
-                account.Gather.Current_Job.ActualizeStats(account.Gather.Stats);               
+            if (account.Gather.Current_El == null)
+                return;
+            account.Log(new ActionTextInformation("Ressource récoltée : " + account.Gather.resourceName + " +" + msg.baseQuantity), 3);
+            if (account.Gather.Stats.ContainsKey(account.Gather.resourceName))
+                account.Gather.Stats[account.Gather.resourceName] += msg.baseQuantity;
+            else
+                account.Gather.Stats.Add(account.Gather.resourceName, msg.baseQuantity);
+            account.Gather.Current_Job.ActualizeStats(account.Gather.Stats);
         }
 
         ////////////////////////////////// PACKET DELETED ///////////////////////////////////////////////
@@ -834,12 +534,12 @@ namespace BlueSheep.Engine.Handlers.Context
             {
                 msg.Deserialize(reader);
             }
-            account.Log(new ErrorTextInformation("Erreur lors de l'utilisation de l'element numero " + msg.elemId + ". Si vous connaissez la raison, rapportez la sur le forum. Merci ! Poursuite du trajet..."), 0);
-            if (account.Gather.Id != -1 && account.PerformGather() == false)
-                if (account.Path != null)
-                    account.Path.PerformActionsStack();
-            else if (account.Path != null)
-                account.Path.PerformActionsStack();
+            //if (account.Gather.Error())
+            //    return;
+            account.Gather.BanElementId(account.Gather.Id);
+            //account.Log(new ErrorTextInformation("Erreur lors de l'utilisation de l'element numero " + msg.elemId + ". Pg lelz. Poursuite du trajet."), 0);
+            if (account.Path != null)
+                account.Path.PerformFlag();
         }
 
         [MessageHandler(typeof(InteractiveUseEndedMessage))]
@@ -854,9 +554,55 @@ namespace BlueSheep.Engine.Handlers.Context
             if (account.Gather.Id == -1)
                 return;
             account.SetStatus(Status.None);
-            if (account.PerformGather() == false && account.Path != null)
-                account.Path.PerformActionsStack();
+            account.Gather.Id = -1;
+            if (account.Path != null)
+                account.Path.PerformFlag();
         }
+
+        [MessageHandler(typeof(ExchangeStartedWithPodsMessage))]
+        public static void ExchangeStartedWithPodsMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
+        {
+            ExchangeStartedWithPodsMessage msg = (ExchangeStartedWithPodsMessage)message;
+
+            using (BigEndianReader reader = new BigEndianReader(packetDatas))
+            {
+                msg.Deserialize(reader);
+            }
+            if (account.GestItemsUC.ListenerBox.Checked)
+                return;
+            List<int> items = account.GestItemsUC.GetItemsToTransfer();
+            account.Inventory.TransferItems(items);
+            account.Wait(2000, 3000);
+            account.Inventory.ExchangeReady();
+        }
+
+        [MessageHandler(typeof(ExchangeRequestedTradeMessage))]
+        public static void ExchangeRequestedTradeMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
+        {
+            ExchangeRequestedTradeMessage msg = (ExchangeRequestedTradeMessage)message;
+
+            using (BigEndianReader reader = new BigEndianReader(packetDatas))
+            {
+                msg.Deserialize(reader);
+            }
+            if (account.GestItemsUC.ListenerBox.Checked)
+                account.Inventory.AcceptExchange();
+        }
+
+        [MessageHandler(typeof(ExchangeIsReadyMessage))]
+        public static void ExchangeIsReadyMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
+        {
+            ExchangeIsReadyMessage msg = (ExchangeIsReadyMessage)message;
+
+            using (BigEndianReader reader = new BigEndianReader(packetDatas))
+            {
+                msg.Deserialize(reader);
+            }
+            if (msg.ready && account.GestItemsUC.ListenerBox.Checked)
+                account.Inventory.ExchangeReady();
+        }
+
+                        
         #endregion
     }
 }

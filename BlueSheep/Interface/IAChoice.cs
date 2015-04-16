@@ -1,5 +1,5 @@
 ﻿using BlueSheep.Core.Fight;
-using ICSharpCode.SharpZipLib.Zip;
+using BlueSheep.Interface.Text;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,7 +14,7 @@ using System.Xml.Serialization;
 
 namespace BlueSheep.Interface
 {
-    public partial class IAChoice : Form
+    public partial class IAChoice : MetroFramework.Forms.MetroForm
     {
         /// <summary>
         /// AI Choice form.
@@ -41,160 +41,65 @@ namespace BlueSheep.Interface
                     FilesList.Columns[2].Text = "Breed";
                     break;
             }
-            string combinedPath = System.IO.Path.Combine (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlueSheep", "IAs");
-            System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(combinedPath);
-            if (di.GetFiles().Count() == 0)
-            {
-                System.Windows.Forms.MessageBox.Show("Aucune IA, veuillez en télécharger sur le forum ou créer la vôtre :) ");
-            }
-            else
-            {
-                foreach (System.IO.FileInfo file in di.GetFiles())
-                {
-                    if (file.Extension == ".bs")
-                        LoadIA(file);
-                }
-            }
+            Init();
         }
         #endregion
 
         #region Public methods
-        public object DeserializeDisp(string file)
-        {
-            try
-            {
-                StreamReader sr = new StreamReader(file);
-                XmlSerializer seria = new XmlSerializer(typeof(Display));
-                List<string> Infos = new List<string>();
-                Display disp = (Display)seria.Deserialize(sr);
-                Infos.Add(disp.Name);
-                Infos.Add(disp.Author);
-                Infos.Add(disp.Race);
-                Infos.Add(Convert.ToString(disp.Version));
-                sr.Close();
-                return Infos;
-            }
-            catch (Exception ex)
-            {
-                System.Windows.Forms.MessageBox.Show("Erreur dans l'IA, veuillez la recréer." + ex.Message);
-                return null;
-            }
-            
-        }
-
         public void LoadIA(FileInfo fi)
         {
-            string ApplicationDataPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
-            string combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp");
-            Decompress(combinedPath, fi.FullName);
-            combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "disp.xml");
-            FileInfo file1 = new FileInfo(combinedPath);
-            List<string> infos = (List<string>)DeserializeDisp(file1.FullName);
+            StreamReader sr = new StreamReader(fi.FullName);
+            string line = null;
+            string[] infos = new string[6];
+            for (int i = 0; i < 5; i++)
+            {
+                line = sr.ReadLine();
+                if (line == null || line.Length < 5)
+                {
+                    MessageBox.Show("Malformated header. Check your AI's syntax. " + fi.FullName);
+                    return;
+                }
+                line.Replace(" ", "");
+                switch (i)
+                {
+                    case 0:
+                        infos[i] = line.Remove(0, 5).Trim();
+                        //enleve @NAME
+                        break;
+                    case 1:
+                        infos[i] = line.Remove(0, 6).Trim();
+                        //@BREED
+                        break;
+                    case 2:
+                        infos[i] = line.Remove(0, 8).Trim();
+                        //enleve @VERSION
+                        break;
+                    case 3:
+                        infos[i] = line.Remove(0, 7).Trim();
+                        //enleve @AUTHOR
+                        break;
+                    case 4:
+                        infos[i] = line.Remove(0, 12).Trim();
+                        //enleve @DESCRIPTION
+                        break;
+                }
+            }
+            infos[5] = fi.FullName;
+            sr.Close();
             FilesList.Items.Add(infos[0]).SubItems.AddRange(new string[] {
 		infos[1],
 		infos[2],
 		infos[3],
-		fi.FullName
+		infos[4],
+        infos[5]
 	});
-
-            combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "disp.xml");
-            File.Delete(combinedPath);
-            combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "config.xml");
-            File.Delete(combinedPath);
-            combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "spells.xml");
-            File.Delete(combinedPath);
-        }
-
-        // Method to decompress.
-        public void Decompress(string destinationDirectory, string myzipfile)
-        {
-            // on cree l'entree zip
-            ZipInputStream zipIStream = new ZipInputStream(File.OpenRead(myzipfile));
-            ZipEntry theEntry = default(ZipEntry);
-            // pour toutes les entrees
-            while (true)
-            {
-                // recuperation de l'entree
-                theEntry = zipIStream.GetNextEntry();
-                // si l'entree vaut nothing => c'est fini
-                if (theEntry == null)
-                    break; 
-                // test si l'entrée est un fichier
-                if (theEntry.IsFile)
-                {
-                    // definition du fichier de sortie
-                    string directoryPath = System.IO.Path.Combine (destinationDirectory, theEntry.Name);
-                    FileInfo myFile = new FileInfo(directoryPath);
-                    // on crée le(s) répertoire(s) si besoin
-                    Directory.CreateDirectory(myFile.DirectoryName);
-                    // creation du fichier de sortie
-                    FileStream fs = new FileStream(myFile.FullName, FileMode.Create);
-                    int size = 2048;
-                    byte[] data = new byte[size + 1];
-                    while (!((size <= 0)))
-                    {
-                        size = zipIStream.Read(data, 0, data.Length);
-                        fs.Write(data, 0, size);
-                    }
-                    fs.Flush();
-                    fs.Close();
-                }
-            }
-            // on ferme le flux
-            zipIStream.Close();
-        }
-
-        public object DeserializeConfig(string file)
-        {
-            StreamReader sr = new StreamReader(file);
-            XmlSerializer seria = new XmlSerializer(typeof(FightConfig));
-            List<object> Infos = new List<object>();
-            FightConfig conf = (FightConfig)seria.Deserialize(sr);
-            Infos.Add(conf.Placement);
-            Infos.Add(conf.Tactic);
-            sr.Close();
-            return conf;
-        }
-
-        public object DeserializeSpells(string file)
-        {
-            StreamReader sr = new StreamReader(file);
-            XmlSerializer seria = new XmlSerializer(typeof(List<BSpell>));
-            List<BSpell> spells = (List<BSpell>)seria.Deserialize(sr);
-            sr.Close();
-            return spells;
         }
         #endregion
 
         #region Méthodes d'interface
-        private void FilesList_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (FilesList.SelectedItems.Count > 0)
-            {
-                string path = FilesList.SelectedItems[0].SubItems[4].Text;
-                string ApplicationDataPath = Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData);
-                string combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp");
-                Decompress(combinedPath, path);
-                combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "config.xml");
-                string file1 = combinedPath;
-                combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "spells.xml");
-                string file2 = combinedPath;
-                FightConfig Conf = (FightConfig)DeserializeConfig(file1);
-                List<BSpell> Spells = (List<BSpell>) DeserializeSpells(file2);
-                Account.Fight = new BFight(Conf, Spells, Account);
-                Account.NomIA.Text = FilesList.SelectedItems[0].SubItems[0].Text;
-                combinedPath = System.IO.Path.Combine (ApplicationDataPath, "BlueSheep", "Temp", "disp.xml");
-                File.Delete(combinedPath);
-                File.Delete(file1);
-                File.Delete(file2);
-                this.Close();
-            }
-        }
-        
-
         private void LoadBt_Click(object sender, EventArgs e)
         {
-            FilesList_SelectedIndexChanged(null, null);
+            LaunchIA();
         }
 
         private void DelBt_Click(object sender, EventArgs e)
@@ -204,22 +109,60 @@ namespace BlueSheep.Interface
                 string path = FilesList.SelectedItems[0].SubItems[4].Text;
                 File.Delete(path);
                 FilesList.Items.Remove(FilesList.SelectedItems[0]);
-                
             }
 
         }
 
         private void AddBt_Click(object sender, EventArgs e)
         {
-
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                FileInfo file = new FileInfo(openFileDialog1.FileName);
-                LoadIA(file);
+                string combinedPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlueSheep", "IAs", openFileDialog1.SafeFileName);
+                if (!File.Exists(combinedPath))
+                {
+                    File.Copy(openFileDialog1.FileName, combinedPath);
+                    FilesList.Items.Clear();
+                    Init();
+                }
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("Le trajet a déjà été ajouté !");
+                }
+            }
+        }
+        #endregion
 
+        #region Private Methods
+        private void Init()
+        {
+            string combinedPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlueSheep", "IAs");
+            openFileDialog1.InitialDirectory = combinedPath;
+            System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(combinedPath);
+            if (di.GetFiles().Count() == 0)
+            {
+                System.Windows.Forms.MessageBox.Show("Aucune IA, veuillez en télécharger sur le forum ou créer le vôtre :) ");
+            }
+            else
+            {
+                foreach (System.IO.FileInfo file in di.GetFiles())
+                {
+                    LoadIA(file);
+                }
             }
         }
 
+        private void LaunchIA()
+        {
+            if (FilesList.SelectedItems.Count > 0 && Account != null)
+            {
+                Account.FightParser = new FightParser(Account, FilesList.SelectedItems[0].SubItems[5].Text, FilesList.SelectedItems[0].SubItems[0].Text);
+                Account.Log(new BotTextInformation("IA chargée : " + FilesList.SelectedItems[0].Text), 0);
+                Account.FightParser.Name = FilesList.SelectedItems[0].Text;
+                Account.NomIA.Text = Account.FightParser.Name;
+                Account.Fight = new BFight(Account, Account.FightParser, Account.FightData);
+                this.Close();
+            }
+        }
         #endregion
 
     }

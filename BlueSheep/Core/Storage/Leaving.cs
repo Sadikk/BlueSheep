@@ -59,18 +59,9 @@ namespace BlueSheep.Core.Storage
 
             ExchangeObjectMoveMessage exchangeObjectMoveMessage =
                 new ExchangeObjectMoveMessage(objectUID, quantity);
+            account.SocketManager.Send(exchangeObjectMoveMessage);
+            account.LastPacketID.Clear();
 
-            using (BigEndianWriter writer = new BigEndianWriter())
-            {
-                exchangeObjectMoveMessage.Serialize(writer);
-
-                MessagePackaging messagePackaging = new MessagePackaging(writer);
-
-                messagePackaging.Pack((int)exchangeObjectMoveMessage.ProtocolID);
-
-                account.SocketManager.Send(messagePackaging.Writer.Content);
-                account.LastPacketID.Clear();
-            }
         }
         #endregion
     }

@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 namespace BlueSheep.Interface
 {
-    public partial class GroupForm : Form
+    public partial class GroupForm : MetroFramework.Forms.MetroForm
     {
         /// <summary>
         /// Container for multiple accountUC.
@@ -26,25 +26,30 @@ namespace BlueSheep.Interface
         #endregion
 
         #region Constructors
-        public GroupForm(List<AccountUC> accounts)
+        public GroupForm(List<AccountUC> accounts, string name)
         {
-            // TODO : Redo all this shit !
             InitializeComponent();
+            this.Text = name;
             list = new List<Account>();
-            MasterChoice.SelectedIndex = 0;
-            MasterChoice.Items.Remove("Blah");
-            listAccounts = accounts;
             foreach (AccountUC account in accounts)
             {
-                MasterChoice.Items.Add(account.AccountName);
                 TabPage tab = new TabPage(account.AccountName);
+                AccountUC naccount = new AccountUC(account.AccountName, account.AccountPassword, true);
                 AccountTabs.TabPages.Add(tab);
-                tab.Controls.Add(account);
-                account.Dock = DockStyle.Left;
-                account.Show();
+                tab.Controls.Add(naccount);
+                naccount.Dock = DockStyle.Fill;
+                naccount.Show();
+                naccount.MyGroup = new Group(accounts, this.Name);
                 list.Add(new Account(account.AccountName, account.AccountPassword));
-                account.Init();
+                naccount.Init();
             }
+        }
+        #endregion
+
+        #region Public Methods
+        public void AddMember(string name)
+        {
+            MasterChoice.Items.Add(name);
         }
         #endregion
 
@@ -59,10 +64,11 @@ namespace BlueSheep.Interface
                     if (item == account.AccountName)
                     {
                         account.IsSlave = true;
-                        account.MyGroup = new Group(listAccounts, null);
+                        account.IsMaster = false;
+                        account.MyGroup = new Group(listAccounts, this.Name);
                     }
                 }
-                if (item == MasterChoice.SelectedText)
+                if (item == (string)MasterChoice.SelectedItem)
                 {
                     foreach (AccountUC account in listAccounts)
                     {
@@ -70,7 +76,7 @@ namespace BlueSheep.Interface
                         {
                             account.IsSlave = false;
                             account.IsMaster = true;
-                            account.MyGroup = new Group(listAccounts, null);
+                            account.MyGroup = new Group(listAccounts, this.Name);
                             account.Log(new BotTextInformation("Je suis le chef de groupe biatch !"), 1);
                             account.Focus();
                             foreach (AccountUC slave in listAccounts)

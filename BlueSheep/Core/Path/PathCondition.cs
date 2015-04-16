@@ -6,17 +6,17 @@ using System.Text;
 
 namespace BlueSheep.Core.Path
 {
-    class Condition
+    class PathCondition
     {
         #region Fields
-        ConditionEnum m_Cond;
+        PathConditionEnum m_Cond;
         object m_delta;
         char m_operateur;
         AccountUC account;
         #endregion
 
         #region Constructors
-        public Condition(ConditionEnum condition, object delta, char operateur, AccountUC Account)
+        public PathCondition(PathConditionEnum condition, object delta, char operateur, AccountUC Account)
         {
             m_Cond = condition;
             m_delta = delta;
@@ -30,14 +30,14 @@ namespace BlueSheep.Core.Path
         {
             switch (m_Cond)
             {
-                case ConditionEnum.Null:
+                case PathConditionEnum.Null:
                     return true;
-                case ConditionEnum.LastMapId:
-                    if (account.Map.LastMapId == Convert.ToInt32(m_delta))
+                case PathConditionEnum.LastMapId:
+                    if (account.MapData.LastMapId == Convert.ToInt32(m_delta))
                         return true;
                     else
                         return false;
-                case ConditionEnum.Level:
+                case PathConditionEnum.Level:
                     switch (m_operateur)
                     {
                         case '<':
@@ -59,7 +59,7 @@ namespace BlueSheep.Core.Path
                             return false;
                     }
                     return false;
-                case ConditionEnum.Pods:
+                case PathConditionEnum.Pods:
                     switch (m_operateur)
                     {
                         case '<':
@@ -81,7 +81,7 @@ namespace BlueSheep.Core.Path
                             return false;
                     }
                     return false;
-                case ConditionEnum.Alive:
+                case PathConditionEnum.Alive:
                     switch (m_operateur)
                     {
                         case '=':
@@ -92,8 +92,8 @@ namespace BlueSheep.Core.Path
                         default:
                             return false;
                     }
-                case ConditionEnum.PodsPercent:
-                    if (m_delta == "%PODS%")
+                case PathConditionEnum.PodsPercent:
+                    if (((string)m_delta)== "%PODS%")
                         m_delta = account.GestItemsUC.NUDBank.Value;
                     switch (m_operateur)
                     {
@@ -122,7 +122,5 @@ namespace BlueSheep.Core.Path
             return false;
         }
         #endregion
-
-
     }
 }

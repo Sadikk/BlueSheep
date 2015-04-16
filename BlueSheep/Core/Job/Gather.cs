@@ -15,9 +15,12 @@ namespace BlueSheep.Core
     {
         #region Fields
         private AccountUC account = null;
-        public bool IsFishing { get; set; }
-        public bool Moved { get; set; }
         private int _Id = -1;
+        private List<int> m_BannedId = new List<int>();
+
+        /// <summary>
+        /// Return the name of Current_El.
+        /// </summary>
         public string resourceName
         {
             get
@@ -26,7 +29,12 @@ namespace BlueSheep.Core
             }
         }
         public JobUC Current_Job;
+        
+        /// <summary>
+        /// Store the gathering stats.
+        /// </summary>
         public Dictionary<string, int> Stats = new Dictionary<string, int>();
+       
         public InteractiveElement Current_El;
         public int Id
         {
@@ -51,6 +59,7 @@ namespace BlueSheep.Core
                 _SkillInstanceUid = value;
             }
         }
+        private int _Error;
         #endregion
 
 
@@ -59,6 +68,15 @@ namespace BlueSheep.Core
             account = Account;
         }
 
+        /// <summary>
+        /// Perform the gathering of the specified ressources.
+        /// </summary>
+        /// <param name="ressources">
+        /// List of the ressources'id.
+        /// </param>
+        /// /// <param name="job">
+        /// The job used.
+        /// </param>
         public bool GoGather(List<int> ressources, JobUC job)
         {
             List<int> ListeRessourcesID = ressources;
@@ -71,13 +89,13 @@ namespace BlueSheep.Core
                 {
                     foreach (var RessourceID in ListeRessourcesID)
                     {
-                        foreach (var UsableElement in account.Map.UsableElements)
+                        foreach (var UsableElement in account.MapData.UsableElements)
                         {
-                            foreach (InteractiveElement InteractiveElement in account.Map.InteractiveElements.Values)
+                            foreach (InteractiveElement InteractiveElement in account.MapData.InteractiveElements.Keys)
                             {
                                 if (UsableElement.Value.Element.Id == InteractiveElement.Id && InteractiveElement.IsUsable)
                                 {
-                                    if (InteractiveElement.TypeId == RessourceID && account.Map.NoEntitiesOnCell(UsableElement.Value.CellId))
+                                    if (InteractiveElement.TypeId == RessourceID && account.MapData.NoEntitiesOnCell(UsableElement.Value.CellId))
                                     {
                                         ListUsableElement.Add(UsableElement.Value);
                                         ListDistance.Add(GetRessourceDistance((int)UsableElement.Value.Element.Id));
@@ -89,13 +107,13 @@ namespace BlueSheep.Core
                 }
                 else
                 {
-                    foreach (var UsableElement in account.Map.UsableElements)
+                    foreach (var UsableElement in account.MapData.UsableElements)
                     {
-                        foreach (InteractiveElement InteractiveElement in account.Map.InteractiveElements.Values)
+                        foreach (InteractiveElement InteractiveElement in account.MapData.InteractiveElements.Keys)
                         {
                             if (UsableElement.Value.Element.Id == InteractiveElement.Id && InteractiveElement.IsUsable)
                             {
-                                if (account.Map.NoEntitiesOnCell(UsableElement.Value.CellId))
+                                if (account.MapData.NoEntitiesOnCell(UsableElement.Value.CellId))
                                 {
                                     ListUsableElement.Add(UsableElement.Value);
                                     ListDistance.Add(GetRessourceDistance((int)UsableElement.Value.Element.Id));
@@ -109,39 +127,29 @@ namespace BlueSheep.Core
                 {
                     foreach (UsableElement UsableElement in TrierDistanceElement(ListDistance, ListUsableElement))
                     {
-                        if (UsableElement.Element.IsUsable == false)
+                        if (UsableElement.Element.IsUsable == false || m_BannedId.Contains((int)UsableElement.Element.Id))
                             continue;
                         Id = (int)UsableElement.Element.Id;
                         SkillInstanceUid = UsableElement.Skills[0].skillInstanceUid;
                         Current_El = UsableElement.Element;
-                        //resourceName = UsableElement.Element.TypeId;
                         int distance = GetRessourceDistance((int)UsableElement.Element.Id);
-                        if (distance == 1 || (IsFishing && account.Inventory.WeaponRange >= distance))
+                        account.Log(new DebugTextInformation("[Gather] Distance from element " + UsableElement.Element.Id + " = " + distance), 0);
+                        if (distance == -1)
                         {
-                            if (Moved)
-                            {
-                                account.Map.UseElement(Id, SkillInstanceUid);
-                            }
-                            else
-                            {
-                                account.Map.UseElement((int)UsableElement.Element.Id, UsableElement.Skills[0].skillInstanceUid);
-                            }
-                            Moved = false;
-                            IsFishing = false;
+                            continue;
+                        }
+                        if (account.MapData.CanGatherElement(Id, distance))
+                        {
                             account.SetStatus(Status.Gathering);
+                            account.Map.UseElement(Id, SkillInstanceUid);
                             return true;
                         }
-                        else if ((account.Inventory.HasFishingRod == false && account.Map.MoveToElement((int)UsableElement.Element.Id, 1)) || (account.Inventory.HasFishingRod == true && account.Map.MoveToElement((int)UsableElement.Element.Id, account.Inventory.WeaponRange)))
+                        else if (account.Map.MoveToElement((int)UsableElement.Element.Id, account.Inventory.WeaponRange))
                         {
-                            account.SetStatus(Status.Gathering);
-                            Id = (int)UsableElement.Element.Id;
-                            SkillInstanceUid = UsableElement.Skills[0].skillInstanceUid;
-                            if (account.Inventory.HasFishingRod)
-                                IsFishing = true;
-                            else
-                                IsFishing = false;
-                            return true;                    
+                            return true;
                         }
+                        else
+                            continue;
                     }
                 }
             }
@@ -151,11 +159,46 @@ namespace BlueSheep.Core
             }
             Id = -1;
             SkillInstanceUid = -1;
-            IsFishing = false;
             Current_El = null;
             return false;
         }
 
+        /// <summary>
+        /// Increase the error count and continue the path if it overtakes a step.
+        /// </summary>
+        public bool Error()
+        {
+            _Error++;
+            if (_Error > 1 && account.Path != null)
+            {
+                account.Path.PerformActionsStack();
+                return true;
+            }
+            else
+                return false;
+        }
+
+        /// <summary>
+        /// Forbid an element id that is unreachable actually.
+        /// </summary>
+        public void BanElementId(int id)
+        {
+            m_BannedId.Add(id);
+            account.Log(new DebugTextInformation("[Gather] Element id " + id + " banned."), 0);
+        }
+
+        /// <summary>
+        /// Set the error amount to 0.
+        /// </summary>
+        public void ClearError()
+        {
+            _Error = 0;
+            m_BannedId.Clear();
+        }
+
+        /// <summary>
+        /// Sort the distance from a list.
+        /// </summary>
         public List<UsableElement> TrierDistanceElement(List<int> ListDistance, List<UsableElement> ListUsableElement)
         {
             int ListLength = 0;
@@ -185,11 +228,16 @@ namespace BlueSheep.Core
             return ListUsableElement;
         }
 
-
-        private int GetRessourceDistance(int Id)
+        /// <summary>
+        /// Get the distance between the character and the ressource.
+        /// </summary>
+        /// <param name="Id">
+        /// The id of the ressource.
+        /// </param>
+        public int GetRessourceDistance(int Id)
         {
-            MapPoint CharacterMapPoint = new MapPoint(account.Map.Character.CellId);
-            StatedElement StatedRessource = account.Map.StatedElements.FirstOrDefault((se) => se.Value.Id == Id).Value;
+            MapPoint CharacterMapPoint = new MapPoint(account.MapData.Character.disposition.cellId);
+            StatedElement StatedRessource = account.MapData.StatedElements.FirstOrDefault((se) => se.Id == Id);
             if (StatedRessource != null)
             {
                 MapPoint RessourceMapPoint = new MapPoint((int)StatedRessource.CellId);

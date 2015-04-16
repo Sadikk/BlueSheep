@@ -35,7 +35,7 @@ namespace BlueSheep.Core.Misc
                 pack.Pack((int)msg.ProtocolID);
                 account.SocketManager.Send(pack.Writer.Content);
                 if (account.DebugMode.Checked)
-                    account.Log(new BotTextInformation("[SND] 861 (ChatClientMultiMessage)"), 0);
+                    account.Log(new DebugTextInformation("[SND] 861 (ChatClientMultiMessage)"), 0);
             }
         }
 
@@ -50,21 +50,15 @@ namespace BlueSheep.Core.Misc
                 pack.Pack((int)msg.ProtocolID);
                 account.SocketManager.Send(pack.Writer.Content);
                 if (account.DebugMode.Checked)
-                    account.Log(new BotTextInformation("[SND] 5001 (InteractiveUseRequestMessage)"), 0);
+                    account.Log(new DebugTextInformation("[SND] 5001 (InteractiveUseRequestMessage)"), 0);
             }
         }
 
         public void Buy()
         {
-            using (BigEndianWriter writer = new BigEndianWriter())
-            {
-                HouseBuyRequestMessage msg = new HouseBuyRequestMessage(priceHouse);
-                msg.Serialize(writer);
-                MessagePackaging pack = new MessagePackaging(writer);
-                pack.Pack((int)msg.ProtocolID);
-                account.SocketManager.Send(pack.Writer.Content);
-            }
-            account.Log(new BotTextInformation("Maison achetée pour " + priceHouse + " kamas !"),0);
+            HouseBuyRequestMessage msg = new HouseBuyRequestMessage(priceHouse);
+            account.SocketManager.Send(msg);
+            account.Log(new BotTextInformation("Maison achetée pour " + priceHouse + " kamas !"), 0);
             if (account.PhraseADire.Text.Length != 0)
             {
                 Say(account.PhraseADire.Text);

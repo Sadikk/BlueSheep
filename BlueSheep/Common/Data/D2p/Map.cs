@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-//using RebirthAPI.Game.Map;
 using BlueSheep.Common.IO;
 using System.IO;
 
 namespace BlueSheep.Data.D2p
 {
-    // TODO : Implement IMapData
-    public class Map// : IMapData
+    public class Map
     {
         // Methods
         public bool IsLineOfSight(int cellId)

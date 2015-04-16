@@ -17,17 +17,7 @@ namespace BlueSheep.Engine.Handlers.Basic
             account.Sequence++;
 
             SequenceNumberMessage sequenceNumberMessage = new SequenceNumberMessage((ushort)account.Sequence);
-
-            using (BigEndianWriter writer = new BigEndianWriter())
-            {
-                sequenceNumberMessage.Serialize(writer);
-
-                MessagePackaging messagePackaging = new MessagePackaging(writer);
-
-                messagePackaging.Pack((int)sequenceNumberMessage.ProtocolID);
-
-                account.SocketManager.Send(messagePackaging.Writer.Content);
-            }
+            account.SocketManager.Send(sequenceNumberMessage);
         }
 
         [MessageHandler(typeof(BasicLatencyStatsRequestMessage))]
@@ -50,7 +40,7 @@ namespace BlueSheep.Engine.Handlers.Basic
 
                     account.SocketManager.Send(messagePackaging.Writer.Content);
                     if (account.DebugMode.Checked)
-                        account.Log(new BlueSheep.Interface.Text.BotTextInformation("[SND] 5663 (BasicLatencyStatsMessage)"), 0);
+                        account.Log(new BlueSheep.Interface.Text.DebugTextInformation("[SND] 5663 (BasicLatencyStatsMessage)"), 0);
                 }
             }
             

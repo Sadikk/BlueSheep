@@ -82,10 +82,10 @@ namespace BlueSheep.Core
         #region Public methods
         public void Init()
         {
-            if (m_CurrentPetIndex == account.petsList.Count)//MainForm.ActualMainForm.MainRunning.CurrentBot.PetsList.Count)
+            if (m_CurrentPetIndex == account.petsList.Count)
             {
-                //MainForm.ActualMainForm.MainRunning.NextBot();
                 account.SetNextMeal();
+                account.GetNextMeal();
                 return;
             }
 

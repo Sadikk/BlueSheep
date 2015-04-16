@@ -59,7 +59,7 @@ namespace BlueSheep.Engine.Handlers.Character
         public static void CharacterSelectedErrorMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
             account.Log(new ConnectionTextInformation("Erreur lors de la sélection du personnage."),0);
-            account.TryReconnect(2);
+            account.TryReconnect(30);
         }
 
         [MessageHandler(typeof(CharacterStatsListMessage))]
@@ -74,20 +74,22 @@ namespace BlueSheep.Engine.Handlers.Character
                 account.ConfigManager.RecoverConfig();
             account.CharacterStats = msg.stats;
             account.CaracUC.Init();
+            if (account.MyGroup != null)
+                ((GroupForm)account.ParentForm).AddMember(account.CharacterBaseInformations.name);
             int percent = (msg.stats.lifePoints / msg.stats.maxLifePoints) * 100;
             string text = msg.stats.lifePoints + "/" + msg.stats.maxLifePoints + "(" + percent + "%)";
-            account.ModifBar(2, (int)msg.stats.maxLifePoints,(int)msg.stats.lifePoints, "Vitalité");
+            account.ModifBar(2, (int)msg.stats.maxLifePoints, (int)msg.stats.lifePoints, "Vitalité");
             double i = msg.stats.experience - msg.stats.experienceLevelFloor;
             double j = msg.stats.experienceNextLevelFloor - msg.stats.experienceLevelFloor;
             try
             {
-                int xppercent = (int)((i / j) * 100);
+                int xppercent = (int)(Math.Round(i / j,2) * 100);
             }
             catch (Exception ex)
             {
 
             }
-                account.ModifBar(1, (int)msg.stats.experienceNextLevelFloor - (int)msg.stats.experienceLevelFloor, (int)msg.stats.experience - (int)msg.stats.experienceLevelFloor, "Experience");
+            account.ModifBar(1, (int)msg.stats.experienceNextLevelFloor - (int)msg.stats.experienceLevelFloor, (int)msg.stats.experience - (int)msg.stats.experienceLevelFloor, "Experience");
             account.ModifBar(4, 0, 0, msg.stats.kamas.ToString());
         }
         
@@ -169,7 +171,7 @@ namespace BlueSheep.Engine.Handlers.Character
             account.ModifBar(1, (int)account.CharacterStats.experienceNextLevelFloor - (int)account.CharacterStats.experienceLevelFloor, (int)account.CharacterStats.experience - (int)account.CharacterStats.experienceLevelFloor, "Experience");
             if (account.Fight != null)
             {
-                account.Fight.xpWon[DateTime.Today] += (int)msg.experienceCharacter;
+                account.FightData.xpWon[DateTime.Today] += (int)msg.experienceCharacter;
             }
 
         }
@@ -191,6 +193,38 @@ namespace BlueSheep.Engine.Handlers.Character
             //    account.Log(new ErrorTextInformation("Echec de l'up de caractéristique."), 0);
                 
         }
+
+        [MessageHandler(typeof(PlayerStatusUpdateMessage))]
+        public static void PlayerStatusUpdateMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
+        {
+            PlayerStatusUpdateMessage msg = (PlayerStatusUpdateMessage)message;
+            using (BigEndianReader reader = new BigEndianReader(packetDatas))
+            {
+                msg.Deserialize(reader);
+            }
+            if (msg.playerId == account.CharacterBaseInformations.id)
+            {
+                switch (msg.status.statusId)
+                {
+                    case 10:
+                        account.Log(new ActionTextInformation("Statut disponible activé."), 3);
+                        break;
+                    case 20:
+                        account.Log(new ActionTextInformation("Statut absent activé."), 3);
+                        PlayerStatusUpdateRequestMessage nmsg = new PlayerStatusUpdateRequestMessage(new PlayerStatus(10));
+                        account.SocketManager.Send(nmsg);
+                        break;
+                    case  40:
+                        account.Log(new ActionTextInformation("Statut solo activé."), 3);
+                        break;
+                    case 30:
+                        account.Log(new ActionTextInformation("Statut privé activé."), 3);
+                        break;
+
+                }
+            }
+        }
+        
         #endregion
     }
 }

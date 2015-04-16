@@ -59,6 +59,36 @@ namespace BlueSheep.Engine.Handlers.Job
                 }
             }
             account.ActualizeJobs();
+            foreach (JobUC j in account.JobsUC)
+            {
+                j.populateTreeview();
+            }
+        }
+
+        [MessageHandler(typeof(JobExperienceUpdateMessage))]
+        public static void JobExperienceUpdateMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
+        {
+            JobExperienceUpdateMessage msg = (JobExperienceUpdateMessage)message;
+
+            using (BigEndianReader reader = new BigEndianReader(packetDatas))
+            {
+                msg.Deserialize(reader);
+            }
+            JobExperience i = msg.experiencesUpdate;
+            foreach (Core.Job.Job j in account.Jobs)
+            {
+                if (i.jobId == j.Id)
+                {
+                    j.Level = i.jobLevel;
+                    j.XP = (int)i.jobXP;
+                    j.XpLevelFloor = (int)i.jobXpLevelFloor;
+                    j.XpNextLevelFloor = (int)i.jobXpNextLevelFloor;
+                    break;
+                }
+            }
+            foreach (JobUC j in account.JobsUC)
+                j.UpdateJob();
+         
         }
 
 #endregion

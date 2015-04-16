@@ -50,7 +50,7 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>1</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
@@ -80,15 +80,22 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="MetroFramework, Version=1.3.0.0, Culture=neutral, PublicKeyToken=5f91a84759bf584a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>C:\Users\Valentin\Downloads\winforms-modernui-master\winforms-modernui-master\MetroFramework\bin\Debug\MetroFramework.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.ReportViewer.Common, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+    <Reference Include="Microsoft.ReportViewer.WinForms, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -97,6 +104,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountsManager\AccountsFileInteractions.cs" />
@@ -130,6 +140,7 @@
     <Compile Include="Common\Data\I18nFileAccessor.cs" />
     <Compile Include="Common\Data\Pathfinding\CellInfo.cs" />
     <Compile Include="Common\Data\Pathfinding\Dofus1Line.cs" />
+    <Compile Include="Common\Data\Pathfinding\DStar.cs" />
     <Compile Include="Common\Data\Pathfinding\MapMovementAdapter.cs" />
     <Compile Include="Common\Data\Pathfinding\OpenSquare.cs" />
     <Compile Include="Common\Data\Pathfinding\Pathfinder.cs" />
@@ -1348,12 +1359,15 @@
     <Compile Include="Common\Types\Spell.cs" />
     <Compile Include="Core\Fight\BFight.cs" />
     <Compile Include="Core\Fight\BSpell.cs" />
+    <Compile Include="Core\Fight\ChallengeEnum.cs" />
     <Compile Include="Core\Fight\Entity.cs" />
-    <Compile Include="Core\Fight\FightConfig.cs" />
+    <Compile Include="Core\Fight\FightCondition.cs" />
+    <Compile Include="Core\Fight\FightConditionEnum.cs" />
+    <Compile Include="Core\Fight\FightData.cs" />
+    <Compile Include="Core\Fight\FightParser.cs" />
     <Compile Include="Core\Fight\PlacementEnum.cs" />
     <Compile Include="Core\Fight\SpellCategory.cs" />
     <Compile Include="Core\Fight\TacticEnum.cs" />
-    <Compile Include="Core\Fight\TeamEnum.cs" />
     <Compile Include="Core\Job\Gather.cs" />
     <Compile Include="Core\Inventory\Inventory.cs" />
     <Compile Include="Core\Inventory\InventoryPositionEnum.cs" />
@@ -1363,14 +1377,15 @@
     <Compile Include="Core\Map\Elements\StatedElement.cs" />
     <Compile Include="Core\Map\Elements\UsableElement.cs" />
     <Compile Include="Core\Map\Map.cs" />
+    <Compile Include="Core\Map\MapData.cs" />
     <Compile Include="Core\Meal\Feeding.cs" />
     <Compile Include="Core\Misc\Flood.cs" />
     <Compile Include="Core\Misc\HouseBuy.cs" />
     <Compile Include="Core\Npc\Npc.cs" />
     <Compile Include="Core\Npc\NpcReply.cs" />
     <Compile Include="Core\Path\Action.cs" />
-    <Compile Include="Core\Path\Condition.cs" />
-    <Compile Include="Core\Path\ConditionEnum.cs" />
+    <Compile Include="Core\Path\PathCondition.cs" />
+    <Compile Include="Core\Path\PathConditionEnum.cs" />
     <Compile Include="Core\Path\PathManager.cs" />
     <Compile Include="Core\Running.cs" />
     <Compile Include="Core\Storage\Getting.cs" />
@@ -1387,6 +1402,16 @@
     <Compile Include="Engine\Enums\ServerStatusEnum.cs" />
     <Compile Include="Engine\Enums\SpellInabilityReasonEnum.cs" />
     <Compile Include="Engine\Enums\StatusEnum.cs" />
+    <Compile Include="Engine\ExceptionHandler\AppSettings.cs" />
+    <Compile Include="Engine\ExceptionHandler\ExceptionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Engine\ExceptionHandler\ExceptionDialog.Designer.cs">
+      <DependentUpon>ExceptionDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Engine\ExceptionHandler\HandledExceptionManager.cs" />
+    <Compile Include="Engine\ExceptionHandler\SimpleMail.cs" />
+    <Compile Include="Engine\ExceptionHandler\UnhandledExceptionManager.cs" />
     <Compile Include="Engine\Frame\LatencyFrame.cs" />
     <Compile Include="Engine\Handlers\Basic\BasicHandler.cs" />
     <Compile Include="Engine\Handlers\Character\CharacterHandler.cs" />
@@ -1407,12 +1432,14 @@
     <Compile Include="Engine\Types\Message.cs" />
     <Compile Include="Engine\Types\MessageInformations.cs" />
     <Compile Include="Engine\Types\MessagePackaging.cs" />
+    <Compile Include="Engine\Types\WatchDog.cs" />
     <Compile Include="Interface\AccountFrm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Interface\AccountFrm.Designer.cs">
       <DependentUpon>AccountFrm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Interface\Text\DebugTextInformation.cs" />
     <Compile Include="Interface\UCs\AccountUC.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -1449,17 +1476,17 @@
     <Compile Include="Interface\IAChoice.Designer.cs">
       <DependentUpon>IAChoice.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interface\IACreator.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Interface\IACreator.Designer.cs">
-      <DependentUpon>IACreator.cs</DependentUpon>
-    </Compile>
     <Compile Include="Interface\UCs\CaracUC.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Interface\UCs\CaracUC.Designer.cs">
       <DependentUpon>CaracUC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Interface\UCs\FloodUC.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Interface\UCs\FloodUC.Designer.cs">
+      <DependentUpon>FloodUC.cs</DependentUpon>
     </Compile>
     <Compile Include="Interface\UCs\GestItemsUC.cs">
       <SubType>UserControl</SubType>
@@ -1512,8 +1539,17 @@
     <Compile Include="Interface\UCs\HeroicUC.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Interface\UCs\RegenUC.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Interface\UCs\RegenUC.Designer.cs">
+      <DependentUpon>RegenUC.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Engine\ExceptionHandler\ExceptionDialog.resx">
+      <DependentUpon>ExceptionDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Interface\AccountFrm.resx">
       <DependentUpon>AccountFrm.cs</DependentUpon>
     </EmbeddedResource>
@@ -1535,11 +1571,11 @@
     <EmbeddedResource Include="Interface\IAChoice.resx">
       <DependentUpon>IAChoice.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Interface\IACreator.resx">
-      <DependentUpon>IACreator.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Interface\UCs\CaracUC.resx">
       <DependentUpon>CaracUC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Interface\UCs\FloodUC.resx">
+      <DependentUpon>FloodUC.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Interface\UCs\GestItemsUC.resx">
       <DependentUpon>GestItemsUC.cs</DependentUpon>
@@ -1559,6 +1595,9 @@
     <EmbeddedResource Include="Interface\UCs\HeroicUC.resx">
       <DependentUpon>HeroicUC.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Interface\UCs\RegenUC.resx">
+      <DependentUpon>RegenUC.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -1569,6 +1608,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="ClassDiagram1.cd" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -1610,25 +1650,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Common\Data\Pathfinding\Zones\" />
-  </ItemGroup>
-  <ItemGroup>
-    <COMReference Include="AxShockwaveFlashObjects">
-      <Guid>{D27CDB6B-AE6D-11CF-96B8-444553540000}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>aximp</WrapperTool>
-      <Isolated>False</Isolated>
-    </COMReference>
-    <COMReference Include="ShockwaveFlashObjects">
-      <Guid>{D27CDB6B-AE6D-11CF-96B8-444553540000}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

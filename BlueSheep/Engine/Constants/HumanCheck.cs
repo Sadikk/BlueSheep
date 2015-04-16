@@ -12,6 +12,7 @@ namespace BlueSheep.Engine.Constants
 {
     public class HumanCheck
     {
+        /* HASH FUNCTION BYPASS. PLEASE DON'T USE WITHOUT CREDITS */
         private const string BASE64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
         
         public byte[] _hashKey;
@@ -23,8 +24,7 @@ namespace BlueSheep.Engine.Constants
 
         public byte[] hash_function(byte[] packet)
         {
-            //object _loc5_ = null;
-            //byte[] _loc6_ = null;
+            /* Hello Mr.Fourbasse :hap: */
             if (this._hashKey == null)
                 return packet;
             using (BigEndianWriter writer = new BigEndianWriter())
@@ -91,29 +91,20 @@ namespace BlueSheep.Engine.Constants
         private byte[] hash(byte[] src)
         {
             uint _loc2_ = Convert.ToUInt32(src.Length * 8);
-            //string _loc3_ = src.endian;
             while (src.Length % 4 != 0)
             {
-                //src[src.Length] = 0;
                 List<byte> list = src.ToList();
                 list.RemoveAt(src.Length - 1);
                 src = list.ToArray();
             }
             List<uint> _loc4_ = new List<uint>();
             uint _loc5_ = 0;
-            
-            //while (_loc5_ < src.Length)
-            //{
-            //    _loc4_.Add(reader.ReadUInt32());
-            //    _loc5_ = _loc5_ + 4;
-            //}
             byte[] _loc6_;
             using (MD5 md5Hash = MD5.Create())
             {
                 _loc6_ = md5Hash.ComputeHash(src.ToArray());
             }
             BinaryReader reader = new BinaryReader(new MemoryStream(_loc6_), Encoding.UTF8);
-            //uint[] _loc6_ = core_md5(_loc4_.ToArray(), _loc2_);
             while (_loc5_ < _loc6_.Length)
             {
                 _loc4_.Add(reader.ReadUInt32());
@@ -126,7 +117,6 @@ namespace BlueSheep.Engine.Constants
                 writer.Write(_loc4_.ToArray()[_loc5_]);
                 _loc5_++;
             }
-            //src.length=_loc2_/8;
             byte[] content = new byte[writer.BaseStream.Length];
 
             writer.BaseStream.Position = 0;

@@ -34,12 +34,13 @@ namespace BlueSheep.Common.Protocol.Messages
         public sbyte[] credentials;
         public short serverId;
         public double sessionOptionalSalt;
+        public List<short> failedAttempts;
         
         public IdentificationMessage()
         {
         }
         
-        public IdentificationMessage(bool autoconnect, bool useCertificate, bool useLoginToken, Types.VersionExtended version, string lang, sbyte[] credentials, short serverId, double sessionOptionalSalt)
+        public IdentificationMessage(bool autoconnect, bool useCertificate, bool useLoginToken, Types.VersionExtended version, string lang, sbyte[] credentials, short serverId, double sessionOptionalSalt, List<short> failedAttempts)
         {
             this.autoconnect = autoconnect;
             this.useCertificate = useCertificate;
@@ -49,6 +50,7 @@ namespace BlueSheep.Common.Protocol.Messages
             this.credentials = credentials;
             this.serverId = serverId;
             this.sessionOptionalSalt = sessionOptionalSalt;
+            this.failedAttempts = failedAttempts;
         }
         
         public override void Serialize(BigEndianWriter writer)
@@ -67,6 +69,9 @@ namespace BlueSheep.Common.Protocol.Messages
             }
             writer.WriteShort(serverId);
             writer.WriteDouble(sessionOptionalSalt);
+            writer.WriteShort((short)this.failedAttempts.Count);
+            foreach (short s in failedAttempts)
+                writer.WriteShort(s);
         }
         
         public override void Deserialize(BigEndianReader reader)
@@ -88,6 +93,13 @@ namespace BlueSheep.Common.Protocol.Messages
             sessionOptionalSalt = reader.ReadDouble();
             if (sessionOptionalSalt < -9.007199254740992E15 || sessionOptionalSalt > 9.007199254740992E15)
                 throw new Exception("Forbidden value on sessionOptionalSalt = " + sessionOptionalSalt + ", it doesn't respect the following condition : sessionOptionalSalt < -9.007199254740992E15 || sessionOptionalSalt > 9.007199254740992E15");
+            ushort length = reader.ReadUShort();
+            failedAttempts = new List<short>();
+            for (int i = 0; i < length; i++)
+            {
+                failedAttempts.Add(reader.ReadVarShort());
+            }
+
         }
         
     }

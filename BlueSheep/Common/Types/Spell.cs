@@ -24,8 +24,6 @@ namespace BlueSheep.Common.Types
 
         public string GetName()
         {
-            //GameDataFileAccessor access = new GameDataFileAccessor();
-            //BlueSheep.Common.Data.DataCenter.Fight.Spell spell = (BlueSheep.Common.Data.DataCenter.Fight.Spell)access.GetObject("Spells",Id);
             DataClass spell = GameData.GetDataObject(D2oFileEnum.Spells, Id);
             return I18N.GetText((int)spell.Fields["nameId"]);
         }

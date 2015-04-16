@@ -6,6 +6,7 @@ using System.Data;
 using System.Diagnostics;
 using BlueSheep.Data.Pathfinding.Positions;
 using BlueSheep.Data.D2p;
+using BlueSheep.Core.Map;
 
 namespace BlueSheep.Data.Pathfinding
 {
@@ -21,7 +22,7 @@ namespace BlueSheep.Data.Pathfinding
             this.int_0 = 0;
         }
 
-        internal SimpleCellInfo(Map MapData, MapPoint OriginPoint, SimpleCellInfo class13_1, MapPoint mapPoint_2)
+        internal SimpleCellInfo(MapData MapData, MapPoint OriginPoint, SimpleCellInfo class13_1, MapPoint mapPoint_2)
         {
             this.int_0 = 0;
             this.int_1 = 0;
@@ -42,7 +43,7 @@ namespace BlueSheep.Data.Pathfinding
                         this.int_0 = (this.int_0 + 50);
                     }
                 }
-                if ((MapData.Cells[OriginPoint.CellId].Speed == 2))
+                if ((MapData.Data.Cells[OriginPoint.CellId].Speed == 2))
                 {
                     this.int_0 = (this.int_0 - 8);
                 }

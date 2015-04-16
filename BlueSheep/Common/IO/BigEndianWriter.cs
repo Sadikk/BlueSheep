@@ -37,6 +37,11 @@ namespace BlueSheep.Common.IO
         {
             m_BinaryWriter = new BinaryWriter(new MemoryStream(), Encoding.UTF8);
         }
+
+        public BigEndianWriter(Stream stream)
+        {
+            m_BinaryWriter = new BinaryWriter(stream, Encoding.UTF8);
+        }
         #endregion
 
         #region Public methods

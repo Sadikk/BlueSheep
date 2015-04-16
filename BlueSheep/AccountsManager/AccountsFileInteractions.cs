@@ -88,13 +88,14 @@ namespace BlueSheep.AccountsManager
                 Directory.CreateDirectory(m_SavingGroupDirectoryPath);
             //if (!File.Exists(m_SavingDirectoryPath + @"\" + groupname))
             // File.Create(m_SavingDirectoryPath + @"\" + groupname);
-            using (BigEndianWriter writer = new BigEndianWriter())
+            m_GroupAccounts = accounts;
+            using (BigEndianWriter writer = new BigEndianWriter(File.Create(Path.Combine(m_SavingGroupDirectoryPath, groupname))))
             {
-                writer.WriteInt(m_Accounts.Count);
-                foreach (Account accountObject in m_Accounts)
+                writer.WriteInt(m_GroupAccounts.Count);
+                foreach (AccountUC accountObject in m_GroupAccounts)
                 {
-                    writer.WriteUTF(accountObject.Name);
-                    writer.WriteUTF(CryptageBS.EncryptBS(accountObject.Password));
+                    writer.WriteUTF(accountObject.AccountName);
+                    writer.WriteUTF(CryptageBS.EncryptBS(accountObject.AccountPassword));
                 }
                 //IFormatter binaryFormatter = new BinaryFormatter();
                 //using (Stream stream = new FileStream(m_SavingGroupDirectoryPath + @"\" + groupname, FileMode.Create, FileAccess.Write))
@@ -134,8 +135,8 @@ namespace BlueSheep.AccountsManager
                     for (int index = 0; index < limite; index++)
                         m_GroupAccounts.Add(new AccountUC(reader.ReadUTF(), reader.ReadUTF(), false));
                     Groups.Add(new Group(m_GroupAccounts, file.Name.Remove((int)file.Name.Length - 3)));
-                    foreach (Account accountObject in m_Accounts)
-                        accountObject.Password = CryptageBS.DecryptBS(accountObject.Password);
+                    foreach (AccountUC accountObject in m_GroupAccounts)
+                        accountObject.AccountPassword = CryptageBS.DecryptBS(accountObject.AccountPassword);
                 }
             }
         }

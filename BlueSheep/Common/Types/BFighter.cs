@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BlueSheep.Common.Protocol.Types;
+using BlueSheep.Common.Data.D2o;
 
 namespace BlueSheep.Common.Types
 {
@@ -21,13 +22,31 @@ namespace BlueSheep.Common.Types
             CreatureGenericId = creatureId;
         }
 
-        public int ActionPoints { get; internal set; }
-        public GameFightMinimalStats GameFightMinimalStats { get; private set; }
-        public bool IsAlive { get; internal set; }
-        public int LifePoints { get; internal set; }
-        public int MaxLifePoints { get; private set; }
-        public int MovementPoints { get; internal set; }
+        public int ActionPoints { get; set; }
+        public GameFightMinimalStats GameFightMinimalStats { get;  set; }
+        public bool IsAlive { get;  set; }
+        public int LifePoints { get;  set; }
+        public int MaxLifePoints { get;  set; }
+        public int MovementPoints { get; set; }
         public uint TeamId { get; private set; }
-        public int CreatureGenericId { get; private set; }
+        public int CreatureGenericId { get;  set; }
+        private string m_Name = "";
+
+        public string Name
+        {
+            get
+            {
+                if (m_Name != "")
+                    return m_Name;
+                if (CreatureGenericId != 0)
+                {
+                    DataClass data = GameData.GetDataObject(D2oFileEnum.Monsters, CreatureGenericId);
+                    return BlueSheep.Common.Data.I18N.GetText((int)data.Fields["nameId"]);
+                }
+                else
+                    return "Unknown";
+            }
+            set { m_Name = value; }
+        }
     }
 }

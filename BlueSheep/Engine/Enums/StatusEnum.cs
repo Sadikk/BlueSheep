@@ -15,6 +15,7 @@ namespace BlueSheep.Engine.Enums
         Moving,
         Exchanging,
         Regenerating,
-        Disconnected
+        Disconnected,
+        Busy
     }
 }

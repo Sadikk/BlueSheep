@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using BlueSheep.Interface;
 using Microsoft.Win32;
 using System.IO;
+using BlueSheep.Engine.ExceptionHandler;
 
 namespace BlueSheep
 {
@@ -18,6 +19,7 @@ namespace BlueSheep
             {
                 try
                 {
+                    UnhandledExceptionManager.AddHandler();
                     Application.EnableVisualStyles();
                     Application.SetCompatibleTextRenderingDefault(false);
                     RegistryKey reg;
@@ -31,8 +33,8 @@ namespace BlueSheep
                         System.Threading.Thread.Sleep(1000);
                     }
                     reg.SetValue("Version", 0.9);
-                    reg.SetValue("Minor", 2);
-                    Application.Run(new MainForm("0.9.2"));
+                    reg.SetValue("Minor", "8,1");
+                    Application.Run(new MainForm("0.9.7.1"));
                 }
                 catch (Exception ex)
                 { MessageBox.Show(ex.Message + ex.StackTrace); }
@@ -41,13 +43,15 @@ namespace BlueSheep
             else
             {
                System.Windows.Forms.MessageBox.Show("Veuillez lancer BlueSheep via l'updater !");
-               Application.Exit();
+               Environment.Exit(0);
             }
+
             /* Changelog :
-             * - + condition alive
-             * - + update des hp en combat
-             * - Fix : Bug à la fermeture
-             */
+             * Flood : Modos
+             * Déplacements : Fix
+             * Trajets : Implantation d'un watchdog
+             * Trajets : Fix des variables %PODS%
+             * */
         }
 
     }

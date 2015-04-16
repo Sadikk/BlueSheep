@@ -62,7 +62,7 @@ namespace BlueSheep.Engine.Constants
 
                 if (kpeArgs.KeyChar == (char)Keys.Enter)
                 {
-                    if (lstControl.Visible == true)
+                    if (lstControl.Visible)
                     {
                         lstControl.Focus();
                     }
@@ -72,6 +72,13 @@ namespace BlueSheep.Engine.Constants
                 {
                     lstControl.Visible = false;
                     kpeArgs.Handled = true;
+                }
+                else if (kpeArgs.KeyChar == (char)Keys.Tab)
+                {
+                    txtControl.Text = ((ListBox)s).SelectedItem.ToString();
+                    txtControl.Select(txtControl.Text.Length, 0);
+                    txtControl.Focus();
+                    lstControl.Hide();
                 }
             };
 

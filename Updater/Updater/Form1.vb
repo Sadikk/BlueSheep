@@ -58,7 +58,7 @@ Public Class UpdaterFrm
         Dim Regex As New System.Text.RegularExpressions.Regex(ProgramName & "=(\d+).(\d+).(\d+)=(.*?).exe")
         Dim matches As MatchCollection = Regex.Matches(ReadSource)
         'Dim reg As RegistryKey
-        Dim c As Integer
+        Dim c As Single
         Dim reg As RegistryKey = Registry.CurrentUser.OpenSubKey("Software\BlueSheep")
         'If File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) & "\BlueSheep\version.bs") Then
         'If cs.Contains("Software\\BlueSheep") Then
@@ -85,7 +85,7 @@ Public Class UpdaterFrm
         Pbar.Value = 100
         Dim major As Integer = Convert.ToInt32(GetVer.Split(".")(0))
         Dim minor As Integer = Convert.ToInt32(GetVer.Split(".")(1))
-        Dim release As Integer = Convert.ToInt32(GetVer.Split(".")(2))
+        Dim release As Single = Convert.ToSingle(GetVer.Split(".")(2))
         Dim currentmajor As Integer
         Dim currentminor As Integer
         If (CurrentVersion.Contains(",")) Then
@@ -95,7 +95,7 @@ Public Class UpdaterFrm
             currentmajor = Convert.ToInt32(CurrentVersion.Split(".")(0))
             currentminor = Convert.ToInt32(CurrentVersion.Split(".")(1))
         End If
-        Dim currentrelease As Integer = c
+        Dim currentrelease As Single = c
 
         If major > currentmajor OrElse minor > currentminor OrElse release > currentrelease Then
             'My.Computer.Network.DownloadFile(GetVerLink, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) & IO.Path.GetFileName(GetVerLink))
@@ -128,7 +128,7 @@ Public Class UpdaterFrm
 
     Private Sub Download()
         Try
-            If Not File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) & "\BlueSheep\ICSharpCode.SharpZipLib.dll") Then
+            If Not File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) & "\BlueSheep\MetroFramework.dll") Then
                 Dim Thread As New Threading.Thread(AddressOf Dll)
                 Thread.Start()
                 Exit Sub
@@ -145,7 +145,13 @@ Public Class UpdaterFrm
     Private Sub Dll()
         Dim Client As WebClient = New WebClient
         AddHandler Client.DownloadProgressChanged, AddressOf client_ProgressChanged
-        AddHandler Client.DownloadFileCompleted, AddressOf dll_DownloadCompleted
-        Client.DownloadFileAsync(New Uri("http://bluesheepbot.com/ICSharpCode.SharpZipLib.dll"), Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) & "\BlueSheep\ICSharpCode.SharpZipLib.dll")
+        Client.DownloadFileAsync(New Uri("http://bluesheepbot.com/MetroFramework.dll"), Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) & "\BlueSheep\MetroFramework.dll")
+        Dim Client2 As WebClient = New WebClient
+        AddHandler Client2.DownloadProgressChanged, AddressOf client_ProgressChanged
+        Client2.DownloadFileAsync(New Uri("http://bluesheepbot.com/MetroFramework.Design.dll"), Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) & "\BlueSheep\MetroFramework.Design.dll")
+        Dim Client3 As WebClient = New WebClient
+        AddHandler Client3.DownloadProgressChanged, AddressOf client_ProgressChanged
+        AddHandler Client3.DownloadFileCompleted, AddressOf dll_DownloadCompleted
+        Client3.DownloadFileAsync(New Uri("http://bluesheepbot.com/MetroFramework.Fonts.dll"), Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) & "\BlueSheep\MetroFramework.Fonts.dll")
     End Sub
 End Class

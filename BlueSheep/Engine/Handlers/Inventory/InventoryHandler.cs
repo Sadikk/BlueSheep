@@ -39,7 +39,8 @@ namespace BlueSheep.Engine.Handlers.Inventory
                     pet.SetFood();
                 }
             }
-            account.Log(new BotTextInformation("Vos " + account.petsList.Count + " familiers vous font un gros bisou de la part de BlueSheep."), 3);
+            if (account.petsList.Count > 0)
+                account.Log(new BotTextInformation("Vos " + account.petsList.Count + " familiers vous font un gros bisou de la part de BlueSheep."), 3);
             if (!account.IsMITM)
             {
                 FriendsGetListMessage friendGetListMessage = new FriendsGetListMessage();
@@ -181,7 +182,8 @@ namespace BlueSheep.Engine.Handlers.Inventory
         public static void ExchangeErrorMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
         {
             account.Log(new CharacterTextInformation("Echec de l'ouverture du coffre."), 0);
-            account.Running.OnSafe = false;
+            if (account.Running != null)
+                account.Running.OnSafe = false;
         }
 
         [MessageHandler(typeof(StorageInventoryContentMessage))]

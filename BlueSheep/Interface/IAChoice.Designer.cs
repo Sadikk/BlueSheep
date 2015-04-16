@@ -31,9 +31,10 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(IAChoice));
             this.FilesList = new System.Windows.Forms.ListView();
             this.Nom = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.Author = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Classe = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Version = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.Author = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.Description = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Path = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.AddBt = new BlueSheep.Interface.SadikButton();
             this.DelBt = new BlueSheep.Interface.SadikButton();
@@ -45,14 +46,15 @@
             // 
             this.FilesList.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.Nom,
-            this.Author,
             this.Classe,
             this.Version,
+            this.Author,
+            this.Description,
             this.Path});
             this.FilesList.FullRowSelect = true;
             this.FilesList.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.FilesList.HideSelection = false;
-            this.FilesList.Location = new System.Drawing.Point(11, 41);
+            this.FilesList.Location = new System.Drawing.Point(11, 88);
             this.FilesList.MultiSelect = false;
             this.FilesList.Name = "FilesList";
             this.FilesList.Size = new System.Drawing.Size(466, 344);
@@ -60,27 +62,35 @@
             this.FilesList.TabIndex = 1;
             this.FilesList.UseCompatibleStateImageBehavior = false;
             this.FilesList.View = System.Windows.Forms.View.Details;
-            this.FilesList.DoubleClick += new System.EventHandler(this.FilesList_SelectedIndexChanged); 
+            this.FilesList.DoubleClick += new System.EventHandler(this.LoadBt_Click);
             // 
             // Nom
             // 
             this.Nom.Text = "Nom";
-            this.Nom.Width = 186;
-            // 
-            // Author
-            // 
-            this.Author.Text = "Auteur";
-            this.Author.Width = 112;
+            this.Nom.Width = 100;
             // 
             // Classe
             // 
+            this.Classe.DisplayIndex = 2;
             this.Classe.Text = "Classe";
             this.Classe.Width = 111;
             // 
             // Version
             // 
+            this.Version.DisplayIndex = 3;
             this.Version.Text = "Version";
             this.Version.Width = 53;
+            // 
+            // Author
+            // 
+            this.Author.DisplayIndex = 1;
+            this.Author.Text = "Auteur";
+            this.Author.Width = 112;
+            // 
+            // Description
+            // 
+            this.Description.Text = "Description";
+            this.Description.Width = 200;
             // 
             // Path
             // 
@@ -92,7 +102,7 @@
             this.AddBt.Cursor = System.Windows.Forms.Cursors.Hand;
             this.AddBt.Font = new System.Drawing.Font("Verdana", 8F);
             this.AddBt.Image = null;
-            this.AddBt.Location = new System.Drawing.Point(12, 8);
+            this.AddBt.Location = new System.Drawing.Point(12, 55);
             this.AddBt.Name = "AddBt";
             this.AddBt.RoundedCorners = false;
             this.AddBt.Size = new System.Drawing.Size(115, 26);
@@ -106,7 +116,7 @@
             this.DelBt.Cursor = System.Windows.Forms.Cursors.Hand;
             this.DelBt.Font = new System.Drawing.Font("Verdana", 8F);
             this.DelBt.Image = null;
-            this.DelBt.Location = new System.Drawing.Point(133, 8);
+            this.DelBt.Location = new System.Drawing.Point(133, 55);
             this.DelBt.Name = "DelBt";
             this.DelBt.RoundedCorners = false;
             this.DelBt.Size = new System.Drawing.Size(117, 26);
@@ -120,7 +130,7 @@
             this.LoadBt.Cursor = System.Windows.Forms.Cursors.Hand;
             this.LoadBt.Font = new System.Drawing.Font("Verdana", 8F);
             this.LoadBt.Image = null;
-            this.LoadBt.Location = new System.Drawing.Point(256, 8);
+            this.LoadBt.Location = new System.Drawing.Point(256, 55);
             this.LoadBt.Name = "LoadBt";
             this.LoadBt.RoundedCorners = false;
             this.LoadBt.Size = new System.Drawing.Size(221, 26);
@@ -136,16 +146,14 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.DeepSkyBlue;
-            this.ClientSize = new System.Drawing.Size(489, 397);
+            this.ClientSize = new System.Drawing.Size(489, 441);
             this.Controls.Add(this.LoadBt);
             this.Controls.Add(this.DelBt);
             this.Controls.Add(this.AddBt);
             this.Controls.Add(this.FilesList);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "IAChoice";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "IAChoice";
+            this.Text = "Choix de l\'IA";
             this.ResumeLayout(false);
 
         }
@@ -162,5 +170,6 @@
         private SadikButton DelBt;
         private SadikButton LoadBt;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.ColumnHeader Description;
     }
 }

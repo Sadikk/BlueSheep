@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 namespace BlueSheep.Interface
 {
-    public partial class PathChoiceForm : Form
+    public partial class PathChoiceForm : MetroFramework.Forms.MetroForm
     {
         /// <summary>
         /// Bot's path choose form.
@@ -84,7 +84,6 @@ namespace BlueSheep.Interface
         #region Private methods
         private void Init()
         {
-            //FilesList.Clear();
             string combinedPath = System.IO.Path.Combine (Environment.GetFolderPath (Environment.SpecialFolder.ApplicationData), "BlueSheep", "Paths");
             openFileDialog1.InitialDirectory = combinedPath;
             System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(combinedPath);
@@ -153,11 +152,9 @@ namespace BlueSheep.Interface
 
         private void LaunchPath(object sender, EventArgs e)
         {
-            if (FilesList.SelectedItems.Count > 0 & Account != null)
+            if (FilesList.SelectedItems.Count > 0 && Account != null)
             {
-                //Account.selectedfile = FilesList.SelectedItems[0].SubItems[3].Text;
                 Account.Path = new Core.Path.PathManager(Account, FilesList.SelectedItems[0].SubItems[5].Text, FilesList.SelectedItems[0].SubItems[0].Text);
-                //Account.Path.Stop = true;
                 Account.Log(new BotTextInformation("Trajet chargé : " + FilesList.SelectedItems[0].Text),0);
                 Account.Path.pathBot = FilesList.SelectedItems[0].Text;
                 if (Account.Fight == null)

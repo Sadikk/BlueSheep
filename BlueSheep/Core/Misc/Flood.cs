@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Threading;
 
 namespace BlueSheep.Core.Misc
 {
@@ -19,36 +20,23 @@ namespace BlueSheep.Core.Misc
         #region Fields
         AccountUC account;
         public bool stop;
-        List<string> listOfPlayers;
-#endregion
+        public Dictionary<string,int> listOfPlayers;
+        
+        #endregion
         
         #region Constructors
         public Flood(AccountUC Account)
         {
             account = Account;
-           
-        }
-        public Flood(AccountUC Account, List<string> list)
-        {
-            account = Account;
-            listOfPlayers = list;
+            listOfPlayers = new Dictionary<string, int>();      
         }
         #endregion
 
         #region Public Methods
-        public void StartFlooding(int channel, bool useSmiley, bool useNumbers, string content, int interval)
+        public void StartFlood(int channel, bool useSmiley, bool useNumbers, string content, int interval)
         {
-            stop = false;
-            string ncontent = content;
-            while (stop == false)
-            {
-                if (useSmiley == true)
-                    ncontent = AddRandomSmiley(content);
-                if (useNumbers == true)
-                    ncontent = AddRandomNumber(content);
-                SendMessage(channel, ncontent);
-                account.Wait(interval * 1000, interval * 1000);
-            }
+            Thread t = new Thread(() => StartFlooding(channel, useSmiley, useNumbers, content, interval));
+            t.Start();
         }
 
         public void SendMessage(int channel, string content)
@@ -62,18 +50,30 @@ namespace BlueSheep.Core.Misc
                 pack.Pack((int)msg.ProtocolID);
                 account.SocketManager.Send(pack.Writer.Content);
                 if (account.DebugMode.Checked)
-                    account.Log(new BotTextInformation("[SND] 861 (ChatClientMultiMessage)"), 0);
+                    account.Log(new DebugTextInformation("[SND] 861 (ChatClientMultiMessage)"), 0);
             }
         }
 
-        public void SendPrivateTo(string name)
+        public void SendPrivateTo(BlueSheep.Common.Protocol.Types.GameRolePlayCharacterInformations infos, string content = "")
         {
-
-            string content = account.FloodContent;
-            if (account.IsRandomingSmileyBox.Checked == true)
+            if (content == "")
+                content = account.FloodUC.FloodContent;
+            int level = Math.Abs((infos.alignmentInfos.characterPower - infos.contextualId));
+            content = content.Replace("%name%", infos.name).Replace("%level%", Convert.ToString(level));
+            if (account.FloodUC.IsRandomingSmileyBox.Checked == true)
                 content = AddRandomSmiley(content);
-            if (account.IsRandomingNumberBox.Checked == true)
+            if (account.FloodUC.IsRandomingNumberBox.Checked == true)
                 content = AddRandomNumber(content);
+            SendPrivateTo(infos.name, content);
+        }
+
+        public void SendPrivateTo(string name, string content)
+        {
+            if (mods.Contains(name))
+            {
+                account.Log(new ErrorTextInformation("[Flood] Annulation de l'envoi d'un message privé à " + name + " (Modo)"), 0);
+                return;
+            }
             using (BigEndianWriter writer = new BigEndianWriter())
             {
                 ChatClientPrivateMessage msg = new ChatClientPrivateMessage(content, name);
@@ -84,12 +84,12 @@ namespace BlueSheep.Core.Misc
                 account.SocketManager.Send(pack.Writer.Content);
                 account.Log(new PrivateTextInformation("à " + name + " : " + content), 1);
                 if (account.DebugMode.Checked)
-                    account.Log(new BotTextInformation("[SND] 851 (ChatClientPrivateMessage)"), 0);
+                    account.Log(new DebugTextInformation("[SND] 851 (ChatClientPrivateMessage)"), 0);
             }
         }
  
 
-        public void SaveNameInMemory(string name)
+        public void SaveNameInMemory(BlueSheep.Common.Protocol.Types.GameRolePlayCharacterInformations infos)
         {
             string path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlueSheep", "Accounts", account.AccountName, "Flood");
             if (!Directory.Exists(path))
@@ -97,34 +97,27 @@ namespace BlueSheep.Core.Misc
 
             try
             {
-                if (listOfPlayers[0] != "null")
+                if (listOfPlayers.Count > 0)
                 {
-                    foreach(string elem in listOfPlayers)
+                    if (listOfPlayers.Keys.ToList().Find(p => p == infos.name) != null)
                     {
-                        if (elem == name)
-                        {
-                            account.Log(new BotTextInformation("(ADVANCED FLOOD)Player déjà entré"), 5);
-                            return;
-                        }
-                    }
+                        account.Log(new ErrorTextInformation("[ADVANCED FLOOD] Player already loaded !"), 5);
+                        return;
+                    }                        
                 }
-                else
-                {
-                    listOfPlayers.Clear();
-                }
-                var swriter = new StreamWriter(path + "\\Players.txt", true);
-                swriter.WriteLine(name);
+                var swriter = new StreamWriter(path + @"\Players.txt", true);
+                int level = Math.Abs((infos.alignmentInfos.characterPower - infos.contextualId));
+                swriter.WriteLine(infos.name + "," + Convert.ToString(level));
                 swriter.Close();
-                listOfPlayers.Add(name);
-                account.PlayerListLb.Items.Add(name);
-                account.Log(new BotTextInformation("(ADVANCED FLOOD)Player ajouté."), 5);
+                listOfPlayers.Add(infos.name, level);
+                account.FloodUC.AddItem(infos.name + "," + Convert.ToString(level));
+                account.Log(new BotTextInformation("[ADVANCED FLOOD] Player added."), 5);
             }
             catch (Exception ex)
             {
-                account.Log(new ErrorTextInformation("(ADVANCED FLOOD)Impossible d'ajouté le player"), 5);
+                account.Log(new ErrorTextInformation("[ADVANCED FLOOD] Unable to add the player."), 5);
                 account.Log(new ErrorTextInformation(ex.ToString()), 5);
             }
-           
         }
         #endregion
 
@@ -142,11 +135,33 @@ namespace BlueSheep.Core.Misc
             string nCon = content + " " + randomIndex.ToString();
             return nCon;
         }
+
+        private void StartFlooding(int channel, bool useSmiley, bool useNumbers, string content, int interval)
+        {
+            stop = false;
+            string ncontent = content;
+            while (stop == false)
+            {
+                if (useSmiley == true)
+                    ncontent = AddRandomSmiley(content);
+                if (useNumbers == true)
+                    ncontent = AddRandomNumber(ncontent);
+                SendMessage(channel, ncontent);
+                account.Wait(interval * 1000, interval * 1000);
+            }
+        }
         #endregion
 
         #region Enums
         public static readonly IList<String> smileys = new ReadOnlyCollection<string>
         (new List<String> {":)",";)","=)",":D",":p","=p",":d","=d","=P"});
+
+        private static readonly IList<String> mods = new ReadOnlyCollection<string>
+        (new List<String> { "[Japlo]" ,"[Lobeline]","[Eknelis]" ,"[Miaidaouh]", "[Alkalino]", "[Seekah]","[Taikorg]",
+            "[Lytimelle]","[Gowolik]","[Diospyros]", "[TobliK]","[Simeth]","[Gazviv]", "[Prag-Matik]","[Maatastrea]",
+            "[Griffinx]", "[Selvetarm]", "[Jial]", "[Haeo-Lien]", "[VeniVidi]", "[Falgoryn]","[Ayuzal]", "[Pad-Panikk]",
+            "[Portgas]", "[Arkansyelle]","[Padalgarath]", "[Semitam]", "[Latnac]", "[Fumikiri]", "[Saskhya]", "[Vandavarya]",
+            "[Modorak]", "[Yesht]", "[Alikaric]", "[Enyden]" });
         #endregion
     }
 }

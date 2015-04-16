@@ -39,6 +39,7 @@
             this.sadikLabel2 = new BlueSheep.Interface.SadikLabel();
             this.NUDBank = new System.Windows.Forms.NumericUpDown();
             this.sadikLabel3 = new BlueSheep.Interface.SadikLabel();
+            this.ListenerBox = new BlueSheep.Interface.SadikCheckbox();
             ((System.ComponentModel.ISupportInitialize)(this.NUDAutoDeletion)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NUDBank)).BeginInit();
             this.SuspendLayout();
@@ -73,6 +74,7 @@
             this.LVGestItems.TabIndex = 28;
             this.LVGestItems.UseCompatibleStateImageBehavior = false;
             this.LVGestItems.View = System.Windows.Forms.View.Details;
+            this.LVGestItems.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.LVGestItems_TouchPressed);
             // 
             // ActionChoiceCombo
             // 
@@ -173,10 +175,21 @@
             this.sadikLabel3.TabIndex = 38;
             this.sadikLabel3.Text = "% de pods \r\npour la banque";
             // 
+            // ListenerBox
+            // 
+            this.ListenerBox.Checked = false;
+            this.ListenerBox.Font = new System.Drawing.Font("Verdana", 8F);
+            this.ListenerBox.Location = new System.Drawing.Point(16, 267);
+            this.ListenerBox.Name = "ListenerBox";
+            this.ListenerBox.Size = new System.Drawing.Size(235, 20);
+            this.ListenerBox.TabIndex = 39;
+            this.ListenerBox.Text = "Se mettre en écoute des échanges.";
+            // 
             // GestItemsUC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.ListenerBox);
             this.Controls.Add(this.sadikLabel3);
             this.Controls.Add(this.NUDBank);
             this.Controls.Add(this.sadikLabel2);
@@ -189,7 +202,7 @@
             this.Controls.Add(this.ItemTxtBox);
             this.Controls.Add(this.LVGestItems);
             this.Name = "GestItemsUC";
-            this.Size = new System.Drawing.Size(410, 283);
+            this.Size = new System.Drawing.Size(410, 290);
             ((System.ComponentModel.ISupportInitialize)(this.NUDAutoDeletion)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.NUDBank)).EndInit();
             this.ResumeLayout(false);
@@ -201,14 +214,15 @@
 
         private System.Windows.Forms.ListBox litPopup;
         private System.Windows.Forms.TextBox ItemTxtBox;
-        private System.Windows.Forms.ListView LVGestItems;
         private SadikCombo ActionChoiceCombo;
         private SadikButton AddBt;
         private SadikLabel sadikLabel1;
         private System.Windows.Forms.NumericUpDown NUDAutoDeletion;
-        private SadikCheckbox AutoDeletionBox;
         private SadikLabel sadikLabel2;
         public System.Windows.Forms.NumericUpDown NUDBank;
         private SadikLabel sadikLabel3;
+        public System.Windows.Forms.ListView LVGestItems;
+        public SadikCheckbox AutoDeletionBox;
+        public SadikCheckbox ListenerBox;
     }
 }

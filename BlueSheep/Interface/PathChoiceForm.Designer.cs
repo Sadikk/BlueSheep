@@ -48,7 +48,7 @@
             this.AddBt.Cursor = System.Windows.Forms.Cursors.Hand;
             this.AddBt.Font = new System.Drawing.Font("Verdana", 8F);
             this.AddBt.Image = null;
-            this.AddBt.Location = new System.Drawing.Point(12, 12);
+            this.AddBt.Location = new System.Drawing.Point(13, 61);
             this.AddBt.Name = "AddBt";
             this.AddBt.RoundedCorners = false;
             this.AddBt.Size = new System.Drawing.Size(133, 26);
@@ -62,7 +62,7 @@
             this.DelBt.Cursor = System.Windows.Forms.Cursors.Hand;
             this.DelBt.Font = new System.Drawing.Font("Verdana", 8F);
             this.DelBt.Image = null;
-            this.DelBt.Location = new System.Drawing.Point(151, 11);
+            this.DelBt.Location = new System.Drawing.Point(152, 60);
             this.DelBt.Name = "DelBt";
             this.DelBt.RoundedCorners = false;
             this.DelBt.Size = new System.Drawing.Size(131, 26);
@@ -76,7 +76,7 @@
             this.LoadBt.Cursor = System.Windows.Forms.Cursors.Hand;
             this.LoadBt.Font = new System.Drawing.Font("Verdana", 8F);
             this.LoadBt.Image = null;
-            this.LoadBt.Location = new System.Drawing.Point(288, 11);
+            this.LoadBt.Location = new System.Drawing.Point(289, 60);
             this.LoadBt.Name = "LoadBt";
             this.LoadBt.RoundedCorners = false;
             this.LoadBt.Size = new System.Drawing.Size(236, 26);
@@ -96,7 +96,7 @@
             this.Path});
             this.FilesList.FullRowSelect = true;
             this.FilesList.HideSelection = false;
-            this.FilesList.Location = new System.Drawing.Point(12, 44);
+            this.FilesList.Location = new System.Drawing.Point(13, 93);
             this.FilesList.MultiSelect = false;
             this.FilesList.Name = "FilesList";
             this.FilesList.Size = new System.Drawing.Size(512, 351);
@@ -149,15 +149,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.DeepSkyBlue;
-            this.ClientSize = new System.Drawing.Size(539, 410);
+            this.ClientSize = new System.Drawing.Size(539, 450);
             this.Controls.Add(this.FilesList);
             this.Controls.Add(this.LoadBt);
             this.Controls.Add(this.DelBt);
             this.Controls.Add(this.AddBt);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "PathChoiceForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Gestion des trajets";
             this.Load += new System.EventHandler(this.PathChoiceForm_Load);
             this.ResumeLayout(false);

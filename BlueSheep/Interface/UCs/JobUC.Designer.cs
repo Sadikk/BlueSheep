@@ -28,9 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.sadikTabControl1 = new BlueSheep.Interface.SadikTabControl();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.tabPage5 = new System.Windows.Forms.TabPage();
@@ -39,7 +36,6 @@
             this.OpenBagCb = new BlueSheep.Interface.SadikCheckbox();
             this.g = new System.Windows.Forms.DataGridView();
             this.gg = new System.Windows.Forms.DataGridView();
-            this.GatherPie = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
@@ -47,9 +43,7 @@
             this.tabPage7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.g)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gg)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.GatherPie)).BeginInit();
             this.tabPage2.SuspendLayout();
-            this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
             // sadikTabControl1
@@ -112,7 +106,7 @@
             // 
             this.OpenBagCb.Checked = false;
             this.OpenBagCb.Font = new System.Drawing.Font("Verdana", 8F);
-            this.OpenBagCb.Location = new System.Drawing.Point(6, 6);
+            this.OpenBagCb.Location = new System.Drawing.Point(16, 19);
             this.OpenBagCb.Name = "OpenBagCb";
             this.OpenBagCb.Size = new System.Drawing.Size(304, 20);
             this.OpenBagCb.TabIndex = 0;
@@ -140,30 +134,6 @@
             this.gg.Size = new System.Drawing.Size(419, 323);
             this.gg.TabIndex = 0;
             // 
-            // GatherPie
-            // 
-            this.GatherPie.BackColor = System.Drawing.Color.DeepSkyBlue;
-            this.GatherPie.BackGradientStyle = System.Windows.Forms.DataVisualization.Charting.GradientStyle.HorizontalCenter;
-            this.GatherPie.BackImageTransparentColor = System.Drawing.Color.White;
-            this.GatherPie.BackSecondaryColor = System.Drawing.Color.Cyan;
-            this.GatherPie.BorderlineColor = System.Drawing.Color.Black;
-            this.GatherPie.BorderSkin.PageColor = System.Drawing.Color.Transparent;
-            chartArea2.Name = "ChartArea1";
-            this.GatherPie.ChartAreas.Add(chartArea2);
-            this.GatherPie.Dock = System.Windows.Forms.DockStyle.Fill;
-            legend2.Name = "Legend1";
-            this.GatherPie.Legends.Add(legend2);
-            this.GatherPie.Location = new System.Drawing.Point(3, 3);
-            this.GatherPie.Name = "GatherPie";
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie;
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            this.GatherPie.Series.Add(series2);
-            this.GatherPie.Size = new System.Drawing.Size(419, 323);
-            this.GatherPie.TabIndex = 0;
-            this.GatherPie.Text = "chart1";
-            // 
             // tabPage1
             // 
             this.tabPage1.BackColor = System.Drawing.Color.White;
@@ -188,7 +158,6 @@
             // tabPage3
             // 
             this.tabPage3.BackColor = System.Drawing.Color.White;
-            this.tabPage3.Controls.Add(this.GatherPie);
             this.tabPage3.Location = new System.Drawing.Point(4, 34);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
@@ -207,9 +176,7 @@
             this.tabPage7.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.g)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.gg)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.GatherPie)).EndInit();
             this.tabPage2.ResumeLayout(false);
-            this.tabPage3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -220,7 +187,6 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.DataVisualization.Charting.Chart GatherPie;
         public System.Windows.Forms.DataGridView g;
         public System.Windows.Forms.DataGridView gg;
         private System.Windows.Forms.TabPage tabPage4;

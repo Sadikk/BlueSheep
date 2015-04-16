@@ -39,7 +39,7 @@ using System.IO;
 
 namespace BlueSheep.Interface
 {
-    public partial class AccountUC : UserControl
+    public partial class AccountUC : MetroFramework.Controls.MetroUserControl
     {
         /// <summary>
         /// Main UC. TODO : Split this hugggge thing into multiple UC.
@@ -51,14 +51,15 @@ namespace BlueSheep.Interface
         private Running m_Running;
         private Thread m_ConnectionThread;
         private Timer m_TimerConnectionThread;
-        public string FloodContent = "";
         private List<Bot> m_Bots = new List<Bot>();
         public string loginstate;
         private DateTime m_NextMeal;
         public bool IsMaster;
         public bool IsSlave;
         public BFight Fight;
+        public FightData FightData;
         public Map Map;
+        public MapData MapData;
         public Inventory Inventory;
         public List<Spell> Spells;
         public PathManager Path;
@@ -76,10 +77,14 @@ namespace BlueSheep.Interface
         public HeroicUC HeroicUC;
         public GestItemsUC GestItemsUC;
         public CaracUC CaracUC;
+        public RegenUC RegenUC;
+        public FloodUC FloodUC;
         public bool IsMITM;
         public Status state;
         public ConfigManager ConfigManager;
-        public List<string> listOfPlayers;
+        public FightParser FightParser;
+        public WatchDog WatchDog;
+        public AccountFrm m_ParentForm;
         #endregion
 
         #region Properties
@@ -117,17 +122,18 @@ namespace BlueSheep.Interface
 
         #region Constructeurs
 
-        public AccountUC(string username, string password, bool socket)
+        public AccountUC(string username, string password, bool socket, MetroFramework.Forms.MetroForm form = null)
         {
             InitializeComponent();
             MonsterTextBox.KeyUp += (s, e) =>
             {
                 IntelliSense.AutoCompleteTextBox(MonsterTextBox, lstPopup, IntelliSense.MonstersList, e);
             };
+            if (form != null)
+                m_ParentForm = (AccountFrm)form;
             AccountName = username;
             AccountPassword = password;
             PetsModifiedList = new List<Pet>();
-            PrivateExitBox.Hide();
             this.IsMITM = !socket;
             switch (MainForm.ActualMainForm.Lang)
             {
@@ -166,7 +172,6 @@ namespace BlueSheep.Interface
             sadikLabel2.Text = "% of life";
             GroupBox2.Text = "AI";
             ChoiceIABt.Text = "Choose an AI";
-            CreateIABt.Text = "Create an AI";
             NomIA.Text = "No AI";
             sadikLabel5.Text = "Numbers of monsters";
             sadikLabel6.Text = "Levels of monsters";
@@ -199,7 +204,6 @@ namespace BlueSheep.Interface
             sadikLabel2.Text = "% de vida";
             GroupBox2.Text = "IA";
             ChoiceIABt.Text = "Choose an IA";
-            CreateIABt.Text = "Create an IA";
             NomIA.Text = "No IA";
             sadikLabel5.Text = "Número de monstruos";
             sadikLabel6.Text = "Niveles de los monstruos";
@@ -232,7 +236,6 @@ namespace BlueSheep.Interface
             sadikLabel2.Text = "% de vida";
             GroupBox2.Text = "IA";
             ChoiceIABt.Text = "Escolha um IA";
-            CreateIABt.Text = "Crie um IA";
             NomIA.Text = "No AI";
             sadikLabel5.Text = "Número de monstros";
             sadikLabel6.Text = "Nível de monstros";
@@ -287,34 +290,27 @@ namespace BlueSheep.Interface
             StatsPage.Controls.Add(CaracUC);
             CaracUC.Show();
 
+            //Regen
+            RegenUC = new RegenUC(this);
+            RegenPage.Controls.Add(RegenUC);
+            RegenUC.Show();
+
+            //Flood
+            FloodUC = new FloodUC(this);
+            tabPage2.Controls.Add(FloodUC);
+            FloodUC.Show();
+
             string path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlueSheep", "Accounts", AccountName);
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
 
             //Config Manager
             this.ConfigManager = new ConfigManager(this);
-            string pathPlayers = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlueSheep", "Accounts", AccountName, "Flood");
-            if (!Directory.Exists(pathPlayers))
-                Directory.CreateDirectory(pathPlayers);
-            listOfPlayers = new List<string>();
-            if (File.Exists(pathPlayers + "\\Players.txt"))
-           {
-               var sr = new StreamReader(pathPlayers + "\\Players.txt");
-               while(!sr.EndOfStream)
-               {
-                   listOfPlayers.Add(sr.ReadLine());
-               }
-               PlayerListLb.Items.AddRange(listOfPlayers.ToArray());
-               sr.Close();
-               Log(new BotTextInformation("(ADVANCED FLOOD) Players chargés."), 5);
-           }
-            else
-            {
-                
-                listOfPlayers.Add("null");
-            }
-            Flood = new Core.Misc.Flood(this, listOfPlayers);
-            
+           
+            Flood = new Core.Misc.Flood(this);
+            FightData = new FightData(this);
+            MapData = new MapData(this);
+            WatchDog = new WatchDog(this);
         }
 
         public AccountUC()
@@ -328,24 +324,34 @@ namespace BlueSheep.Interface
 
         private void Form_Closed(object sender, EventArgs e)
         {
-            this.ConfigManager.SaveConfig();
-            this.SocketManager.DisconnectFromGUI();
+            if (this.SocketManager != null)
+                this.SocketManager.DisconnectFromGUI();
             if (IsMITM)
             {
-                this.SocketManager.DisconnectServer();
+                this.SocketManager.DisconnectServer("Form closing");
             }
-            
+        }
+
+        private void SaveConfig_Click(object sender, EventArgs e)
+        {
+            ConfigManager.SaveConfig();
+        }
+
+        private void DeleteConfigBt_Click(object sender, EventArgs e)
+        {
+            ConfigManager.DeleteConfig();
         }
 
         public void InitMITM()
         {
             this.SocketManager = new SocketManager(this);
-            this.SocketManager.ListenDofus();
+            this.SocketManager.InitMITM();
+
         }
 
         public void Log(TextInformation text,int levelVerbose)
         {
-            if (this.IsDisposed == true)
+            if (this.IsDisposed == true || LogConsole.IsDisposed == true)
                 return;
             if ((int)NUDVerbose.Value < levelVerbose)
                 return;
@@ -357,11 +363,13 @@ namespace BlueSheep.Interface
                 {
                     text.Text = BlueSheep.Engine.Constants.Translate.GetTranslation(text.Text, MainForm.ActualMainForm.Lang);
                 }
-                text.Text = "[" + DateTime.Now.ToShortTimeString() +
+                text.Text = "[" + DateTime.Now.ToLongTimeString() +
                     "] (" + text.Category + ") " + text.Text;
+                if (text.Category == "Debug" && !DebugMode.Checked)
+                    return;
 
                 if (LogCb.Checked)
-                    using (StreamWriter fileWriter = new StreamWriter(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Logs.txt", true))
+                    using (StreamWriter fileWriter = new StreamWriter(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\Logs\" + DateTime.Now.ToShortDateString().Replace("/", "-") + "_" + this.CharacterBaseInformations.name +".txt", true))
                         fileWriter.WriteLine(text.Text);
 
                 int startIndex = LogConsole.TextLength;
@@ -445,14 +453,14 @@ namespace BlueSheep.Interface
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
-            if (this.SocketManager.Connected() == true)
+            if (this.SocketManager.State == SocketState.Connected)
             {
                 this.SocketManager.DisconnectFromGUI();
             }
             else
             {
-                m_ConnectionThread = new Thread(Connect);
-                m_ConnectionThread.Start();
+                //Init();
+                TryReconnect(2);
             }
         }
 
@@ -541,17 +549,9 @@ namespace BlueSheep.Interface
         {
             if (Path != null)
             {
-                Path.Stop();
-                //Path = null;
-                //PathDownBt.Text = "Trajet";
+                Path.StopPath();
                 this.Log(new BotTextInformation("Trajet arrêté"),1);
             }
-        }
-
-        private void CreateIABt_Click(object sender, EventArgs e)
-        {
-            IACreator frm = new IACreator(this);
-            frm.Show();
         }
 
         private void ChoiceIABt_Click(object sender, EventArgs e)
@@ -582,6 +582,7 @@ namespace BlueSheep.Interface
                 li.ToolTipText = i.Description;
                 AddItem(li, LVItems);
             }
+            RegenUC.RefreshQuantity();
         }
 
         public void ActualizeFamis()
@@ -637,6 +638,11 @@ namespace BlueSheep.Interface
 
         public void ModLabel(string content, Label lab)
         {
+            if (lab.InvokeRequired)
+            {
+                Invoke(new DelegLabel(ModLabel), content, lab);
+                return;
+            }
             lab.Text = content;
         }
 
@@ -674,21 +680,12 @@ namespace BlueSheep.Interface
             }
         }
 
-        private void FloodContentRbox_TextChanged(object sender, EventArgs e)
-        {
-            FloodContent = FloodContentRbox.Text;
-        }
-
         public void ActualizeMap()
         {
             this.BeginInvoke(new MethodInvoker(MapView.Items.Clear)); 
-            foreach (BlueSheep.Core.Map.Elements.InteractiveElement e in Map.InteractiveElements.Values)
+            foreach (BlueSheep.Core.Map.Elements.InteractiveElement e in MapData.InteractiveElements.Keys)
             {
-                BlueSheep.Core.Map.Elements.StatedElement element = null;
-                if (Map.StatedElements.ContainsKey((int)e.Id))
-                {
-                    element = Map.StatedElements[(int)e.Id];
-                }
+                BlueSheep.Core.Map.Elements.StatedElement element = MapData.StatedElements.Find(s => s.Id == e.Id);
                 string type = "Inconnu (" + e.TypeId + ")";
                 switch (e.TypeId)
                 {
@@ -729,9 +726,9 @@ namespace BlueSheep.Interface
             //        cellId = Convert.ToString(element.CellId);
             //    AddItem(new ListViewItem(new string[] { Convert.ToString(d.Id), cellId, "Porte" }), MapView);
             //}
-            foreach (int npcid in Npc.Npcs.Values)
+            foreach (GameRolePlayNpcInformations n in MapData.Npcs)
             {
-                AddItem(new ListViewItem(new string[] { Convert.ToString(npcid), "?" , "Pnj" }), MapView);
+                AddItem(new ListViewItem(new string[] { Convert.ToString(n.npcId), "?" , "Pnj" }), MapView);
             }
         }
 
@@ -744,7 +741,7 @@ namespace BlueSheep.Interface
                 JobsTabP.TabPages.Clear();
                 foreach (Job j in Jobs)
                 {
-                    JobsTabP.TabPages.Add(I18N.GetText((int)GameData.GetDataObject(D2oFileEnum.Jobs, j.Id).Fields["nameId"]));
+                    JobsTabP.TabPages.Add(j.Name);
                     SadikTabControl t = new SadikTabControl();
                     t.TabPages.Add("Configuration");
                     t.TabPages.Add("Statistiques");
@@ -760,9 +757,9 @@ namespace BlueSheep.Interface
                         if (j.Level >= (int)d.Fields["levelMin"])
                         {
                             string name = I18N.GetText((int)d.Fields["nameId"]);
-                            string rname = I18N.GetText((int)GameData.GetDataObject(D2oFileEnum.Items, (int)d.Fields["gatheredRessourceItem"]).Fields["nameId"]);
                             int rid = (int)d.Fields["interactiveId"];
-                            uc.g.Rows.Add(name, rname, rid);
+                                string typename = I18N.GetText((int)GameData.GetDataObject(D2oFileEnum.Interactives, rid).Fields["nameId"]);
+                                uc.g.Rows.Add(name, typename, rid);
                         }
                     }
 
@@ -774,14 +771,18 @@ namespace BlueSheep.Interface
                             string name = I18N.GetText((int)d.Fields["nameId"]);
                             foreach (int c in (ArrayList)d.Fields["craftableItemIds"])
                             {
-                                string rname = I18N.GetText((int)GameData.GetDataObject(D2oFileEnum.Items, c).Fields["nameId"]);
-                                uc.gg.Rows.Add(name, rname, c);
+                                string rname = "Unknown";
+                                DataClass data = GameData.GetDataObject(D2oFileEnum.Items, c);
+                                if (data != null)
+                                {
+                                    rname = I18N.GetText((int)data.Fields["nameId"]);
+                                    uc.gg.Rows.Add(name, rname, c);
+                                }
                             }
                         }
                     }
                     uc.g.AutoResizeColumns();
                     uc.g.Columns[2].Visible = false;
-
                     uc.gg.AutoResizeColumns();
                     uc.gg.Columns[2].Visible = false;
                     uc.Show();
@@ -937,6 +938,9 @@ namespace BlueSheep.Interface
                 case Status.Disconnected:
                     nstatus = "Déconnecté";
                     break;
+                case Status.Busy:
+                    nstatus = "Occupé";
+                    break;
             }
             if (MainForm.ActualMainForm.Lang != "FR")
             {
@@ -947,20 +951,13 @@ namespace BlueSheep.Interface
         #endregion
 
         #region Methodes Publics
-        public void TryReconnect(int minute)
+
+        public void TryReconnect(int secondes)
         {
-            SocketManager.DisconnectFromGUI();
-
-            Log(new ConnectionTextInformation("Reconnexion automatique dans " + minute + " minute(s)."),0);
-
-            //if (m_TimerConnectionThread == null)
-                m_TimerConnectionThread = new Timer(TimerConnectionThreadFinished, null, (int)TimeSpan.FromMinutes(minute).TotalMilliseconds,
-                    Timeout.Infinite);
-            //else
-            //    m_TimerConnectionThread.Change((int)TimeSpan.FromMinutes(minute).TotalMilliseconds, Timeout.Infinite);
-
-            //State = "En reconnexion (" + minute + ")";
-            //MainForm.ActualMainForm.ActualizeAccountInformations();
+            Log(new ConnectionTextInformation("Reconnexion automatique dans " + secondes + " secondes."), 0);
+            SocketManager.Disconnect("Try Reconnect.");
+            m_TimerConnectionThread = new Timer(TimerConnectionThreadFinished, null, (int)TimeSpan.FromSeconds(secondes).TotalMilliseconds,
+                Timeout.Infinite);
         }
 
         public void Wait(int min, int max)
@@ -979,13 +976,10 @@ namespace BlueSheep.Interface
         {
             m_NextMeal = new DateTime();
 
-            //foreach (Bot bot in m_Bots)
-            //{
                 if (m_NextMeal.Year == 1)
                 {
                     m_NextMeal = new DateTime(NextMeal.Year, NextMeal.Month, NextMeal.Day, NextMeal.Hour,
                         NextMeal.Minute, 0);
-                    //continue;
                 }
 
                 else if (NextMeal <= m_NextMeal)
@@ -993,7 +987,6 @@ namespace BlueSheep.Interface
                     m_NextMeal = new DateTime(NextMeal.Year, NextMeal.Month, NextMeal.Day,NextMeal.Hour,
                         NextMeal.Minute, 0);
                 }
-            //}
 
             if (m_NextMeal.Year != 1)
             {
@@ -1003,7 +996,7 @@ namespace BlueSheep.Interface
 
                Log(new GeneralTextInformation("Prochain repas dans " + difference.Hour + " heure(s) " +
                     difference.Minute + " minute(s)."),3);
-               this.SocketManager.DisconnectFromGUI();
+               this.SocketManager.Disconnect("Wait before next meal.");
 
                 if (m_TimerConnectionThread == null)
                     m_TimerConnectionThread = new Timer(TimerConnectionThreadFinished, null,
@@ -1028,79 +1021,10 @@ namespace BlueSheep.Interface
         public void Init()
         {
             this.Enabled = false;
+            //this.SocketManager = null;
             m_ConnectionThread = new Thread(Connect);
             m_ConnectionThread.Start();
         }
-
-        //private void SendCommand(string text)
-        //{
-           
-        //    //string[] command = text.Split(':');
-        //    //switch (command[0])
-        //    //{
-        //    //    //case "/invite":
-        //    //    //    Invitation(command[1]);
-        //    //    //    break;
-        //    //    //case "/droite":
-        //    //    //    this.Map.ChangeMap("droite");
-        //    //    //    break;
-        //    //    //case "/gauche":
-        //    //    //    this.Map.ChangeMap("gauche");
-        //    //    //    break;
-        //    //    //case "/bas":
-        //    //    //    this.Map.ChangeMap("bas");
-        //    //    //    break;
-        //    //    //case "/haut":
-        //    //    //    this.Map.ChangeMap("haut");
-        //    //    //    break;
-        //    //    //case "/mapid":
-        //    //    //    Log(new BotTextInformation("L'id de la map est : " + this.Map.Id),0);
-        //    //    //    break;
-        //    //    //case "/cellid":
-        //    //    //    Log(new BotTextInformation("Le joueur se trouve sur la cellule " + this.Map.Character.CellId),0);
-        //    //    //    break;
-        //    //    //case "/cell":
-        //    //    //    try
-        //    //    //    {
-        //    //    //        this.Map.MoveToCell(Convert.ToInt32(command[1]));
-        //    //    //        Log(new BotTextInformation("Déplacement vers la cellid " + command[1]),0);
-        //    //    //    }
-        //    //    //    catch (Exception ex)
-        //    //    //    {
-        //    //    //        Log(new ErrorTextInformation(ex.Message),0);
-        //    //    //    }
-        //    //    //    break;
-        //    //    case "/g":
-        //    //        Flood.SendMessage(2, command[1]);
-        //    //        break;
-        //    //    case "/r":
-        //    //        Flood.SendMessage(6, command[1]);
-        //    //        break;
-        //    //    case "/b":
-        //    //        Flood.SendMessage(5, command[1]);
-        //    //        break;
-        //    //    case "/a":
-        //    //        Flood.SendMessage(3, command[1]);
-        //    //        break;
-        //    //    case "/s":
-        //    //        Flood.SendMessage(0, command[1]);
-        //    //        break;
-        //    //    case "/w":
-        //    //        string name = command[1];
-        //    //        string content = command[2];
-        //    //        using (BigEndianWriter writer = new BigEndianWriter())
-        //    //        {
-        //    //            ChatClientPrivateMessage msg = new ChatClientPrivateMessage(content, name);
-        //    //            msg.Serialize(writer);
-        //    //            writer.Content = this.HumanCheck.hash_function(writer.Content);
-        //    //            MessagePackaging pack = new MessagePackaging(writer);
-        //    //            pack.Pack((int)msg.ProtocolID);
-        //    //            SocketManager.Send(pack.Writer.Content);
-        //    //            Log(new PrivateTextInformation("à " + name + " : " + content), 1);
-        //    //        }
-        //    //        break;
-        //    //}
-        //}
 
         public bool PerformGather()
         {
@@ -1109,7 +1033,7 @@ namespace BlueSheep.Interface
             {
                 for (int i = 0; i < j.g.RowCount; i++)
                 {
-                    if (j.g.Rows[i].Selected == true)
+                    if (Convert.ToBoolean(j.g.Rows[i].Cells[3].Value) == true)
                     {
                         r.Add((int)j.g.Rows[i].Cells[2].Value);
                     }
@@ -1155,52 +1079,54 @@ namespace BlueSheep.Interface
                 return (bool)Invoke(new DelegVerifGroup(VerifGroup), monsters);
             if (MonstersRestrictionsView.Items.Count <= 0)
                 return true;
-            foreach (string s in monsters)
+            foreach (ListViewItem i in MonstersRestrictionsView.Items)
             {
-                ListViewItem i = MonstersRestrictionsView.FindItemWithText(s, false, 0, false);
-                if (i == null)
-                    continue;
-                switch (i.SubItems[1].Text)
+                switch (i.SubItems[3].Text)
                 {
-                    case ">":
-                        if (monsters.FindAll(f => s == f).Count > Convert.ToInt32(i.SubItems[2].Text))
+                    case "Interdit":
+                        switch (i.SubItems[1].Text)
                         {
-                            switch (i.SubItems[3].Text)
-                            {
-                                case "Interdit":
+                            case ">":
+                                if (monsters.FindAll(f => i.SubItems[0].Text == f).Count > Convert.ToInt32(i.SubItems[2].Text))
                                     return false;
-                                case "Obligatoire":
-                                    break;
-                            }
+                                else
+                                    continue;
+                            case "<":
+                                if (monsters.FindAll(f => i.SubItems[0].Text == f).Count < Convert.ToInt32(i.SubItems[2].Text))
+                                    return false;
+                                else
+                                    continue;
+                            case "=":
+                                if (monsters.FindAll(f => i.SubItems[0].Text == f).Count == Convert.ToInt32(i.SubItems[2].Text))
+                                    return false;
+                                else
+                                    continue;
+                            default:
+                                continue;
                         }
-                        break;
-                    case "<":
-                        if (monsters.FindAll(f => s == f).Count < Convert.ToInt32(i.SubItems[2].Text))
+                    case "Obligatoire":
+                        switch (i.SubItems[1].Text)
                         {
-                            switch (i.SubItems[3].Text)
-                            {
-                                case "Interdit":
+                            case ">":
+                                if (!(monsters.FindAll(f => i.SubItems[0].Text == f).Count > Convert.ToInt32(i.SubItems[2].Text)))
                                     return false;
-                                case "Obligatoire":
-                                    break;
-                            }
-                        }
-                        break;
-                    case "=":
-                        if (monsters.FindAll(f => s == f).Count == Convert.ToInt32(i.SubItems[2].Text))
-                        {
-                            switch (i.SubItems[3].Text)
-                            {
-                                case "Interdit":
+                                else
+                                    continue;
+                            case "<":
+                                if (!(monsters.FindAll(f => i.SubItems[0].Text == f).Count < Convert.ToInt32(i.SubItems[2].Text)))
                                     return false;
-                                case "Obligatoire":
-                                    break;
-                            }
+                                else
+                                    continue;
+                            case "=":
+                                if (!(monsters.FindAll(f => i.SubItems[0].Text == f).Count == Convert.ToInt32(i.SubItems[2].Text)))
+                                    return false;
+                                else
+                                    continue;
+                            default:
+                                continue;
                         }
-                        break;
                 }
             }
-
             return true;
 
         }
@@ -1216,26 +1142,31 @@ namespace BlueSheep.Interface
 
             m_Running = new Running(this);
 
-                    if ((this.SocketManager != null) && (this.SocketManager.Connected()))
-                        return;
+            if (this.SocketManager != null && this.SocketManager.State == SocketState.Connected)
+                return;
 
-                    Log(new ConnectionTextInformation("Connexion."),0);
+            Log(new ConnectionTextInformation("Connexion."), 0);
 
-                    this.SocketManager = new SocketManager(this);
+            if (this.SocketManager == null)
+                this.SocketManager = new SocketManager(this);
 
-                    this.SocketManager.Connect(new ConnectionInformations("213.248.126.40", 5555, "d'identification"));
-                    loginstate = "identification";
-                    if (checkBoxBegin.Checked == true)
-                        GetNextMeal();
-                    this.SocketManager.Send(new BasicPingMessage());
+            this.SocketManager.Connect(new ConnectionInformations("213.248.126.40", 5555, "d'identification"));
+            loginstate = "identification";
+            if (checkBoxBegin.Checked == true)
+                GetNextMeal();
         }
 
         private void TimerConnectionThreadFinished(object stateInfo)
         {
             if (this.IsDisposed == true)
                 return;
-            m_ConnectionThread = new Thread(Connect);
-            m_ConnectionThread.Start();
+            //Init();
+            //AccountUC Uc = new AccountUC(this.AccountName, this.AccountPassword, true);
+            //this.ParentForm.Controls.Add(Uc);
+            //Uc.Show();
+            if (this.MyGroup == null && m_ParentForm != null)
+                m_ParentForm.Reconnect();
+            //this.Dispose();
         }
 
         private static int GetRandomTime()
@@ -1272,87 +1203,48 @@ namespace BlueSheep.Interface
         }
 
        
-        private void RemovePlayerBt_Click(object sender, EventArgs e)
-        {
-          
-            string pathPlayers = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlueSheep", "Accounts", this.AccountName, "Flood");
-            if (File.Exists(pathPlayers + "\\Players.txt"))
-            {
-                supprimerLigne(pathPlayers + "\\Players.txt", PlayerListLb.SelectedItem.ToString());
-            }
-            if (PlayerListLb.SelectedItem != null)
-            {
-                PlayerListLb.Items.Remove(PlayerListLb.SelectedItem);
-            }
-        }
-        
-        private void supprimerLigne(string path, string ligne) {
-         
-            string texte = null;
-            string ligneActuelle = null;
-            StreamReader sr = new StreamReader(path);
-        
-            while ((sr.Peek() != -1)) 
-            {
-                ligneActuelle = sr.ReadLine();
-                if (!(ligneActuelle == ligne)) 
-                {
-                    texte = (texte + (ligneActuelle + "\r\n"));
-                }
-            }
-            sr.Close();
-         
-            StreamWriter sr2 = new StreamWriter(path);
-            sr2.Write(texte);
-            sr2.Close();
-        }
-        private void ClearListeBt_Click(object sender, EventArgs e)
-        {
-            if(PlayerListLb.Items.Count != 0)
-            {
-                PlayerListLb.Items.Clear();
-            }
-            string pathPlayers = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BlueSheep", "Accounts", this.AccountName, "Flood");
-            if(File.Exists(pathPlayers + "\\Players.txt"))
-            {
-                var sw = new StreamWriter(pathPlayers + "\\Players.txt");
-                sw.Write("");
-                sw.Close();
-            }
-        }
 
-        private void FloodPlayersBt_Click(object sender, EventArgs e)
+
+        private void AutoDelAddBt_Click(object sender, EventArgs e)
         {
-            this.FloodContent = this.FloodContentRbox.Text;
-            foreach(var elem in PlayerListLb.Items)
+            for (int i = 0; i < LVItems.Items.Count; i++)
             {
-                try
+                if (LVItems.Items[i].Selected)
                 {
-                    Flood.SendPrivateTo((string)elem);
-                }
-                catch (Exception)
-                {
-                    this.Log(new ErrorTextInformation("Impossible d'envoyer le message à: " + (string)elem), 3);
+                    ListViewItem item = new ListViewItem(new string[] { LVItems.Items[i].SubItems[2].Text, "Suppression automatique" });
+                    GestItemsUC.LVGestItems.Items.Add(item);
                 }
             }
         }
 
-        private void StartStopFloodingBox_CheckedChanged(object sender)
+        private void RegenAddBt_Click(object sender, EventArgs e)
         {
-            if (StartStopFloodingBox.Checked == false)
+            for (int i = 0; i < LVItems.Items.Count; i++)
             {
-                Flood.stop = true;
-                Log(new BotTextInformation("Flood arrêté"), 1);
-                return;
+                if (LVItems.Items[i].Selected)
+                {
+                    ListViewItem item = new ListViewItem(new string[] { LVItems.Items[i].SubItems[2].Text, LVItems.Items[i].SubItems[3].Text });
+                    RegenUC.LVItems.Items.Add(item);
+                }
             }
-            Log(new BotTextInformation("Flood activé"), 1);
-            if (CommerceBox.Checked)
-                Flood.StartFlooding(5, IsRandomingSmileyBox.Checked, IsRandomingNumberBox.Checked, FloodContentRbox.Text, (int)NUDFlood.Value);
-            if (RecrutementBox.Checked)
-                Flood.StartFlooding(6, IsRandomingSmileyBox.Checked, IsRandomingNumberBox.Checked, FloodContentRbox.Text, (int)NUDFlood.Value);
-            if (GeneralBox.Checked)
-                Flood.StartFlooding(0, IsRandomingSmileyBox.Checked, IsRandomingNumberBox.Checked, FloodContentRbox.Text, (int)NUDFlood.Value);
         }
+
+        private void RelaunchPath_CheckedChanged(object sender, EventArgs e)
+        {
+            if (RelaunchPath.Checked)
+            {
+                RelaunchPath.Text = "✔ Relancer le trajet à la reconnexion";
+            }
+            else
+            {
+                RelaunchPath.Text = "✘ Relancer le trajet à la reconnexion";
+            }
+            ConfigManager.SaveConfig();
+        }
+
+
+
+
 
       
 

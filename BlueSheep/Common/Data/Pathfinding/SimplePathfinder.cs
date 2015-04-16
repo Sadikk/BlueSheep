@@ -6,13 +6,14 @@ using BlueSheep.Core.Fight;
 using BlueSheep.Engine.Types;
 using BlueSheep.Common.Types;
 using BlueSheep.Common.Protocol.Types;
+using BlueSheep.Core.Map;
 
 namespace BlueSheep.Data.Pathfinding
 {
     public class SimplePathfinder
     {
         // Methods
-        public SimplePathfinder(Map Map)
+        public SimplePathfinder(MapData Map)
         {
             this.MapData = Map;
             if (Map.Id == 2561)
@@ -100,7 +101,7 @@ namespace BlueSheep.Data.Pathfinding
             {
                 return false;
             }
-            return this.MapData.Cells[int_1].Mov();
+            return this.MapData.Data.Cells[int_1].Mov();
         }
 
         private MovementPath method_3(SimpleCellInfo class13_0)
@@ -150,7 +151,7 @@ namespace BlueSheep.Data.Pathfinding
         private List<SimpleCellInfo> list_0 = new List<SimpleCellInfo>();
         private List<SimpleCellInfo> list_1 = new List<SimpleCellInfo>();
         private List<int> ListCellIdFighters = new List<int>();
-        private Map MapData;
+        private MapData MapData;
         private MapPoint MapPoint_FromCell;
         private MapPoint MapPoint_ToCell;
     }

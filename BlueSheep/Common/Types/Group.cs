@@ -17,7 +17,7 @@ namespace BlueSheep.Common.Types
         }
         #endregion
 
-#region Publics methods
+        #region Publics methods
         public AccountUC GetMaster()
         {
             foreach (AccountUC a in accounts)
@@ -75,6 +75,7 @@ namespace BlueSheep.Common.Types
                             ac.Map.useZaap((int)a.Path.Current_Action.m_delta);
                         System.Threading.Thread.Sleep(500);
                     }
+                    return;
                 }
             }
         }
@@ -92,6 +93,7 @@ namespace BlueSheep.Common.Types
                             ac.Map.useZaapi((int)a.Path.Current_Action.m_delta);
                         System.Threading.Thread.Sleep(500);
                     }
+                    return;
                 }
             }
         }
@@ -109,10 +111,65 @@ namespace BlueSheep.Common.Types
                             ac.Map.MoveToCell(delta);
                         System.Threading.Thread.Sleep(500);
                     }
+                    return;
                 }
             }
         }
-#endregion
+
+        public void MoveToElementGroup(int delta)
+        {
+            foreach (AccountUC a in accounts)
+            {
+                if (a.IsMaster == true)
+                {
+                    a.Map.MoveToSecureElement(delta);
+                    foreach (AccountUC ac in accounts)
+                    {
+                        if (ac.IsSlave == true)
+                            ac.Map.MoveToSecureElement(delta);
+                        System.Threading.Thread.Sleep(500);
+                    }
+                    return;
+                }
+            }
+        }
+
+        public void TalkToNpcGroup(int delta)
+        {
+            foreach (AccountUC a in accounts)
+            {
+                if (a.IsMaster == true)
+                {
+                    a.Npc.TalkToNpc(delta);
+                    foreach (AccountUC ac in accounts)
+                    {
+                        if (ac.IsSlave == true)
+                            ac.Npc.TalkToNpc(delta);
+                        System.Threading.Thread.Sleep(500);
+                    }
+                    return;
+                }
+            }
+        }
+
+        public void RequestExchangeGroup(string delta)
+        {
+            foreach (AccountUC a in accounts)
+            {
+                if (a.IsMaster == true)
+                {
+                    a.Inventory.RequestExchange(delta);
+                    foreach (AccountUC ac in accounts)
+                    {
+                        if (ac.IsSlave == true)
+                            ac.Inventory.RequestExchange(delta);
+                        System.Threading.Thread.Sleep(2000);
+                    }
+                    return;
+                }
+            }
+        }
+    #endregion
 
     }
 }

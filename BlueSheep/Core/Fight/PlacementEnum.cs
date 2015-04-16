@@ -10,7 +10,10 @@ namespace BlueSheep.Core.Fight
     {
         Rapproché,
         Eloigné,
-        Immobile
+        Immobile,
+        Near,
+        Far,
+        Still
     }
 
 }

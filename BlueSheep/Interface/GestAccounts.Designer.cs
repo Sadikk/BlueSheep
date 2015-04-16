@@ -50,10 +50,10 @@
             this.sadikTabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.sadikTabControl1.Font = new System.Drawing.Font("Verdana", 8F);
             this.sadikTabControl1.ItemSize = new System.Drawing.Size(0, 30);
-            this.sadikTabControl1.Location = new System.Drawing.Point(0, 0);
+            this.sadikTabControl1.Location = new System.Drawing.Point(20, 60);
             this.sadikTabControl1.Name = "sadikTabControl1";
             this.sadikTabControl1.SelectedIndex = 0;
-            this.sadikTabControl1.Size = new System.Drawing.Size(278, 246);
+            this.sadikTabControl1.Size = new System.Drawing.Size(276, 245);
             this.sadikTabControl1.TabIndex = 12;
             // 
             // LaunchPage
@@ -66,7 +66,7 @@
             this.LaunchPage.Location = new System.Drawing.Point(4, 34);
             this.LaunchPage.Name = "LaunchPage";
             this.LaunchPage.Padding = new System.Windows.Forms.Padding(3);
-            this.LaunchPage.Size = new System.Drawing.Size(270, 208);
+            this.LaunchPage.Size = new System.Drawing.Size(268, 207);
             this.LaunchPage.TabIndex = 0;
             this.LaunchPage.Text = "Lancer";
             // 
@@ -130,7 +130,7 @@
             this.AddPage.Location = new System.Drawing.Point(4, 34);
             this.AddPage.Name = "AddPage";
             this.AddPage.Padding = new System.Windows.Forms.Padding(3);
-            this.AddPage.Size = new System.Drawing.Size(270, 208);
+            this.AddPage.Size = new System.Drawing.Size(268, 207);
             this.AddPage.TabIndex = 1;
             this.AddPage.Text = "Ajouter";
             // 
@@ -198,12 +198,10 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.DeepSkyBlue;
-            this.ClientSize = new System.Drawing.Size(278, 246);
+            this.ClientSize = new System.Drawing.Size(316, 325);
             this.Controls.Add(this.sadikTabControl1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "GestAccounts";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Gestion des comptes";
             this.sadikTabControl1.ResumeLayout(false);
             this.LaunchPage.ResumeLayout(false);

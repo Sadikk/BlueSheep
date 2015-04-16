@@ -151,6 +151,17 @@ AppPackages/
 sql/
 *.Cache
 ClientBin/
+ASToBSTranslator/
+RawManager/
+Updater/
+Sources/
+old/
+BlueSheep.rar
+Updater/
+Confuser/
+Updater\
+.gitignore
+Projet1/
 [Ss]tyle[Cc]op.*
 ~$*
 *~

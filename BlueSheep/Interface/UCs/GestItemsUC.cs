@@ -11,7 +11,7 @@ using BlueSheep.Interface.Text;
 
 namespace BlueSheep.Interface.UCs
 {
-    public partial class GestItemsUC : UserControl
+    public partial class GestItemsUC : MetroFramework.Controls.MetroUserControl
     {
         #region Constructors
         public GestItemsUC(AccountUC Account)
@@ -24,12 +24,14 @@ namespace BlueSheep.Interface.UCs
             {
                 IntelliSense.AutoCompleteTextBox(ItemTxtBox, this.litPopup, IntelliSense.ItemsList, e);
             };
-            AutoDeletionTimer = new System.Timers.Timer(Convert.ToDouble(NUDAutoDeletion.Value * 1000));
+            AutoDeletionTimer = new System.Timers.Timer(Convert.ToDouble(NUDAutoDeletion.Value * 1000)) { AutoReset = false };
             AutoDeletionTimer.Elapsed += new System.Timers.ElapsedEventHandler(PerformAutoDeletion);
             if (AutoDeletionBox.Checked)
                 AutoDeletionTimer.Start();
         }
         #endregion
+
+        private delegate void AutoDeleteCallback(object sender, System.Timers.ElapsedEventArgs e);
 
         #region Fields
         AccountUC account;
@@ -69,21 +71,28 @@ namespace BlueSheep.Interface.UCs
         #region PrivateMethods
         private void PerformAutoDeletion(object sender, System.Timers.ElapsedEventArgs e)
         {
+            if (LVGestItems.InvokeRequired)
+            {
+                Invoke(new AutoDeleteCallback(PerformAutoDeletion), sender, e);
+                return;
+            }
             if (account.state == BlueSheep.Engine.Enums.Status.Fighting)
             {
                 account.Log(new ErrorTextInformation("La suppression automatique ne peut être effectuée en combat. Suppression automatique annulée. Mais elle reviendra muéhhééhhé"), 2);
+                Reset();
                 return;
             }
-            if (LVGestItems.Items.Count <= 0)
-                return;
-            else
+            if (LVGestItems.Items.Count > 0)
             {
                 foreach (ListViewItem item in LVGestItems.Items)
                 {
                     if (item.SubItems[1].Text == "Suppression automatique")
                         account.Inventory.DeleteItem(account.Inventory.GetItemFromName(item.SubItems[0].Text).UID, account.Inventory.GetItemFromName(item.SubItems[0].Text).Quantity);
                 }
+                Reset();
             }
+            else
+                Reset();
         }
 
         private List<int> GetItemsNoBank()
@@ -106,9 +115,9 @@ namespace BlueSheep.Interface.UCs
         #region UI Methods
         private void AddBt_Click(object sender, EventArgs e)
         {
-            if (ItemTxtBox.Text.Length > 0 && ActionChoiceCombo.SelectedText.Length > 0)
+            if (ItemTxtBox.Text.Length > 0 && ActionChoiceCombo.SelectedItem != null)
             {
-                ListViewItem item = new ListViewItem(new string[] { ItemTxtBox.Text, ActionChoiceCombo.SelectedText });
+                ListViewItem item = new ListViewItem(new string[] { ItemTxtBox.Text, (string)ActionChoiceCombo.SelectedItem });
                 LVGestItems.Items.Add(item);
                 ItemTxtBox.Text = "Entrez le nom d'un item...";
             }
@@ -142,7 +151,29 @@ namespace BlueSheep.Interface.UCs
             if (ItemTxtBox.Text == "")
                 ItemTxtBox.Text = "Entrez le nom d'un item...";
         }
+
+        private void LVGestItems_TouchPressed(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Delete)
+            {
+                for (int i = 0; i < LVGestItems.Items.Count; i++)
+                {
+                    if (LVGestItems.Items[i].Selected)
+                        LVGestItems.Items.RemoveAt(i);
+                }
+            }
+        }
+
+        private void Reset()
+        {
+            AutoDeletionTimer.Dispose();
+            AutoDeletionTimer = new System.Timers.Timer(Convert.ToDouble(NUDAutoDeletion.Value * 1000));
+            AutoDeletionTimer.Elapsed += new System.Timers.ElapsedEventHandler(PerformAutoDeletion);
+            if (AutoDeletionBox.Checked)
+                AutoDeletionTimer.Start();
+        }
         #endregion
+
 
     }
 }

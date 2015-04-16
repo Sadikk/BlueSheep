@@ -7,13 +7,17 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using BlueSheep.Common.Protocol.Messages;
+using BlueSheep.Interface.Text;
+using BlueSheep.Common.Data.D2o;
+using System.Collections;
 
 namespace BlueSheep.Interface.UCs
 {
-    public partial class CaracUC : UserControl
+    public partial class CaracUC : MetroFramework.Controls.MetroUserControl
     {
         #region Fields
         AccountUC account;
+        private int m_count;
         #endregion
 
         private delegate void DelegLabel(string text, Label lab);
@@ -38,6 +42,7 @@ namespace BlueSheep.Interface.UCs
             Invoke(new DelegLabel(ModLabel), Convert.ToString(account.CharacterStats.actionPoints.@base + account.CharacterStats.actionPoints.additionnal + account.CharacterStats.actionPoints.objectsAndMountBonus), APLb);
             Invoke(new DelegLabel(ModLabel), Convert.ToString(account.CharacterStats.movementPoints.@base + account.CharacterStats.movementPoints.additionnal + account.CharacterStats.movementPoints.objectsAndMountBonus),MpLb);
             Invoke(new DelegLabel(ModLabel), Convert.ToString(account.CharacterStats.statsPoints), AvailabPtLb);
+            //GetBoost(10);
         }
 
         
@@ -47,33 +52,37 @@ namespace BlueSheep.Interface.UCs
             if (VitaRb.Checked)
             {
                 while (Convert.ToInt32(AvailabPtLb.Text) != 0)
+                {
                     UpStat(11, 1);
+                }
             }
-            else if (WisRb.Checked)
-            {
-                while (Convert.ToInt32(AvailabPtLb.Text)%3 == 0)
-                    UpStat(12, 3);     
-            }
-            else if (StreRb.Checked)
-            {
-                while (Convert.ToInt32(AvailabPtLb.Text) != 0)
-                    UpStat(10, 1);
-            }           
-            else if (InteRb.Checked)
-            {
-                 while (Convert.ToInt32(AvailabPtLb.Text) != 0)
-                    UpStat(15, 1);        
-            }
-            else if (LuckRb.Checked)
-            {
-                while (Convert.ToInt32(AvailabPtLb.Text) != 0)
-                    UpStat(13, 1); 
-            }           
-            else if (AgiRb.Checked)
-            {
-                while (Convert.ToInt32(AvailabPtLb.Text) != 0)
-                    UpStat(14, 1);  
-            }
+            else
+                account.Log(new ErrorTextInformation("L'auto-up ne gère pas les paliers et a donc été désactivé pour des raisons de sécurité (ban 2h sinon)."), 0);
+            //else if (WisRb.Checked)
+            //{
+            //    while (Convert.ToInt32(AvailabPtLb.Text) % 3 == 0)
+            //        UpStat(12, 3);
+            //}
+            //else if (StreRb.Checked)
+            //{
+            //    while (Convert.ToInt32(AvailabPtLb.Text) != 0)
+            //        UpStat(10, 1);
+            //}
+            //else if (InteRb.Checked)
+            //{
+            //    while (Convert.ToInt32(AvailabPtLb.Text) != 0)
+            //        UpStat(15, 1);
+            //}
+            //else if (LuckRb.Checked)
+            //{
+            //    while (Convert.ToInt32(AvailabPtLb.Text) != 0)
+            //        UpStat(13, 1);
+            //}
+            //else if (AgiRb.Checked)
+            //{
+            //    while (Convert.ToInt32(AvailabPtLb.Text) != 0)
+            //        UpStat(14, 1);
+            //}
                 
 
         }
@@ -127,6 +136,30 @@ namespace BlueSheep.Interface.UCs
         {
             lab.Text = content;
         }
+
+        public int GetBoost(int statId)
+        {
+            DataClass d = GameData.GetDataObject(D2oFileEnum.Breeds, account.CharacterBaseInformations.breed);
+            switch (statId)
+            {
+                case 10:
+                    ArrayList o =(ArrayList)d.Fields["statsPointsForStrength"];
+                    break;
+                case 11:
+                    break;
+                case 12:
+                    break;
+                case 13:
+                    break;
+                case 14:
+                    break;
+                case 15:
+                    break;
+            }
+
+            return 1;
+        }
+
         #endregion
 
         

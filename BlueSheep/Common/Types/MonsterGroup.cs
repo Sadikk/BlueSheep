@@ -76,7 +76,6 @@ namespace BlueSheep.Common.Types
             string names = "";
             foreach (string item in monstersname)
             {
-                //Account.Log("names = " + names + Environment.NewLine + "item = " + item);
                 names = names + item;
                 if (monstersname.IndexOf(item) != monstersname.Count - 1)
                     names = names + ",";

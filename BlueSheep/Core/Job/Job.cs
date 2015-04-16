@@ -18,6 +18,10 @@ namespace BlueSheep.Core.Job
         public int XpLevelFloor;
         public int XpNextLevelFloor;
         private AccountUC account;
+        public string Name
+        {
+            get { return BlueSheep.Common.Data.I18N.GetText((int)GameData.GetDataObject(D2oFileEnum.Jobs, Id).Fields["nameId"]); }
+        }
 
         public Job(int id, List<int> skills, AccountUC Account)
         {

@@ -15,7 +15,7 @@ using System.Diagnostics;
 using BlueSheep.Engine.Constants;
 namespace BlueSheep.Interface
 {
-    public partial class GestAccounts : Form
+    public partial class GestAccounts : MetroFramework.Forms.MetroForm
     {
         /// <summary>
         /// Account manager.
@@ -95,23 +95,23 @@ namespace BlueSheep.Interface
                 {
                     // TODO : Automate the dll injection
                     Process proc = new Process();
-                    string directoryPath = System.IO.Path.Combine (MainForm.ActualMainForm.DofusPath, "Dofus.exe");
+                    string directoryPath = System.IO.Path.Combine (MainForm.ActualMainForm.DofusPath, "app", "Dofus.exe");
                     proc.StartInfo.FileName = directoryPath;
                     proc.Start();
-                    BlueSheep.Engine.Constants.DllInjector Injector = new Engine.Constants.DllInjector();
-                    String path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\No.Ankama.dll";
-                    List<Process> lp = Process.GetProcessesByName("Dofus").ToList();
-                    foreach (Process p in lp)
-                    {
-                     Engine.Constants.DllInjectionResult result = Injector.Inject(p.ProcessName, path);
-                     if (result != Engine.Constants.DllInjectionResult.Success)
-                    {
-                    System.Windows.Forms.MessageBox.Show("Erreur lors de l'injection.");
-                    proc.Kill();
-                     this.Close();
-                     }
-                    }
-                    DllInjector.GetInstance.Inject(proc.ProcessName, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\No.Ankama.dll");
+                    //BlueSheep.Engine.Constants.DllInjector Injector = new Engine.Constants.DllInjector();
+                    //String path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\No.Ankama.dll";
+                    //List<Process> lp = Process.GetProcessesByName("Dofus").ToList();
+                    //foreach (Process p in lp)
+                    //{
+                    //    Engine.Constants.DllInjectionResult result = Injector.Inject(p.ProcessName, path);
+                    //    if (result != Engine.Constants.DllInjectionResult.Success)
+                    //    {
+                    //        System.Windows.Forms.MessageBox.Show("Erreur lors de l'injection.");
+                    //        proc.Kill();
+                    //        this.Close();
+                    //    }
+                    //}
+                    //DllInjector.GetInstance.Inject(proc.ProcessName, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\No.Ankama.dll");
 
                     AccountFrm frm = new AccountFrm(account.SubItems[0].Text, account.SubItems[1].Text, false);
                     frm.Show();

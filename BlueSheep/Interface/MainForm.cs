@@ -17,7 +17,7 @@ using System.Windows.Forms;
 
 namespace BlueSheep.Interface
 {
-    public partial class MainForm : Form
+    public partial class MainForm : MetroFramework.Forms.MetroForm
     {
         /// <summary>
         /// Main form.
@@ -140,6 +140,8 @@ namespace BlueSheep.Interface
                 Directory.CreateDirectory(Path.Combine(blueSheepPath, "Paths")).Attributes = FileAttributes.Normal;
             if (!Directory.Exists(Path.Combine(blueSheepPath, "IAs")))
                 Directory.CreateDirectory(Path.Combine(blueSheepPath, "IAs")).Attributes = FileAttributes.Normal;
+            if (!Directory.Exists(Path.Combine(blueSheepPath, "Logs")))
+                Directory.CreateDirectory(Path.Combine(blueSheepPath, "Logs")).Attributes = FileAttributes.Normal;
 
             string bsConfPath = Path.Combine (blueSheepPath, "bs.conf");
             if (File.Exists(bsConfPath))

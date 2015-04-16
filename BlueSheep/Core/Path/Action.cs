@@ -43,13 +43,11 @@ namespace BlueSheep.Core.Path
                     {
                         account.MyGroup.MoveGroup((string)m_delta);
                         account.Wait(2000, 3000);
-                       // account.Path.Stop = true;
                     }
                     else if (account.IsSlave == false)
                     {
                         account.Map.ChangeMap((string)m_delta);
                         account.Wait(2000, 3000);
-                        //account.Path.Stop = true;
                     }
                     else
                     {
@@ -61,12 +59,10 @@ namespace BlueSheep.Core.Path
                     {
                         account.MyGroup.UseItemGroup(account.Inventory.GetItemFromGID(Convert.ToInt32(m_delta)).UID);
                         account.Wait(2000, 3000);
-                        //account.Path.Stop = true;
                     }
                     else if (account.IsSlave == false)
                     {
                         account.Inventory.UseItem(account.Inventory.GetItemFromGID(Convert.ToInt32(m_delta)).UID);
-                        //account.Path.Stop = true;
                     }
                     else
                     {
@@ -78,12 +74,10 @@ namespace BlueSheep.Core.Path
                     {
                         account.MyGroup.MoveToCellGroup(Convert.ToInt32(m_delta));
                         account.Wait(2000, 3000);
-                        //account.Path.Stop = true;
                     }
                     else if (account.IsSlave == false)
                     {
                         account.Map.MoveToCell(Convert.ToInt32(m_delta));
-                        //account.Path.Stop = true;
                     }
                     else
                     {
@@ -92,24 +86,34 @@ namespace BlueSheep.Core.Path
                     account.Log(new BotTextInformation("Trajet : Déplacement sur la cellule " + Convert.ToString(m_delta)),5);
                     break;
                 case "npc(":
-                    //TODO : Rework with group
-                    account.Npc.TalkToNpc(Convert.ToInt32(m_delta));
+                    if (account.IsMaster == true && account.MyGroup != null)
+                    {
+                        account.MyGroup.TalkToNpcGroup(Convert.ToInt32(m_delta));
+                        account.Wait(2000, 3000);
+                    }
+                    else if (account.IsSlave == false)
+                    {
+                        account.Npc.TalkToNpc(Convert.ToInt32(m_delta));
+                    }
+                    else
+                    {
+                        account.Log(new ErrorTextInformation("Impossible d'enclencher le dialogue. (mûle ?)"), 0);
+                    } 
+                    break;
+                    
                     break;
                 case "use(":
                     account.Map.MoveToSecureElement(Convert.ToInt32(m_delta));
-                    account.Map.UseElement(Convert.ToInt32(m_delta));
                     break;
                 case "zaap(":
                     if (account.IsMaster == true && account.MyGroup != null)
                     {
                         account.MyGroup.UseZaapGroup();
                         account.Wait(2000, 3000);
-                        //account.Path.Stop = true;
                     }
                     else if (account.IsSlave == false)
                     {
                         account.Map.useZaap(Convert.ToInt32(account.Path.Current_Action.m_delta));
-                        //account.Path.Stop = true;
                     }
                     else
                     {
@@ -121,22 +125,33 @@ namespace BlueSheep.Core.Path
                     {
                         account.MyGroup.UseZaapiGroup();
                         account.Wait(2000, 3000);
-                        //account.Path.Stop = true;
                     }
                     else if (account.IsSlave == false)
                     {
                         account.Map.useZaapi(Convert.ToInt32(account.Path.Current_Action.m_delta));
-                        //account.Path.Stop = true;
                     }
                     else
                     {
                         account.Log(new ErrorTextInformation("Impossible d'enclencher le déplacement. (mûle ? plus d'objet ?)"), 0);
                     } 
                     break;
-
-                    
-
+                case "exchange(":
+                    if (account.IsMaster == true && account.MyGroup != null)
+                    {
+                        account.MyGroup.RequestExchangeGroup((string)m_delta);
+                        account.Wait(2000, 3000);
+                    }
+                    else if (account.IsSlave == false)
+                    {
+                        account.Inventory.RequestExchange((string)m_delta);
+                    }
+                    else
+                    {
+                        account.Log(new ErrorTextInformation("Impossible d'enclencher le dialogue. (mûle ?)"), 0);
+                    } 
+                    break;
             }
+            account.WatchDog.Update();
         }
         #endregion
 
@@ -144,8 +159,8 @@ namespace BlueSheep.Core.Path
         private string RandomDir(string delta)
         {
             string[] t = delta.Split(',');
-            Random r = new Random(0);
-            int pos = r.Next(0, t.Length - 1);
+            Random r = new Random();
+            int pos = r.Next(0, t.Length);
             return t[pos];
         }
         #endregion

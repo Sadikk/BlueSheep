@@ -14,11 +14,10 @@ namespace BlueSheep.Data.Pathfinding
     public class Pathfinder
     {
         // Methods
-        public Pathfinder(BlueSheep.Data.D2p.Map Map, Map map)
+        public Pathfinder(MapData map)
         {
-            this.Map = map;
-            this.MapData = Map;
-            if (Map.Id == 2561)
+            this.MapData = map;
+            if (MapData.Id == 2561)
             {
                 this.ListCellIdFighters.Add(53);
             }
@@ -337,7 +336,7 @@ namespace BlueSheep.Data.Pathfinding
 
         public bool PointMov(int x, int y, int cellId, bool troughtEntities)
         {
-            bool isNewSystem = ((Map)Map).IsUsingNewMovementSystem;
+            bool isNewSystem = MapData.Data.IsUsingNewMovementSystem;
             MapPoint actualPoint = new MapPoint(x, y);
             BlueSheep.Data.D2p.CellData fCellData = null;
             BlueSheep.Data.D2p.CellData sCellData = null;
@@ -346,12 +345,12 @@ namespace BlueSheep.Data.Pathfinding
 
             if (actualPoint.IsInMap())
             {
-                fCellData = MapData.Cells[actualPoint.CellId];
+                fCellData = MapData.Data.Cells[actualPoint.CellId];
                 mov = ((fCellData.Mov()) && (!this.IsFighting || !fCellData.NonWalkableDuringFight()));
 
                 if (!((mov == false)) && isNewSystem && cellId != -1 && cellId != actualPoint.CellId)
                 {
-                    sCellData = (MapData).Cells[cellId];
+                    sCellData = (MapData).Data.Cells[cellId];
                     floor = Math.Abs(Math.Abs(fCellData.Floor) - Math.Abs(sCellData.Floor));
                     if (!(sCellData.MoveZone == fCellData.MoveZone) && floor > 0 && sCellData.MoveZone == fCellData.MoveZone && fCellData.MoveZone == 0 && floor > 11)
                     {
@@ -359,10 +358,11 @@ namespace BlueSheep.Data.Pathfinding
                     }
                     if (!troughtEntities)
                     {
-                        List<Entity> entities = Map.Entities.Where((e) => e.CellId == actualPoint.CellId).ToList();
-                        if (entities.Count > 0)
+                        int count = 0;
+                        count += MapData.Monsters.Where((e) => e.m_cellId == actualPoint.CellId).ToList().Count;
+                        if (count > 0)
                         {
-                            //ToDo Voir à travers les entity
+                        //    //ToDo Voir à travers les entity
                             return false;
                         }
                     }
@@ -377,19 +377,19 @@ namespace BlueSheep.Data.Pathfinding
 
         public bool IsChangeZone(int fCell, int sCell)
         {
-            Map data = (Map)MapData;
+            BlueSheep.Data.D2p.Map data = MapData.Data;
             return data.Cells[fCell].MoveZone != data.Cells[sCell].MoveZone && System.Math.Abs(data.Cells[fCell].Floor) == System.Math.Abs(data.Cells[sCell].Floor);
         }
 
         private double GetCellSpeed(int cellId, bool throughEntities)
         {
-            BlueSheep.Data.D2p.Map data = Map.Data;
+            BlueSheep.Data.D2p.Map data = MapData.Data;
             var speed = data.Cells[cellId].Speed;
             MapPoint cell = new MapPoint(cellId);
 
             if (throughEntities)
             {
-                if (!(Map.NoEntitiesOnCell(cellId)))
+                if (!(MapData.NoEntitiesOnCell(cellId)))
                 {
                     return 20;
                 }
@@ -405,31 +405,31 @@ namespace BlueSheep.Data.Pathfinding
             var cost = 1.0D;
             MapPoint adjCell = null;
 
-            if (!(Map.NoEntitiesOnCell(cellId)))
+            if (!(MapData.NoEntitiesOnCell(cellId)))
             {
                 cost += 0.3;
             }
 
             adjCell = new MapPoint(cell.X + 1, cell.Y);
-            if (adjCell != null && !(Map.NoEntitiesOnCell(adjCell.CellId)))
+            if (adjCell != null && !(MapData.NoEntitiesOnCell(adjCell.CellId)))
             {
                 cost += 0.3;
             }
 
             adjCell = new MapPoint(cell.X, cell.Y + 1);
-            if (adjCell != null && !(Map.NoEntitiesOnCell(adjCell.CellId)))
+            if (adjCell != null && !(MapData.NoEntitiesOnCell(adjCell.CellId)))
             {
                 cost += 0.3;
             }
 
             adjCell = new MapPoint(cell.X - 1, cell.Y);
-            if (adjCell != null && !(Map.NoEntitiesOnCell(adjCell.CellId)))
+            if (adjCell != null && !(MapData.NoEntitiesOnCell(adjCell.CellId)))
             {
                 cost += 0.3;
             }
 
             adjCell = new MapPoint(cell.X, cell.Y - 1);
-            if (adjCell != null && !(Map.NoEntitiesOnCell(adjCell.CellId)))
+            if (adjCell != null && !(MapData.NoEntitiesOnCell(adjCell.CellId)))
             {
                 cost += 0.3;
             }
@@ -553,8 +553,8 @@ namespace BlueSheep.Data.Pathfinding
         private List<int> ListCellIdFighters = new List<int>();
         private int MovePoint = -1;
 
-        private BlueSheep.Data.D2p.Map MapData;
-        private Map Map;
+        private MapData MapData;
+        //private Map Map;
 
         private List<CellInfo> MapStatus = new List<CellInfo>();
         private List<OpenSquare> OpenList = new List<OpenSquare>();

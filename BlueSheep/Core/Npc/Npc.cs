@@ -16,9 +16,8 @@ namespace BlueSheep.Core.Npc
     {
         #region Fields
         public AccountUC account { get; set; }
-        public BlueSheep.Core.Fight.Entity Entity { get; set; }
+        public BlueSheep.Common.Protocol.Types.GameRolePlayNpcInformations Entity { get; set; }
         public int Id { get; set; }
-        public Dictionary<int, int> Npcs { get; set; }
         public int QuestionId { get; set; }
         public string QuestionText
         {
@@ -33,7 +32,6 @@ namespace BlueSheep.Core.Npc
         {
             account = Account;
             Entity = null;
-            Npcs = new Dictionary<int, int>();
             Replies = new List<NpcReply>();
         }
         #endregion
@@ -44,26 +42,16 @@ namespace BlueSheep.Core.Npc
             Replies.Clear();
             QuestionId = 0;
             Id = 0;
-            using (BigEndianWriter writer = new BigEndianWriter())
-            {
-                LeaveDialogRequestMessage msg = new LeaveDialogRequestMessage();
-                msg.Serialize(writer);
-                MessagePackaging pack = new MessagePackaging(writer);
-                pack.Pack((int)msg.ProtocolID);
-                account.SocketManager.Send(pack.Writer.Content);
-            }
+
+            LeaveDialogRequestMessage msg = new LeaveDialogRequestMessage();
+            account.SocketManager.Send(msg);
+
         }
 
         public void SendReply(int replyId)
         {
-            using (BigEndianWriter writer = new BigEndianWriter())
-            {
-                NpcDialogReplyMessage msg = new NpcDialogReplyMessage((short)replyId);
-                msg.Serialize(writer);
-                MessagePackaging pack = new MessagePackaging(writer);
-                pack.Pack((int)msg.ProtocolID);
-                account.SocketManager.Send(pack.Writer.Content);
-            }
+            NpcDialogReplyMessage msg = new NpcDialogReplyMessage((short)replyId);
+            account.SocketManager.Send(msg);
         }
 
         public string GetNpcName(int npcId)
@@ -79,25 +67,25 @@ namespace BlueSheep.Core.Npc
             account.Busy = true;
             using (BigEndianWriter writer = new BigEndianWriter())
             {
-                NpcGenericActionRequestMessage msg = new NpcGenericActionRequestMessage(npcId, 3, account.Map.Id);
+                NpcGenericActionRequestMessage msg = new NpcGenericActionRequestMessage(npcId, 3, account.MapData.Id);
                 msg.Serialize(writer);
                 writer.Content = account.HumanCheck.hash_function(writer.Content);
                 MessagePackaging pack = new MessagePackaging(writer);
                 pack.Pack((int)msg.ProtocolID);
                 account.SocketManager.Send(pack.Writer.Content);
                 if (account.DebugMode.Checked)
-                    account.Log(new BotTextInformation("[SND] 5898 (NpcGenericActionRequestMessage)"), 0);
+                    account.Log(new DebugTextInformation("[SND] 5898 (NpcGenericActionRequestMessage)"), 0);
             }
         }
 
         public int FindContextIdFromNpcId(int npcid)
         {
             if (npcid == 0)
-                return Npcs.ToList()[0].Key;
-            foreach (KeyValuePair<int, int> p in Npcs)
+                return account.MapData.Npcs[0].contextualId;
+            foreach (BlueSheep.Common.Protocol.Types.GameRolePlayNpcInformations p in account.MapData.Npcs)
             {
-                if (p.Value == npcid)
-                    return p.Key;
+                if (p.npcId == npcid)
+                    return p.contextualId;
             }
             return 0;
         }
