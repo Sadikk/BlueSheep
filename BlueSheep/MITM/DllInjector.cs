@@ -1,151 +1,136 @@
-﻿using System;
+using System;
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace BlueSheep.MITM
+public static class Injection
 {
-    public enum DllInjectionResult
+    private const uint MEM_COMMIT = 0x1000;
+    private const uint MEM_DECOMMIT = 0x4000;
+    private const uint MEM_RELEASE = 0x8000;
+    private const uint MEM_RESERVE = 0x2000;
+    private const uint PAGE_EXECUTE_READWRITE = 0x40;
+    private const uint PAGE_READWRITE = 4;
+    private const uint PROCESS_ALL_ACCESS = 0x1f0fff;
+    private const uint TH32CS_SNAPPROCESS = 2;
+    private const uint WAIT_ABANDONED = 0x80;
+    private const uint WAIT_FAILED = uint.MaxValue;
+    private const uint WAIT_OBJECT_0 = 0;
+    private const uint WAIT_TIMEOUT = 0x102;
+
+    [DllImport("KERNEL32.DLL")]
+    private static extern bool CloseHandle(IntPtr hObject);
+    [DllImport("KERNEL32.DLL")]
+    private static extern IntPtr CreateRemoteThread(IntPtr hProcess, IntPtr se, uint dwStackSize, IntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, uint lpThreadId);
+    [DllImport("KERNEL32.DLL")]
+    private static extern IntPtr CreateToolhelp32Snapshot(uint dwFlags, uint th32ProcessID);
+    [DllImport("KERNEL32.DLL")]
+    private static extern int GetLastError();
+    [DllImport("KERNEL32.DLL", CharSet=CharSet.Ansi)]
+    private static extern IntPtr GetModuleHandle(string lpModuleName);
+    [DllImport("KERNEL32.DLL", CharSet=CharSet.Ansi)]
+    private static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
+    public static Process[] GetProcessId(string proc)
     {
-        DllNotFound,
-        GameProcessNotFound,
-        InjectionFailed,
-        Success
+        return Process.GetProcessesByName(proc);
     }
 
-    public sealed class DllInjector
+    [DllImport("KERNEL32.DLL")]
+    private static extern IntPtr OpenProcess(uint dwDesiredAccess, bool bInheritHandle, uint dwProcessId);
+    [DllImport("KERNEL32.DLL")]
+    private static extern bool Process32First(IntPtr hSnapShot, ref PROCESSENTRY32 pe);
+    [DllImport("KERNEL32.DLL")]
+    private static extern bool Process32Next(IntPtr Handle, ref PROCESSENTRY32 lppe);
+    public static bool StartInjection(string DllName, uint ProcessID)
     {
-        static readonly IntPtr INTPTR_ZERO = (IntPtr)0;
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static extern IntPtr OpenProcess(uint dwDesiredAccess, int bInheritHandle, uint dwProcessId);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static extern int CloseHandle(IntPtr hObject);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static extern IntPtr GetModuleHandle(string lpModuleName);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, IntPtr dwSize, uint flAllocationType, uint flProtect);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static extern int WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] buffer, uint size, int lpNumberOfBytesWritten);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        static extern IntPtr CreateRemoteThread(IntPtr hProcess, IntPtr lpThreadAttribute, IntPtr dwStackSize, IntPtr lpStartAddress,
-            IntPtr lpParameter, uint dwCreationFlags, IntPtr lpThreadId);
-
-        static DllInjector _instance;
-
-        public static DllInjector GetInstance
+        bool flag;
+        try
         {
-            get
+            IntPtr hProcess = new IntPtr(0);
+            IntPtr lpBaseAddress = new IntPtr(0);
+            IntPtr lpStartAddress = new IntPtr(0);
+            IntPtr hHandle = new IntPtr(0);
+            int nSize = DllName.Length + 1;
+            hProcess = OpenProcess(0x1f0fff, false, ProcessID);
+            if (!(hProcess != IntPtr.Zero))
             {
-                if (_instance == null)
-                {
-                    _instance = new DllInjector();
-                }
-                return _instance;
+                throw new Exception("Processus non ouvert...injection \x00e9chou\x00e9e");
             }
-        }
-
-        public DllInjector() { }
-
-        public DllInjectionResult Inject(string sProcName, string sDllPath)
-        {
-            if (!File.Exists(sDllPath))
+            lpBaseAddress = VirtualAllocEx(hProcess, IntPtr.Zero, (UIntPtr) nSize, 0x1000, 0x40);
+            if (!(lpBaseAddress != IntPtr.Zero))
             {
-                return DllInjectionResult.DllNotFound;
+                throw new Exception("M\x00e9moire non allou\x00e9e...injection \x00e9chou\x00e9e");
             }
-
-            uint _procId = 0;
-
-            Process[] _procs = Process.GetProcesses();
-            for (int i = 0; i < _procs.Length; i++)
+            ASCIIEncoding encoding = new ASCIIEncoding();
+            int lpNumberOfBytesWritten = 0;
+            if (!WriteProcessMemory(hProcess, lpBaseAddress, encoding.GetBytes(DllName), nSize, lpNumberOfBytesWritten))
             {
-                if (_procs[i].ProcessName == sProcName)
-                {
-                    _procId = (uint)_procs[i].Id;
-                    break;
-                }
+                throw new Exception("Erreur d'\x00e9criture dans le processus...injection \x00e9chou\x00e9e");
             }
-
-            if (_procId == 0)
+            lpStartAddress = GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
+            if (!(lpStartAddress != IntPtr.Zero))
             {
-                return DllInjectionResult.GameProcessNotFound;
+                throw new Exception("Adresse LoadLibraryA non trouv\x00e9e...injection \x00e9chou\x00e9e");
             }
-
-            if (!bInject(_procId, sDllPath))
+            hHandle = CreateRemoteThread(hProcess, IntPtr.Zero, 0, lpStartAddress, lpBaseAddress, 0, 0);
+            if (!(hHandle != IntPtr.Zero))
             {
-                return DllInjectionResult.InjectionFailed;
+                throw new Exception("Probl\x00e8me au lancement du thread...injection \x00e9chou\x00e9e");
             }
-
-            return DllInjectionResult.Success;
-        }
-
-        public DllInjectionResult Inject(uint sProcId, string sDllPath)
-        {
-            if (!File.Exists(sDllPath))
+            uint num3 = WaitForSingleObject(hHandle, 0x2710);
+            if (((num3 == uint.MaxValue) && (num3 == 0x80)) && ((num3 == 0) && (num3 == 0x102)))
             {
-                return DllInjectionResult.DllNotFound;
+                throw new Exception("WaitForSingle \x00e9chou\x00e9 : " + num3.ToString() + "...injection \x00e9chou\x00e9e");
             }
-
-            if (sProcId == 0)
+            if (!VirtualFreeEx(hProcess, lpBaseAddress, 0, 0x8000))
             {
-                return DllInjectionResult.GameProcessNotFound;
+                throw new Exception("Probl\x00e8me lib\x00e8ration de m\x00e9moire...injection \x00e9chou\x00e9e");
             }
-
-            if (!bInject(sProcId, sDllPath))
+            if (hHandle == IntPtr.Zero)
             {
-                return DllInjectionResult.InjectionFailed;
+                throw new Exception("Mauvais Handle du thread...injection \x00e9chou\x00e9e");
             }
-
-            return DllInjectionResult.Success;
-        }
-
-        bool bInject(uint pToBeInjected, string sDllPath)
-        {
-            IntPtr hndProc = OpenProcess((0x2 | 0x8 | 0x10 | 0x20 | 0x400), 1, pToBeInjected);
-
-            if (hndProc == INTPTR_ZERO)
-            {
-                return false;
-            }
-
-            IntPtr lpLLAddress = GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
-
-            if (lpLLAddress == INTPTR_ZERO)
-            {
-                return false;
-            }
-
-            IntPtr lpAddress = VirtualAllocEx(hndProc, (IntPtr)null, (IntPtr)sDllPath.Length, (0x1000 | 0x2000), 0X40);
-
-            if (lpAddress == INTPTR_ZERO)
-            {
-                return false;
-            }
-
-            byte[] bytes = Encoding.ASCII.GetBytes(sDllPath);
-
-            if (WriteProcessMemory(hndProc, lpAddress, bytes, (uint)bytes.Length, 0) == 0)
-            {
-                return false;
-            }
-
-            if (CreateRemoteThread(hndProc, (IntPtr)null, INTPTR_ZERO, lpLLAddress, lpAddress, 0, (IntPtr)null) == INTPTR_ZERO)
-            {
-                return false;
-            }
-
-            CloseHandle(hndProc);
-
+            CloseHandle(hHandle);
             return true;
         }
+        catch (Exception exception)
+        {
+            Console.WriteLine(exception.Message);
+            flag = false;
+        }
+        return flag;
+    }
+
+    [DllImport("KERNEL32.DLL")]
+    private static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAdress, UIntPtr dwSize, uint flAllocationType, uint flProtect);
+    [DllImport("KERNEL32.DLL")]
+    private static extern bool VirtualFreeEx(IntPtr hProcess, IntPtr lpAdress, uint dwSize, uint dwFreeType);
+    [DllImport("KERNEL32.DLL")]
+    private static extern uint WaitForSingleObject(IntPtr hHandle, uint dwMilliSeconds);
+    [DllImport("KERNEL32.DLL")]
+    private static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, int nSize, int lpNumberOfBytesWritten);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct PROCESSENTRY32
+    {
+        public int dwSize;
+        public uint cntUsage;
+        public uint th32ProcessID;
+        public IntPtr th32DefaultHeapID;
+        public uint th32ModuleID;
+        public uint cntThreads;
+        public uint th32ParentProcessID;
+        public int pcPriClassBase;
+        public uint dwFlags;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst=260)]
+        public string szExeFile;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct SECURITY_ATTRIBUTES
+    {
+        public int nLength;
+        public IntPtr lpSecurityDescriptor;
+        public int bInheritHandle;
     }
 }

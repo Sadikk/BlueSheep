@@ -55,7 +55,7 @@ Public Class UpdaterFrm
         Dim WebResponse As System.Net.HttpWebResponse = WebRequest.GetResponse
         Dim STR As System.IO.StreamReader = New System.IO.StreamReader(WebResponse.GetResponseStream())
         Dim ReadSource As String = STR.ReadToEnd
-        Dim Regex As New System.Text.RegularExpressions.Regex(ProgramName & "=(\d+).(\d+).(\d+)=(.*?).exe")
+        Dim Regex As New System.Text.RegularExpressions.Regex(ProgramName & "=(\d+).(\d+).(\d+(\,\d{1}))=(.*?).exe")
         Dim matches As MatchCollection = Regex.Matches(ReadSource)
         'Dim reg As RegistryKey
         Dim c As Single

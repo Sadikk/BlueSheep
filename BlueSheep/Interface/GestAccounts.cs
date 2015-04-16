@@ -98,6 +98,7 @@ namespace BlueSheep.Interface
                     string directoryPath = System.IO.Path.Combine (MainForm.ActualMainForm.DofusPath, "app", "Dofus.exe");
                     proc.StartInfo.FileName = directoryPath;
                     proc.Start();
+<<<<<<< HEAD
                     //BlueSheep.Engine.Constants.DllInjector Injector = new Engine.Constants.DllInjector();
                     //String path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\No.Ankama.dll";
                     //List<Process> lp = Process.GetProcessesByName("Dofus").ToList();
@@ -112,6 +113,13 @@ namespace BlueSheep.Interface
                     //    }
                     //}
                     //DllInjector.GetInstance.Inject(proc.ProcessName, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\No.Ankama.dll");
+=======
+                    BlueSheep.Engine.Constants.DllInjector Injector = new Engine.Constants.D);
+                    String path = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\BlueSheep\No.Ankama.dll";
+                    
+                    
+                    BlueSheep.Engine.Injection.StartInjection(path, proc.Id);
+>>>>>>> 64fe840c1f84ddc82e715e9985aed4832fb50823
 
                     AccountFrm frm = new AccountFrm(account.SubItems[0].Text, account.SubItems[1].Text, false);
                     frm.Show();
