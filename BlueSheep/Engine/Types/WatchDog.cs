@@ -33,7 +33,8 @@ namespace BlueSheep.Engine.Types
 
         public void StopPathDog()
         {
-            m_PathDog.Abort();
+            if (m_PathDog != null)
+                m_PathDog.Abort();
         }
 
         public void Update()
