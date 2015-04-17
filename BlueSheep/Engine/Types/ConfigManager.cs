@@ -43,7 +43,7 @@ namespace BlueSheep.Engine.Types
                     account.Fight = new BFight(account, account.FightParser, account.FightData);
                     account.ModLabel(conf.m_IA, account.NomIA);
                 }
-                if (conf.m_Path != null && conf.m_BotPath != null)
+                if (conf.m_Path != null && conf.m_BotPath != null && conf.m_Path != "")
                 {
                     account.Path = new Core.Path.PathManager(account, conf.m_Path, conf.m_BotPath);
                     if (conf.m_BotPath != null)
