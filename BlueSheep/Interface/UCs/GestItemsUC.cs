@@ -87,7 +87,11 @@ namespace BlueSheep.Interface.UCs
                 foreach (ListViewItem item in LVGestItems.Items)
                 {
                     if (item.SubItems[1].Text == "Suppression automatique")
-                        account.Inventory.DeleteItem(account.Inventory.GetItemFromName(item.SubItems[0].Text).UID, account.Inventory.GetItemFromName(item.SubItems[0].Text).Quantity);
+                    {
+                        BlueSheep.Core.Inventory.Item i = account.Inventory.GetItemFromName(item.SubItems[0].Text);
+                        if (i != null)
+                            account.Inventory.DeleteItem(i.UID, i.Quantity);
+                    }
                 }
                 Reset();
             }
