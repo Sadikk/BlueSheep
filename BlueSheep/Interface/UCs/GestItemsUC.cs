@@ -24,7 +24,7 @@ namespace BlueSheep.Interface.UCs
             {
                 IntelliSense.AutoCompleteTextBox(ItemTxtBox, this.litPopup, IntelliSense.ItemsList, e);
             };
-            AutoDeletionTimer = new System.Timers.Timer(Convert.ToDouble(NUDAutoDeletion.Value * 1000)) { AutoReset = false };
+            AutoDeletionTimer = new System.Timers.Timer(Convert.ToDouble(NUDAutoDeletion.Value * 10000)) { AutoReset = false };
             AutoDeletionTimer.Elapsed += new System.Timers.ElapsedEventHandler(PerformAutoDeletion);
             if (AutoDeletionBox.Checked)
                 AutoDeletionTimer.Start();
@@ -130,7 +130,7 @@ namespace BlueSheep.Interface.UCs
 
         private void NUDAutoDeletion_ValueChanged(object sender, EventArgs e)
         {
-            AutoDeletionTimer = new System.Timers.Timer(Convert.ToDouble(NUDAutoDeletion.Value * 1000));
+            AutoDeletionTimer = new System.Timers.Timer(Convert.ToDouble(NUDAutoDeletion.Value * 10000));
             AutoDeletionTimer.Elapsed += new System.Timers.ElapsedEventHandler(PerformAutoDeletion);
             if (AutoDeletionBox.Checked)
                 AutoDeletionTimer.Start();
