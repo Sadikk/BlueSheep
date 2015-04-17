@@ -28,6 +28,7 @@ namespace BlueSheep.Core.Path
             get { return flag; }
             internal set { flag = value; }
         }
+        private List<string> m_content;
         public string pathBot;
         public Thread Thread;
         public bool Launched;
@@ -54,6 +55,7 @@ namespace BlueSheep.Core.Path
             Account = account;
             path = Path;
             Account.PathDownBt.Text = name;
+            m_content = File.ReadAllLines(Path).ToList();
         }
 
         #endregion
@@ -182,16 +184,18 @@ namespace BlueSheep.Core.Path
         /// </summary>
         public void ParsePath()
         {
-            if (!File.Exists(path))
-                return;
-            StreamReader sr = new StreamReader(path);
-            string line = "";
+            //if (!File.Exists(path))
+            //    return;
+            //StreamReader sr = new StreamReader(path);
+            //string line = "";
             conditions = new List<PathCondition>();
             ActionsStack = new List<Action>();
 
-            while (sr.Peek() > 0)
+            //while (sr.Peek() > 0)
+            //{
+            foreach (string line in m_content)
             {
-                line = sr.ReadLine();
+                //line = sr.ReadLine();
                 if (line == "" || line == string.Empty || line == null || line.StartsWith("#"))
                     continue;
                 if (line.Contains("+Condition "))
@@ -203,7 +207,7 @@ namespace BlueSheep.Core.Path
                 {
                     Current_Map = Account.MapData.Pos;
                     AnalyseLine(line);
-                    sr.Close(); 
+                    //sr.Close(); 
                     return;
                 }
                 foreach (string f in flags)
@@ -224,7 +228,7 @@ namespace BlueSheep.Core.Path
                     }
                 }
             }
-            sr.Close();
+            //sr.Close();
             Lost();
         }
 
