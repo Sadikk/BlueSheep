@@ -131,15 +131,12 @@ namespace BlueSheep.Common
                     ParseArguments(DeleteCommand(split));
                     return Fight();
                 case "/gather":
-<<<<<<< HEAD
                     DefineRequiredParameters(new string[] { });
                     DefineOptionalParameter(new string[] { });
                     DefineSwitches(new string[] { "-launch", "-stats" });
-=======
                     DefineRequiredParameters(new string[] {});
                     DefineOptionalParameter(new string[] {});
                     DefineSwitches(new string[] {"-launch","-stats"});
->>>>>>> 64fe840c1f84ddc82e715e9985aed4832fb50823
                     ParseArguments(DeleteCommand(split));
                     return Gather();
             }
@@ -603,20 +600,11 @@ namespace BlueSheep.Common
                     ls.Add("/gather [-launch] [-stats]");
                     ls.Add("Interface to manage gather.");
                     ls.Add("OPTIONS:");
-                    ls.Add("  - launch  : Perfo gathering on the map.");
-<<<<<<< HEAD
-                    ls.Add("  - stats  : Display gathering stats.");
-=======
-                    ls.Add("  - stats  : Display gathering stats.");                
->>>>>>> 64fe840c1f84ddc82e715e9985aed4832fb50823
+                    ls.Add("  - launch  : Perform gathering on the map.");
                     ls.Add("EXAMPLE:");
                     ls.Add("1. > /gather -launch");
                     ls.Add("   - Launch the gathering");
                     return ls;
-<<<<<<< HEAD
-
-=======
->>>>>>> 64fe840c1f84ddc82e715e9985aed4832fb50823
             }
             return ls = new List<string>() { ""};
         }
@@ -943,24 +931,14 @@ namespace BlueSheep.Common
             else
                 return result;
         }
-<<<<<<< HEAD
 
-        /// <summary>
-=======
-        
          /// <summary>
->>>>>>> 64fe840c1f84ddc82e715e9985aed4832fb50823
         /// Interface to manage gather.
         /// </summary>
         private List<string> Gather()
         {
             bool launch = IsSwitchOn("-launch");
             bool stats = IsSwitchOn("-stats");
-<<<<<<< HEAD
-
-=======
-  
->>>>>>> 64fe840c1f84ddc82e715e9985aed4832fb50823
             try
             {
                 if (launch)
@@ -970,20 +948,11 @@ namespace BlueSheep.Common
                 }
                 if (stats)
                 {
-<<<<<<< HEAD
                     Dictionary<string, int> newStats = account.Gather.Stats;
-=======
-                    Dictionary<string,int> newStats = account.Gather.Stats;
->>>>>>> 64fe840c1f84ddc82e715e9985aed4832fb50823
                     foreach (KeyValuePair<string, int> key in newStats)
                     {
                         result.Add(String.Format("[{1}] : {2}", key.Key, key.Value));
                     }
-<<<<<<< HEAD
-
-=======
-                   
->>>>>>> 64fe840c1f84ddc82e715e9985aed4832fb50823
                 }
             }
             catch (Exception ex)
@@ -996,13 +965,8 @@ namespace BlueSheep.Common
             else
                 return result;
         }
-<<<<<<< HEAD
         #endregion
-=======
-
->>>>>>> 64fe840c1f84ddc82e715e9985aed4832fb50823
     }
-        #endregion
 
 
 

@@ -375,6 +375,7 @@ namespace BlueSheep.Core.Path
         private void Lost()
         {
             Account.Log(new ErrorTextInformation("Aucune action disponible dans le trajet, le bot est perdu."), 0);
+            StopPath();
         }
         #endregion
 
