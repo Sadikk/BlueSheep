@@ -51,6 +51,7 @@ namespace BlueSheep.Core.Misc
                 account.SocketManager.Send(pack.Writer.Content);
                 if (account.DebugMode.Checked)
                     account.Log(new DebugTextInformation("[SND] 861 (ChatClientMultiMessage)"), 0);
+                account.FloodUC.Increase(false);
             }
         }
 
@@ -65,6 +66,7 @@ namespace BlueSheep.Core.Misc
             if (account.FloodUC.IsRandomingNumberBox.Checked == true)
                 content = AddRandomNumber(content);
             SendPrivateTo(infos.name, content);
+            account.FloodUC.Increase(true);
         }
 
         public void SendPrivateTo(string name, string content)

@@ -70,7 +70,8 @@ namespace BlueSheep.Engine.Types
         private bool CheckState()
         {
             return (m_Account.state == Enums.Status.None ||
-                m_Account.state == Enums.Status.Moving);
+                m_Account.state == Enums.Status.Moving ||
+                m_Account.state == Enums.Status.Busy);
         }
         #endregion
     }

@@ -290,9 +290,25 @@ namespace BlueSheep.Engine.Handlers.Context
             {
                 msg.Deserialize(reader);
             }
+            account.Log(new ErrorTextInformation("[FROM " + msg.author + " ] : " + msg.content),0);
+            account.Log(new BotTextInformation("You has been locked for " + msg.lockDuration + ". Stopping BlueSheep actions while blocked..."),0);
             account.Log(new ErrorTextInformation("Y a un popup sur l'écran, surement un modo :s"), 0);
-            account.SocketManager.Disconnect("Alerte au modo ! Alerte au modo !");
+             account.Wait(msg.lockDuration, msg.lockDuration);
+            //account.SocketManager.Disconnect("Alerte au modo ! Alerte au modo !");
         }
+
+        [MessageHandler(typeof(SystemMessageDisplayMessage))]
+        public static void SystemMessageDisplayMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
+        {
+            SystemMessageDisplayMessage msg = (SystemMessageDisplayMessage)message;
+
+            using (BigEndianReader reader = new BigEndianReader(packetDatas))
+            {
+                msg.Deserialize(reader);
+            }
+           // account.SocketManager.Disconnect("Alerte au modo ! Alerte au modo !");
+        }
+        
 
         [MessageHandler(typeof(PartyInvitationMessage))]
         public static void PartyInvitationMessageTreatment(Message message, byte[] packetDatas, AccountUC account)

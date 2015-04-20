@@ -105,6 +105,12 @@ namespace BlueSheep.Core.Map
             if (path == null)
                 return false;
             List<UInt32> serverMovement = MapMovementAdapter.GetServerMovement(path);
+            if(serverMovement[serverMovement.Count -1] == m_Account.MapData.Character.disposition.cellId)
+            {
+                Moving = false;
+                ConfirmMove();
+                return true;
+            }
             int timetowait;
             if (serverMovement.Count() < 3)
                 timetowait = serverMovement.Count() * 500;
@@ -269,6 +275,12 @@ namespace BlueSheep.Core.Map
             if (path == null)
                 return false;
             List<UInt32> serverMovement = MapMovementAdapter.GetServerMovement(path);
+            if (serverMovement[serverMovement.Count - 1] == m_Account.MapData.Character.disposition.cellId)
+            {
+                Moving = false;
+                ConfirmMove();
+                return true;
+            }
             int timetowait;
             if (serverMovement.Count() < 3)
                 timetowait = serverMovement.Count() * 514;

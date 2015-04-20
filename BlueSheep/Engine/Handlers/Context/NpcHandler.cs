@@ -70,6 +70,11 @@ namespace BlueSheep.Engine.Handlers.Context
                 account.Npc.SendReply(259);
                 return;
             }
+            else if (account.Npc.QuestionId == 318)
+            {
+                account.Log(new ErrorTextInformation("Vous n'êtes pas level 10, vous ne pouvez pas utiliser la banque. Fermeture du dialogue."), 0);
+                account.Npc.CloseDialog();
+            }
             if (msg.visibleReplies.Length == 0)
                 account.Npc.CloseDialog();
             account.Npc.Replies.Clear();

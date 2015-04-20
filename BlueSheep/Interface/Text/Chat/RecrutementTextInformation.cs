@@ -22,7 +22,7 @@ namespace BlueSheep.Interface.Text.Chat
 
             public override Color Color
             {
-                get { return ColorTranslator.FromHtml("#6BF787"); }
+                get { return ColorTranslator.FromHtml("#85CC73"); }
             }
 
             public override string Category
