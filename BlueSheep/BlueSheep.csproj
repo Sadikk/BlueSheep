@@ -1433,34 +1433,24 @@
     <Compile Include="Engine\Types\MessageInformations.cs" />
     <Compile Include="Engine\Types\MessagePackaging.cs" />
     <Compile Include="Engine\Types\WatchDog.cs" />
-    <Compile Include="Interface\AccountFrm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Interface\AccountFrm.cs" />
     <Compile Include="Interface\AccountFrm.Designer.cs">
       <DependentUpon>AccountFrm.cs</DependentUpon>
     </Compile>
     <Compile Include="Interface\Text\DebugTextInformation.cs" />
-    <Compile Include="Interface\UCs\AccountUC.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Interface\UCs\AccountUC.cs" />
     <Compile Include="Interface\UCs\AccountUC.Designer.cs">
       <DependentUpon>AccountUC.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interface\DofusPathForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Interface\DofusPathForm.cs" />
     <Compile Include="Interface\DofusPathForm.Designer.cs">
       <DependentUpon>DofusPathForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interface\GestAccounts.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Interface\GestAccounts.cs" />
     <Compile Include="Interface\GestAccounts.Designer.cs">
       <DependentUpon>GestAccounts.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interface\GestGroupe.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Interface\GestGroupe.cs" />
     <Compile Include="Interface\GestGroupe.Designer.cs">
       <DependentUpon>GestGroupe.cs</DependentUpon>
     </Compile>
@@ -1470,51 +1460,35 @@
     <Compile Include="Interface\GroupForm.Designer.cs">
       <DependentUpon>GroupForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interface\IAChoice.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Interface\IAChoice.cs" />
     <Compile Include="Interface\IAChoice.Designer.cs">
       <DependentUpon>IAChoice.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interface\UCs\CaracUC.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Interface\UCs\CaracUC.cs" />
     <Compile Include="Interface\UCs\CaracUC.Designer.cs">
       <DependentUpon>CaracUC.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interface\UCs\FloodUC.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Interface\UCs\FloodUC.cs" />
     <Compile Include="Interface\UCs\FloodUC.Designer.cs">
       <DependentUpon>FloodUC.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interface\UCs\GestItemsUC.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Interface\UCs\GestItemsUC.cs" />
     <Compile Include="Interface\UCs\GestItemsUC.Designer.cs">
       <DependentUpon>GestItemsUC.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interface\UCs\JobUC.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Interface\UCs\JobUC.cs" />
     <Compile Include="Interface\UCs\JobUC.Designer.cs">
       <DependentUpon>JobUC.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interface\LoginForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Interface\LoginForm.cs" />
     <Compile Include="Interface\LoginForm.Designer.cs">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interface\MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Interface\MainForm.cs" />
     <Compile Include="Interface\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Interface\PathChoiceForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Interface\PathChoiceForm.cs" />
     <Compile Include="Interface\PathChoiceForm.Designer.cs">
       <DependentUpon>PathChoiceForm.cs</DependentUpon>
     </Compile>
@@ -1536,12 +1510,8 @@
     <Compile Include="Interface\Theme.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Interface\UCs\HeroicUC.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Interface\UCs\RegenUC.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="Interface\UCs\HeroicUC.cs" />
+    <Compile Include="Interface\UCs\RegenUC.cs" />
     <Compile Include="Interface\UCs\RegenUC.Designer.cs">
       <DependentUpon>RegenUC.cs</DependentUpon>
     </Compile>

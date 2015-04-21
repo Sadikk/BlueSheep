@@ -315,6 +315,18 @@ namespace BlueSheep.Engine.Handlers.Inventory
                 account.Running.OnSafe = false;
             account.Busy = false;
         }
+        [MessageHandler(typeof(ExchangeShopStockStartedMessage))]
+        public static void ExchangeShopStockStartedMessageTreatment(Message message, byte[] packetDatas, AccountUC account)
+        {
+            ExchangeShopStockStartedMessage msg = (ExchangeShopStockStartedMessage)message;
+            using (BigEndianReader reader = new BigEndianReader(packetDatas))
+            {
+                msg.Deserialize(reader);
+            }
+            account.actualizeshop(msg.objectsInfos.ToList());
+            if (account.NeedToAddItem())
+            { account.addItemToShop(); }
+        }
         #endregion
     }
 }

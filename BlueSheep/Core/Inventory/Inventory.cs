@@ -87,6 +87,21 @@ namespace BlueSheep.Core.Inventory
             
         }
 
+        public void SendItemToShop(int uid, int quantity, int price)
+        {
+            if (ItemExists(uid) && ItemQuantity(uid) > 0)
+            {
+                ExchangeRequestOnShopStockMessage packetshop = new ExchangeRequestOnShopStockMessage();
+                Account.SocketManager.Send(packetshop);
+                ExchangeObjectMovePricedMessage msg = new ExchangeObjectMovePricedMessage(uid, quantity, price);
+                Account.SocketManager.Send(msg);
+                Account.Log(new ActionTextInformation("Ajout de " + Account.Inventory.GetItemFromUID(uid).Name + "(x " + quantity + ") dans le magasin magasin au prix de : " + price + " Kamas"), 2);
+                LeaveDialogRequestMessage packetleave = new LeaveDialogRequestMessage();
+                Account.SocketManager.Send(packetleave);
+            }
+
+        }
+
         public void DropItem(int uid, int quantity)
         {
             if (ItemExists(uid) && ItemQuantity(uid) > 0)

@@ -52,6 +52,10 @@
             this.SubcribeLb = new System.Windows.Forms.ToolStripLabel();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.VitaBar = new MetroFramework.Controls.MetroProgressBar();
+            this.PodsBar = new MetroFramework.Controls.MetroProgressBar();
+            this.XpBar = new MetroFramework.Controls.MetroProgressBar();
+            this.PlaceTimer = new System.Windows.Forms.Timer(this.components);
             this.KamasLabel = new BlueSheep.Interface.SadikLabel();
             this.StatusLb = new BlueSheep.Interface.SadikLabel();
             this.VTabAccount = new BlueSheep.Interface.SadikVerticalTabControl();
@@ -70,25 +74,14 @@
             this.LogCb = new BlueSheep.Interface.SadikCheckbox();
             this.DebugMode = new BlueSheep.Interface.SadikCheckbox();
             this.FightPage = new System.Windows.Forms.TabPage();
-            this.JobPage = new System.Windows.Forms.TabPage();
-            this.JobsTabP = new BlueSheep.Interface.SadikTabControl();
-            this.FamiPage = new System.Windows.Forms.TabPage();
-            this.panelAccountInformations = new System.Windows.Forms.Panel();
-            this.labelSafe = new BlueSheep.Interface.SadikLabel();
-            this.labelNextMeal = new BlueSheep.Interface.SadikLabel();
-            this.checkBoxBegin = new BlueSheep.Interface.SadikCheckbox();
-            this.listViewPets = new System.Windows.Forms.ListView();
-            this.InventairePage = new System.Windows.Forms.TabPage();
-            this.DiversPage = new System.Windows.Forms.TabPage();
-            this.VitaBar = new MetroFramework.Controls.MetroProgressBar();
-            this.PodsBar = new MetroFramework.Controls.MetroProgressBar();
-            this.XpBar = new MetroFramework.Controls.MetroProgressBar();
             this.metroTabControl2 = new MetroFramework.Controls.MetroTabControl();
             this.metroTabPage3 = new MetroFramework.Controls.MetroTabPage();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.IsLockingFight = new MetroFramework.Controls.MetroCheckBox();
             this.NUDTimeoutFight = new System.Windows.Forms.NumericUpDown();
             this.sadikLabel11 = new BlueSheep.Interface.SadikLabel();
             this.GroupBox2 = new System.Windows.Forms.GroupBox();
+            this.NomIA = new MetroFramework.Controls.MetroLabel();
             this.ChoiceIABt = new BlueSheep.Interface.SadikButton();
             this.GroupBox3 = new System.Windows.Forms.GroupBox();
             this.sadikLabel2 = new BlueSheep.Interface.SadikLabel();
@@ -120,8 +113,15 @@
             this.metroTabPage5 = new MetroFramework.Controls.MetroTabPage();
             this.WinLoseFightPie = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.XpBarsChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.IsLockingFight = new MetroFramework.Controls.MetroCheckBox();
-            this.NomIA = new MetroFramework.Controls.MetroLabel();
+            this.JobPage = new System.Windows.Forms.TabPage();
+            this.JobsTabP = new BlueSheep.Interface.SadikTabControl();
+            this.FamiPage = new System.Windows.Forms.TabPage();
+            this.panelAccountInformations = new System.Windows.Forms.Panel();
+            this.labelSafe = new BlueSheep.Interface.SadikLabel();
+            this.labelNextMeal = new BlueSheep.Interface.SadikLabel();
+            this.checkBoxBegin = new BlueSheep.Interface.SadikCheckbox();
+            this.listViewPets = new System.Windows.Forms.ListView();
+            this.InventairePage = new System.Windows.Forms.TabPage();
             this.sadikTabControl2 = new MetroFramework.Controls.MetroTabControl();
             this.metroTabPage6 = new MetroFramework.Controls.MetroTabPage();
             this.RegenAddBt = new BlueSheep.Interface.SadikButton();
@@ -133,6 +133,7 @@
             this.LVItems = new System.Windows.Forms.ListView();
             this.tabPage9 = new MetroFramework.Controls.MetroTabPage();
             this.RegenPage = new MetroFramework.Controls.MetroTabPage();
+            this.DiversPage = new System.Windows.Forms.TabPage();
             this.FloodPage = new MetroFramework.Controls.MetroTabControl();
             this.MaisonsPage = new MetroFramework.Controls.MetroTabPage();
             this.sadikLabel9 = new BlueSheep.Interface.SadikLabel();
@@ -144,14 +145,22 @@
             this.StartWaitingBt = new BlueSheep.Interface.SadikButton();
             this.MaxPrice = new System.Windows.Forms.NumericUpDown();
             this.PhraseADire = new System.Windows.Forms.TextBox();
-            this.tabPage2 = new MetroFramework.Controls.MetroTabPage();
             this.metroTabPage9 = new MetroFramework.Controls.MetroTabPage();
             this.MapView = new System.Windows.Forms.ListView();
             this.Id = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.CellId = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Type = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.tabPage2 = new MetroFramework.Controls.MetroTabPage();
             this.tabPage8 = new MetroFramework.Controls.MetroTabPage();
             this.StatsPage = new MetroFramework.Controls.MetroTabPage();
+            this.marchandPage = new MetroFramework.Controls.MetroTabPage();
+            this.sadikButton3 = new BlueSheep.Interface.SadikButton();
+            this.sadikLabel10 = new BlueSheep.Interface.SadikLabel();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.LVItemShop = new System.Windows.Forms.ListView();
+            this.LVItemBag = new System.Windows.Forms.ListView();
+            this.sadikCheckbox1 = new BlueSheep.Interface.SadikCheckbox();
+            this.BtnActualize = new BlueSheep.Interface.SadikButton();
             this.toolStrip1.SuspendLayout();
             this.VTabAccount.SuspendLayout();
             this.ConsolePage.SuspendLayout();
@@ -162,11 +171,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.NUDVerbose)).BeginInit();
             this.sadikGroupBox1.SuspendLayout();
             this.FightPage.SuspendLayout();
-            this.JobPage.SuspendLayout();
-            this.FamiPage.SuspendLayout();
-            this.panelAccountInformations.SuspendLayout();
-            this.InventairePage.SuspendLayout();
-            this.DiversPage.SuspendLayout();
             this.metroTabControl2.SuspendLayout();
             this.metroTabPage3.SuspendLayout();
             this.groupBox8.SuspendLayout();
@@ -187,12 +191,19 @@
             this.metroTabPage5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.WinLoseFightPie)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.XpBarsChart)).BeginInit();
+            this.JobPage.SuspendLayout();
+            this.FamiPage.SuspendLayout();
+            this.panelAccountInformations.SuspendLayout();
+            this.InventairePage.SuspendLayout();
             this.sadikTabControl2.SuspendLayout();
             this.metroTabPage6.SuspendLayout();
+            this.DiversPage.SuspendLayout();
             this.FloodPage.SuspendLayout();
             this.MaisonsPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MaxPrice)).BeginInit();
             this.metroTabPage9.SuspendLayout();
+            this.marchandPage.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
             // toolStrip1
@@ -314,6 +325,44 @@
             this.imageList1.Images.SetKeyName(3, "logo_maison.PNG");
             this.imageList1.Images.SetKeyName(4, "logo_recolte.PNG");
             this.imageList1.Images.SetKeyName(5, "settings.png");
+            // 
+            // VitaBar
+            // 
+            this.VitaBar.HideProgressText = false;
+            this.VitaBar.Location = new System.Drawing.Point(114, 390);
+            this.VitaBar.Name = "VitaBar";
+            this.VitaBar.Size = new System.Drawing.Size(115, 23);
+            this.VitaBar.Style = MetroFramework.MetroColorStyle.Blue;
+            this.VitaBar.TabIndex = 9;
+            this.VitaBar.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.VitaBar.Theme = MetroFramework.MetroThemeStyle.Light;
+            // 
+            // PodsBar
+            // 
+            this.PodsBar.HideProgressText = false;
+            this.PodsBar.Location = new System.Drawing.Point(235, 390);
+            this.PodsBar.Name = "PodsBar";
+            this.PodsBar.Size = new System.Drawing.Size(122, 23);
+            this.PodsBar.Style = MetroFramework.MetroColorStyle.Blue;
+            this.PodsBar.TabIndex = 20;
+            this.PodsBar.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.PodsBar.Theme = MetroFramework.MetroThemeStyle.Light;
+            // 
+            // XpBar
+            // 
+            this.XpBar.HideProgressText = false;
+            this.XpBar.Location = new System.Drawing.Point(363, 390);
+            this.XpBar.Name = "XpBar";
+            this.XpBar.Size = new System.Drawing.Size(115, 23);
+            this.XpBar.Style = MetroFramework.MetroColorStyle.Blue;
+            this.XpBar.TabIndex = 10;
+            this.XpBar.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.XpBar.Theme = MetroFramework.MetroThemeStyle.Light;
+            // 
+            // PlaceTimer
+            // 
+            this.PlaceTimer.Interval = 10000;
+            this.PlaceTimer.Tick += new System.EventHandler(this.PlaceTimer_Tick);
             // 
             // KamasLabel
             // 
@@ -543,151 +592,6 @@
             this.FightPage.Text = "Combat";
             this.FightPage.UseVisualStyleBackColor = true;
             // 
-            // JobPage
-            // 
-            this.JobPage.Controls.Add(this.JobsTabP);
-            this.JobPage.Location = new System.Drawing.Point(104, 4);
-            this.JobPage.Name = "JobPage";
-            this.JobPage.Padding = new System.Windows.Forms.Padding(3);
-            this.JobPage.Size = new System.Drawing.Size(498, 348);
-            this.JobPage.TabIndex = 6;
-            this.JobPage.Text = "Métiers";
-            this.JobPage.UseVisualStyleBackColor = true;
-            // 
-            // JobsTabP
-            // 
-            this.JobsTabP.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.JobsTabP.Font = new System.Drawing.Font("Verdana", 8F);
-            this.JobsTabP.ItemSize = new System.Drawing.Size(0, 30);
-            this.JobsTabP.Location = new System.Drawing.Point(3, 3);
-            this.JobsTabP.Name = "JobsTabP";
-            this.JobsTabP.SelectedIndex = 0;
-            this.JobsTabP.Size = new System.Drawing.Size(492, 342);
-            this.JobsTabP.TabIndex = 0;
-            // 
-            // FamiPage
-            // 
-            this.FamiPage.Controls.Add(this.panelAccountInformations);
-            this.FamiPage.Location = new System.Drawing.Point(104, 4);
-            this.FamiPage.Name = "FamiPage";
-            this.FamiPage.Padding = new System.Windows.Forms.Padding(3);
-            this.FamiPage.Size = new System.Drawing.Size(498, 348);
-            this.FamiPage.TabIndex = 2;
-            this.FamiPage.Text = "Familiers";
-            this.FamiPage.UseVisualStyleBackColor = true;
-            // 
-            // panelAccountInformations
-            // 
-            this.panelAccountInformations.AutoScroll = true;
-            this.panelAccountInformations.AutoScrollMargin = new System.Drawing.Size(0, 15);
-            this.panelAccountInformations.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panelAccountInformations.Controls.Add(this.labelSafe);
-            this.panelAccountInformations.Controls.Add(this.labelNextMeal);
-            this.panelAccountInformations.Controls.Add(this.checkBoxBegin);
-            this.panelAccountInformations.Controls.Add(this.listViewPets);
-            this.panelAccountInformations.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelAccountInformations.Location = new System.Drawing.Point(3, 3);
-            this.panelAccountInformations.Name = "panelAccountInformations";
-            this.panelAccountInformations.Size = new System.Drawing.Size(492, 342);
-            this.panelAccountInformations.TabIndex = 3;
-            // 
-            // labelSafe
-            // 
-            this.labelSafe.AutoSize = true;
-            this.labelSafe.Font = new System.Drawing.Font("Verdana", 8F);
-            this.labelSafe.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(135)))), ((int)(((byte)(135)))), ((int)(((byte)(135)))));
-            this.labelSafe.Location = new System.Drawing.Point(341, 302);
-            this.labelSafe.Name = "labelSafe";
-            this.labelSafe.Size = new System.Drawing.Size(56, 13);
-            this.labelSafe.TabIndex = 12;
-            this.labelSafe.Text = "Coffre : ";
-            // 
-            // labelNextMeal
-            // 
-            this.labelNextMeal.AutoSize = true;
-            this.labelNextMeal.Font = new System.Drawing.Font("Verdana", 8F);
-            this.labelNextMeal.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(135)))), ((int)(((byte)(135)))), ((int)(((byte)(135)))));
-            this.labelNextMeal.Location = new System.Drawing.Point(162, 302);
-            this.labelNextMeal.Name = "labelNextMeal";
-            this.labelNextMeal.Size = new System.Drawing.Size(155, 13);
-            this.labelNextMeal.TabIndex = 11;
-            this.labelNextMeal.Text = "Prochain repas : Inconnu.";
-            // 
-            // checkBoxBegin
-            // 
-            this.checkBoxBegin.Checked = false;
-            this.checkBoxBegin.Font = new System.Drawing.Font("Verdana", 8F);
-            this.checkBoxBegin.Location = new System.Drawing.Point(16, 299);
-            this.checkBoxBegin.Name = "checkBoxBegin";
-            this.checkBoxBegin.Size = new System.Drawing.Size(140, 20);
-            this.checkBoxBegin.TabIndex = 10;
-            this.checkBoxBegin.Text = "Démarrer l\'élevage";
-            this.checkBoxBegin.CheckedChanged += new BlueSheep.Interface.SadikCheckbox.CheckedChangedEventHandler(this.checkBoxBegin_CheckedChanged);
-            // 
-            // listViewPets
-            // 
-            this.listViewPets.Location = new System.Drawing.Point(3, 3);
-            this.listViewPets.Name = "listViewPets";
-            this.listViewPets.Size = new System.Drawing.Size(482, 290);
-            this.listViewPets.TabIndex = 4;
-            this.listViewPets.UseCompatibleStateImageBehavior = false;
-            this.listViewPets.View = System.Windows.Forms.View.Details;
-            // 
-            // InventairePage
-            // 
-            this.InventairePage.Controls.Add(this.sadikTabControl2);
-            this.InventairePage.Location = new System.Drawing.Point(104, 4);
-            this.InventairePage.Name = "InventairePage";
-            this.InventairePage.Padding = new System.Windows.Forms.Padding(3);
-            this.InventairePage.Size = new System.Drawing.Size(498, 348);
-            this.InventairePage.TabIndex = 4;
-            this.InventairePage.Text = "Inventaire";
-            this.InventairePage.UseVisualStyleBackColor = true;
-            // 
-            // DiversPage
-            // 
-            this.DiversPage.Controls.Add(this.FloodPage);
-            this.DiversPage.Location = new System.Drawing.Point(104, 4);
-            this.DiversPage.Name = "DiversPage";
-            this.DiversPage.Padding = new System.Windows.Forms.Padding(3);
-            this.DiversPage.Size = new System.Drawing.Size(498, 348);
-            this.DiversPage.TabIndex = 3;
-            this.DiversPage.Text = "Divers";
-            this.DiversPage.UseVisualStyleBackColor = true;
-            // 
-            // VitaBar
-            // 
-            this.VitaBar.HideProgressText = false;
-            this.VitaBar.Location = new System.Drawing.Point(114, 390);
-            this.VitaBar.Name = "VitaBar";
-            this.VitaBar.Size = new System.Drawing.Size(115, 23);
-            this.VitaBar.Style = MetroFramework.MetroColorStyle.Blue;
-            this.VitaBar.TabIndex = 9;
-            this.VitaBar.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.VitaBar.Theme = MetroFramework.MetroThemeStyle.Light;
-            // 
-            // PodsBar
-            // 
-            this.PodsBar.HideProgressText = false;
-            this.PodsBar.Location = new System.Drawing.Point(235, 390);
-            this.PodsBar.Name = "PodsBar";
-            this.PodsBar.Size = new System.Drawing.Size(122, 23);
-            this.PodsBar.Style = MetroFramework.MetroColorStyle.Blue;
-            this.PodsBar.TabIndex = 20;
-            this.PodsBar.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.PodsBar.Theme = MetroFramework.MetroThemeStyle.Light;
-            // 
-            // XpBar
-            // 
-            this.XpBar.HideProgressText = false;
-            this.XpBar.Location = new System.Drawing.Point(363, 390);
-            this.XpBar.Name = "XpBar";
-            this.XpBar.Size = new System.Drawing.Size(115, 23);
-            this.XpBar.Style = MetroFramework.MetroColorStyle.Blue;
-            this.XpBar.TabIndex = 10;
-            this.XpBar.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.XpBar.Theme = MetroFramework.MetroThemeStyle.Light;
-            // 
             // metroTabControl2
             // 
             this.metroTabControl2.Controls.Add(this.metroTabPage3);
@@ -731,6 +635,20 @@
             this.groupBox8.TabIndex = 19;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Divers";
+            // 
+            // IsLockingFight
+            // 
+            this.IsLockingFight.AutoSize = true;
+            this.IsLockingFight.DisplayFocus = true;
+            this.IsLockingFight.FontSize = MetroFramework.MetroCheckBoxSize.Medium;
+            this.IsLockingFight.Location = new System.Drawing.Point(9, 50);
+            this.IsLockingFight.Name = "IsLockingFight";
+            this.IsLockingFight.Size = new System.Drawing.Size(132, 19);
+            this.IsLockingFight.Style = MetroFramework.MetroColorStyle.Blue;
+            this.IsLockingFight.TabIndex = 3;
+            this.IsLockingFight.Text = "Fermer le combat";
+            this.IsLockingFight.Theme = MetroFramework.MetroThemeStyle.Light;
+            this.IsLockingFight.UseSelectable = true;
             // 
             // NUDTimeoutFight
             // 
@@ -784,6 +702,15 @@
             this.GroupBox2.TabIndex = 16;
             this.GroupBox2.TabStop = false;
             this.GroupBox2.Text = "IA";
+            // 
+            // NomIA
+            // 
+            this.NomIA.AutoSize = true;
+            this.NomIA.Location = new System.Drawing.Point(22, 22);
+            this.NomIA.Name = "NomIA";
+            this.NomIA.Size = new System.Drawing.Size(68, 19);
+            this.NomIA.TabIndex = 2;
+            this.NomIA.Text = "Aucune IA";
             // 
             // ChoiceIABt
             // 
@@ -1001,7 +928,6 @@
             this.MonstersRestrictionsView.TabIndex = 33;
             this.MonstersRestrictionsView.UseCompatibleStateImageBehavior = false;
             this.MonstersRestrictionsView.View = System.Windows.Forms.View.Details;
-            this.ForbidMonsterBt.Click += new System.EventHandler(this.ForbidMonsterBt_Click);
             // 
             // NUDRestrictions
             // 
@@ -1217,28 +1143,106 @@
             this.XpBarsChart.TabIndex = 2;
             this.XpBarsChart.Text = "chart1";
             // 
-            // IsLockingFight
+            // JobPage
             // 
-            this.IsLockingFight.AutoSize = true;
-            this.IsLockingFight.DisplayFocus = true;
-            this.IsLockingFight.FontSize = MetroFramework.MetroCheckBoxSize.Medium;
-            this.IsLockingFight.Location = new System.Drawing.Point(9, 50);
-            this.IsLockingFight.Name = "IsLockingFight";
-            this.IsLockingFight.Size = new System.Drawing.Size(132, 19);
-            this.IsLockingFight.Style = MetroFramework.MetroColorStyle.Blue;
-            this.IsLockingFight.TabIndex = 3;
-            this.IsLockingFight.Text = "Fermer le combat";
-            this.IsLockingFight.Theme = MetroFramework.MetroThemeStyle.Light;
-            this.IsLockingFight.UseSelectable = true;
+            this.JobPage.Controls.Add(this.JobsTabP);
+            this.JobPage.Location = new System.Drawing.Point(104, 4);
+            this.JobPage.Name = "JobPage";
+            this.JobPage.Padding = new System.Windows.Forms.Padding(3);
+            this.JobPage.Size = new System.Drawing.Size(498, 348);
+            this.JobPage.TabIndex = 6;
+            this.JobPage.Text = "Métiers";
+            this.JobPage.UseVisualStyleBackColor = true;
             // 
-            // NomIA
+            // JobsTabP
             // 
-            this.NomIA.AutoSize = true;
-            this.NomIA.Location = new System.Drawing.Point(22, 22);
-            this.NomIA.Name = "NomIA";
-            this.NomIA.Size = new System.Drawing.Size(68, 19);
-            this.NomIA.TabIndex = 2;
-            this.NomIA.Text = "Aucune IA";
+            this.JobsTabP.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.JobsTabP.Font = new System.Drawing.Font("Verdana", 8F);
+            this.JobsTabP.ItemSize = new System.Drawing.Size(0, 30);
+            this.JobsTabP.Location = new System.Drawing.Point(3, 3);
+            this.JobsTabP.Name = "JobsTabP";
+            this.JobsTabP.SelectedIndex = 0;
+            this.JobsTabP.Size = new System.Drawing.Size(492, 342);
+            this.JobsTabP.TabIndex = 0;
+            // 
+            // FamiPage
+            // 
+            this.FamiPage.Controls.Add(this.panelAccountInformations);
+            this.FamiPage.Location = new System.Drawing.Point(104, 4);
+            this.FamiPage.Name = "FamiPage";
+            this.FamiPage.Padding = new System.Windows.Forms.Padding(3);
+            this.FamiPage.Size = new System.Drawing.Size(498, 348);
+            this.FamiPage.TabIndex = 2;
+            this.FamiPage.Text = "Familiers";
+            this.FamiPage.UseVisualStyleBackColor = true;
+            // 
+            // panelAccountInformations
+            // 
+            this.panelAccountInformations.AutoScroll = true;
+            this.panelAccountInformations.AutoScrollMargin = new System.Drawing.Size(0, 15);
+            this.panelAccountInformations.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panelAccountInformations.Controls.Add(this.labelSafe);
+            this.panelAccountInformations.Controls.Add(this.labelNextMeal);
+            this.panelAccountInformations.Controls.Add(this.checkBoxBegin);
+            this.panelAccountInformations.Controls.Add(this.listViewPets);
+            this.panelAccountInformations.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelAccountInformations.Location = new System.Drawing.Point(3, 3);
+            this.panelAccountInformations.Name = "panelAccountInformations";
+            this.panelAccountInformations.Size = new System.Drawing.Size(492, 342);
+            this.panelAccountInformations.TabIndex = 3;
+            // 
+            // labelSafe
+            // 
+            this.labelSafe.AutoSize = true;
+            this.labelSafe.Font = new System.Drawing.Font("Verdana", 8F);
+            this.labelSafe.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(135)))), ((int)(((byte)(135)))), ((int)(((byte)(135)))));
+            this.labelSafe.Location = new System.Drawing.Point(341, 302);
+            this.labelSafe.Name = "labelSafe";
+            this.labelSafe.Size = new System.Drawing.Size(56, 13);
+            this.labelSafe.TabIndex = 12;
+            this.labelSafe.Text = "Coffre : ";
+            // 
+            // labelNextMeal
+            // 
+            this.labelNextMeal.AutoSize = true;
+            this.labelNextMeal.Font = new System.Drawing.Font("Verdana", 8F);
+            this.labelNextMeal.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(135)))), ((int)(((byte)(135)))), ((int)(((byte)(135)))));
+            this.labelNextMeal.Location = new System.Drawing.Point(162, 302);
+            this.labelNextMeal.Name = "labelNextMeal";
+            this.labelNextMeal.Size = new System.Drawing.Size(155, 13);
+            this.labelNextMeal.TabIndex = 11;
+            this.labelNextMeal.Text = "Prochain repas : Inconnu.";
+            // 
+            // checkBoxBegin
+            // 
+            this.checkBoxBegin.Checked = false;
+            this.checkBoxBegin.Font = new System.Drawing.Font("Verdana", 8F);
+            this.checkBoxBegin.Location = new System.Drawing.Point(16, 299);
+            this.checkBoxBegin.Name = "checkBoxBegin";
+            this.checkBoxBegin.Size = new System.Drawing.Size(140, 20);
+            this.checkBoxBegin.TabIndex = 10;
+            this.checkBoxBegin.Text = "Démarrer l\'élevage";
+            this.checkBoxBegin.CheckedChanged += new BlueSheep.Interface.SadikCheckbox.CheckedChangedEventHandler(this.checkBoxBegin_CheckedChanged);
+            // 
+            // listViewPets
+            // 
+            this.listViewPets.Location = new System.Drawing.Point(3, 3);
+            this.listViewPets.Name = "listViewPets";
+            this.listViewPets.Size = new System.Drawing.Size(482, 290);
+            this.listViewPets.TabIndex = 4;
+            this.listViewPets.UseCompatibleStateImageBehavior = false;
+            this.listViewPets.View = System.Windows.Forms.View.Details;
+            // 
+            // InventairePage
+            // 
+            this.InventairePage.Controls.Add(this.sadikTabControl2);
+            this.InventairePage.Location = new System.Drawing.Point(104, 4);
+            this.InventairePage.Name = "InventairePage";
+            this.InventairePage.Padding = new System.Windows.Forms.Padding(3);
+            this.InventairePage.Size = new System.Drawing.Size(498, 348);
+            this.InventairePage.TabIndex = 4;
+            this.InventairePage.Text = "Inventaire";
+            this.InventairePage.UseVisualStyleBackColor = true;
             // 
             // sadikTabControl2
             // 
@@ -1400,17 +1404,29 @@
             this.RegenPage.VerticalScrollbarHighlightOnWheel = false;
             this.RegenPage.VerticalScrollbarSize = 10;
             // 
+            // DiversPage
+            // 
+            this.DiversPage.Controls.Add(this.FloodPage);
+            this.DiversPage.Location = new System.Drawing.Point(104, 4);
+            this.DiversPage.Name = "DiversPage";
+            this.DiversPage.Padding = new System.Windows.Forms.Padding(3);
+            this.DiversPage.Size = new System.Drawing.Size(498, 348);
+            this.DiversPage.TabIndex = 3;
+            this.DiversPage.Text = "Divers";
+            this.DiversPage.UseVisualStyleBackColor = true;
+            // 
             // FloodPage
             // 
             this.FloodPage.Controls.Add(this.MaisonsPage);
-            this.FloodPage.Controls.Add(this.tabPage2);
             this.FloodPage.Controls.Add(this.metroTabPage9);
+            this.FloodPage.Controls.Add(this.tabPage2);
             this.FloodPage.Controls.Add(this.tabPage8);
             this.FloodPage.Controls.Add(this.StatsPage);
+            this.FloodPage.Controls.Add(this.marchandPage);
             this.FloodPage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.FloodPage.Location = new System.Drawing.Point(3, 3);
             this.FloodPage.Name = "FloodPage";
-            this.FloodPage.SelectedIndex = 0;
+            this.FloodPage.SelectedIndex = 5;
             this.FloodPage.Size = new System.Drawing.Size(492, 342);
             this.FloodPage.TabIndex = 1;
             this.FloodPage.UseSelectable = true;
@@ -1549,20 +1565,6 @@
             this.PhraseADire.Size = new System.Drawing.Size(390, 20);
             this.PhraseADire.TabIndex = 20;
             // 
-            // tabPage2
-            // 
-            this.tabPage2.HorizontalScrollbarBarColor = true;
-            this.tabPage2.HorizontalScrollbarHighlightOnWheel = false;
-            this.tabPage2.HorizontalScrollbarSize = 10;
-            this.tabPage2.Location = new System.Drawing.Point(4, 38);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Size = new System.Drawing.Size(484, 300);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Flood";
-            this.tabPage2.VerticalScrollbarBarColor = true;
-            this.tabPage2.VerticalScrollbarHighlightOnWheel = false;
-            this.tabPage2.VerticalScrollbarSize = 10;
-            // 
             // metroTabPage9
             // 
             this.metroTabPage9.Controls.Add(this.MapView);
@@ -1607,6 +1609,20 @@
             this.Type.Text = "Type";
             this.Type.Width = 97;
             // 
+            // tabPage2
+            // 
+            this.tabPage2.HorizontalScrollbarBarColor = true;
+            this.tabPage2.HorizontalScrollbarHighlightOnWheel = false;
+            this.tabPage2.HorizontalScrollbarSize = 10;
+            this.tabPage2.Location = new System.Drawing.Point(4, 38);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Size = new System.Drawing.Size(484, 300);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Flood";
+            this.tabPage2.VerticalScrollbarBarColor = true;
+            this.tabPage2.VerticalScrollbarHighlightOnWheel = false;
+            this.tabPage2.VerticalScrollbarSize = 10;
+            // 
             // tabPage8
             // 
             this.tabPage8.HorizontalScrollbarBarColor = true;
@@ -1635,6 +1651,116 @@
             this.StatsPage.VerticalScrollbarHighlightOnWheel = false;
             this.StatsPage.VerticalScrollbarSize = 10;
             // 
+            // marchandPage
+            // 
+            this.marchandPage.Controls.Add(this.BtnActualize);
+            this.marchandPage.Controls.Add(this.sadikButton3);
+            this.marchandPage.Controls.Add(this.sadikLabel10);
+            this.marchandPage.Controls.Add(this.numericUpDown1);
+            this.marchandPage.Controls.Add(this.LVItemShop);
+            this.marchandPage.Controls.Add(this.LVItemBag);
+            this.marchandPage.Controls.Add(this.sadikCheckbox1);
+            this.marchandPage.HorizontalScrollbarBarColor = true;
+            this.marchandPage.HorizontalScrollbarHighlightOnWheel = false;
+            this.marchandPage.HorizontalScrollbarSize = 10;
+            this.marchandPage.Location = new System.Drawing.Point(4, 38);
+            this.marchandPage.Name = "marchandPage";
+            this.marchandPage.Size = new System.Drawing.Size(484, 300);
+            this.marchandPage.TabIndex = 5;
+            this.marchandPage.Text = "Mode marchand";
+            this.marchandPage.VerticalScrollbarBarColor = true;
+            this.marchandPage.VerticalScrollbarHighlightOnWheel = false;
+            this.marchandPage.VerticalScrollbarSize = 10;
+            // 
+            // sadikButton3
+            // 
+            this.sadikButton3.ButtonStyle = BlueSheep.Interface.SadikButton.Style.Blue;
+            this.sadikButton3.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.sadikButton3.Font = new System.Drawing.Font("Verdana", 8F);
+            this.sadikButton3.Image = null;
+            this.sadikButton3.Location = new System.Drawing.Point(293, 133);
+            this.sadikButton3.Name = "sadikButton3";
+            this.sadikButton3.RoundedCorners = false;
+            this.sadikButton3.Size = new System.Drawing.Size(65, 20);
+            this.sadikButton3.TabIndex = 12;
+            this.sadikButton3.Text = "Ajouter";
+            this.sadikButton3.Click += new System.EventHandler(this.sadikButton3_Click);
+            // 
+            // sadikLabel10
+            // 
+            this.sadikLabel10.AutoSize = true;
+            this.sadikLabel10.BackColor = System.Drawing.Color.Transparent;
+            this.sadikLabel10.Font = new System.Drawing.Font("Verdana", 8F);
+            this.sadikLabel10.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(135)))), ((int)(((byte)(135)))), ((int)(((byte)(135)))));
+            this.sadikLabel10.Location = new System.Drawing.Point(364, 135);
+            this.sadikLabel10.Name = "sadikLabel10";
+            this.sadikLabel10.Size = new System.Drawing.Size(29, 13);
+            this.sadikLabel10.TabIndex = 11;
+            this.sadikLabel10.Text = "Prix";
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Location = new System.Drawing.Point(399, 133);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(85, 20);
+            this.numericUpDown1.TabIndex = 10;
+            // 
+            // LVItemShop
+            // 
+            this.LVItemShop.BackColor = System.Drawing.Color.White;
+            this.LVItemShop.FullRowSelect = true;
+            this.LVItemShop.Location = new System.Drawing.Point(1, 159);
+            this.LVItemShop.Name = "LVItemShop";
+            this.LVItemShop.ShowItemToolTips = true;
+            this.LVItemShop.Size = new System.Drawing.Size(484, 112);
+            this.LVItemShop.Sorting = System.Windows.Forms.SortOrder.Descending;
+            this.LVItemShop.TabIndex = 9;
+            this.LVItemShop.UseCompatibleStateImageBehavior = false;
+            this.LVItemShop.View = System.Windows.Forms.View.Details;
+            // 
+            // LVItemBag
+            // 
+            this.LVItemBag.BackColor = System.Drawing.Color.White;
+            this.LVItemBag.FullRowSelect = true;
+            this.LVItemBag.Location = new System.Drawing.Point(1, 3);
+            this.LVItemBag.Name = "LVItemBag";
+            this.LVItemBag.ShowItemToolTips = true;
+            this.LVItemBag.Size = new System.Drawing.Size(484, 124);
+            this.LVItemBag.Sorting = System.Windows.Forms.SortOrder.Descending;
+            this.LVItemBag.TabIndex = 8;
+            this.LVItemBag.UseCompatibleStateImageBehavior = false;
+            this.LVItemBag.View = System.Windows.Forms.View.Details;
+            // 
+            // sadikCheckbox1
+            // 
+            this.sadikCheckbox1.Checked = false;
+            this.sadikCheckbox1.Font = new System.Drawing.Font("Verdana", 8F);
+            this.sadikCheckbox1.Location = new System.Drawing.Point(311, 277);
+            this.sadikCheckbox1.Name = "sadikCheckbox1";
+            this.sadikCheckbox1.Size = new System.Drawing.Size(177, 20);
+            this.sadikCheckbox1.TabIndex = 2;
+            this.sadikCheckbox1.Text = "Activer le mode marchand";
+            this.sadikCheckbox1.CheckedChanged += new BlueSheep.Interface.SadikCheckbox.CheckedChangedEventHandler(this.sadikCheckbox1_CheckedChanged_1);
+            // 
+            // BtnActualize
+            // 
+            this.BtnActualize.ButtonStyle = BlueSheep.Interface.SadikButton.Style.Blue;
+            this.BtnActualize.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.BtnActualize.Font = new System.Drawing.Font("Verdana", 8F);
+            this.BtnActualize.Image = null;
+            this.BtnActualize.Location = new System.Drawing.Point(222, 133);
+            this.BtnActualize.Name = "BtnActualize";
+            this.BtnActualize.RoundedCorners = false;
+            this.BtnActualize.Size = new System.Drawing.Size(65, 20);
+            this.BtnActualize.TabIndex = 13;
+            this.BtnActualize.Text = "Actualiser";
+            this.BtnActualize.Click += new System.EventHandler(this.BtnActualize_Click);
+            // 
             // AccountUC
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1662,12 +1788,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.NUDVerbose)).EndInit();
             this.sadikGroupBox1.ResumeLayout(false);
             this.FightPage.ResumeLayout(false);
-            this.JobPage.ResumeLayout(false);
-            this.FamiPage.ResumeLayout(false);
-            this.panelAccountInformations.ResumeLayout(false);
-            this.panelAccountInformations.PerformLayout();
-            this.InventairePage.ResumeLayout(false);
-            this.DiversPage.ResumeLayout(false);
             this.metroTabControl2.ResumeLayout(false);
             this.metroTabPage3.ResumeLayout(false);
             this.groupBox8.ResumeLayout(false);
@@ -1694,13 +1814,22 @@
             this.metroTabPage5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.WinLoseFightPie)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.XpBarsChart)).EndInit();
+            this.JobPage.ResumeLayout(false);
+            this.FamiPage.ResumeLayout(false);
+            this.panelAccountInformations.ResumeLayout(false);
+            this.panelAccountInformations.PerformLayout();
+            this.InventairePage.ResumeLayout(false);
             this.sadikTabControl2.ResumeLayout(false);
             this.metroTabPage6.ResumeLayout(false);
+            this.DiversPage.ResumeLayout(false);
             this.FloodPage.ResumeLayout(false);
             this.MaisonsPage.ResumeLayout(false);
             this.MaisonsPage.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.MaxPrice)).EndInit();
             this.metroTabPage9.ResumeLayout(false);
+            this.marchandPage.ResumeLayout(false);
+            this.marchandPage.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1824,5 +1953,14 @@
         private MetroFramework.Controls.MetroTabPage StatsPage;
         public MetroFramework.Controls.MetroCheckBox IsLockingFight;
         public MetroFramework.Controls.MetroLabel NomIA;
+        private MetroFramework.Controls.MetroTabPage marchandPage;
+        private SadikCheckbox sadikCheckbox1;
+        private SadikButton sadikButton3;
+        private SadikLabel sadikLabel10;
+        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        public System.Windows.Forms.ListView LVItemShop;
+        public System.Windows.Forms.ListView LVItemBag;
+        private System.Windows.Forms.Timer PlaceTimer;
+        private SadikButton BtnActualize;
     }
 }

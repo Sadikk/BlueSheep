@@ -118,6 +118,8 @@ namespace BlueSheep.Interface
         private delegate void DelegBool(bool param1);
         private delegate void DelegGatherPie(Dictionary<string, int> ressources, Dictionary<DateTime,int> xp);
         private delegate bool DelegVerifGroup(List<string> monsters);
+        private delegate bool BoolCallback();
+        private delegate void Callback();
         #endregion
 
         #region Constructeurs
@@ -138,7 +140,7 @@ namespace BlueSheep.Interface
             switch (MainForm.ActualMainForm.Lang)
             {
                 case "FR":
-                    listViewPets.Columns.Add("Nom", 150, HorizontalAlignment.Left);
+            listViewPets.Columns.Add("Nom", 150, HorizontalAlignment.Left);
             listViewPets.Columns.Add("UID", 0, HorizontalAlignment.Left);
             listViewPets.Columns.Add("Nourriture (Quantité)", -2, HorizontalAlignment.Left);
             listViewPets.Columns.Add("Prochain repas", -2, HorizontalAlignment.Left);
@@ -149,6 +151,18 @@ namespace BlueSheep.Interface
             LVItems.Columns.Add("Quantité", -2, HorizontalAlignment.Center);
             LVItems.Columns.Add("Type", -2, HorizontalAlignment.Center);
             LVItems.Columns.Add("Prix moyen", -2, HorizontalAlignment.Center);
+            LVItemBag.Columns.Add("GID", 0, HorizontalAlignment.Center);
+            LVItemBag.Columns.Add("UID", 0, HorizontalAlignment.Center);
+            LVItemBag.Columns.Add("Nom", -2, HorizontalAlignment.Center);
+            LVItemBag.Columns.Add("Quantité", -2, HorizontalAlignment.Center);
+            LVItemBag.Columns.Add("Type", -2, HorizontalAlignment.Center);
+            LVItemBag.Columns.Add("Prix moyen", -2, HorizontalAlignment.Center);
+            LVItemShop.Columns.Add("GID", 0, HorizontalAlignment.Center);
+            LVItemShop.Columns.Add("UID", 0, HorizontalAlignment.Center);
+            LVItemShop.Columns.Add("Nom", -2, HorizontalAlignment.Center);
+            LVItemShop.Columns.Add("Quantité", -2, HorizontalAlignment.Center);
+            LVItemShop.Columns.Add("Type", -2, HorizontalAlignment.Center);
+            LVItemShop.Columns.Add("Prix de vente", -2, HorizontalAlignment.Center);
                     break;
                 case "EN":
                     listViewPets.Columns.Add("Name", 150, HorizontalAlignment.Left);
@@ -162,6 +176,18 @@ namespace BlueSheep.Interface
             LVItems.Columns.Add("Quantity", -2, HorizontalAlignment.Center);
             LVItems.Columns.Add("Type", -2, HorizontalAlignment.Center);
             LVItems.Columns.Add("Average Price", -2, HorizontalAlignment.Center);
+            LVItemBag.Columns.Add("GID", 0, HorizontalAlignment.Center);
+            LVItemBag.Columns.Add("UID", 0, HorizontalAlignment.Center);
+            LVItemBag.Columns.Add("Name", -2, HorizontalAlignment.Center);
+            LVItemBag.Columns.Add("Quantity", -2, HorizontalAlignment.Center);
+            LVItemBag.Columns.Add("Type", -2, HorizontalAlignment.Center);
+            LVItemBag.Columns.Add("Average Price", -2, HorizontalAlignment.Center);
+            LVItemShop.Columns.Add("GID", 0, HorizontalAlignment.Center);
+            LVItemShop.Columns.Add("UID", 0, HorizontalAlignment.Center);
+            LVItemShop.Columns.Add("Name", -2, HorizontalAlignment.Center);
+            LVItemShop.Columns.Add("Quantity", -2, HorizontalAlignment.Center);
+            LVItemShop.Columns.Add("Type", -2, HorizontalAlignment.Center);
+            LVItemShop.Columns.Add("Sell price", -2, HorizontalAlignment.Center);
             VTabAccount.TabPages[1].Text = "Fight";
             VTabAccount.TabPages[2].Text = "Pets";
             VTabAccount.TabPages[3].Text = "Inventory";
@@ -351,7 +377,7 @@ namespace BlueSheep.Interface
 
         public void Log(TextInformation text,int levelVerbose)
         {
-            if (this.IsDisposed == true || LogConsole.IsDisposed == true)
+            if (this.IsDisposed == true)
                 return;
             if ((int)NUDVerbose.Value < levelVerbose)
                 return;
@@ -583,6 +609,15 @@ namespace BlueSheep.Interface
                 AddItem(li, LVItems);
             }
             RegenUC.RefreshQuantity();
+
+            this.BeginInvoke(new MethodInvoker(LVItemBag.Items.Clear));
+            foreach (Core.Inventory.Item i in Inventory.Items)
+            {
+                string[] row1 = { i.GID.ToString(), i.UID.ToString(), i.Name, i.Quantity.ToString(), i.Type.ToString(), i.Price.ToString() };
+                System.Windows.Forms.ListViewItem li = new System.Windows.Forms.ListViewItem(row1);
+                li.ToolTipText = i.Description;
+                AddItem(li, LVItemBag);
+            }
         }
 
         public void ActualizeFamis()
@@ -1020,7 +1055,7 @@ namespace BlueSheep.Interface
 
         public void Init()
         {
-            this.Enabled = false;
+            //this.Enabled = false;
             //this.SocketManager = null;
             m_ConnectionThread = new Thread(Connect);
             m_ConnectionThread.Start();
@@ -1242,35 +1277,121 @@ namespace BlueSheep.Interface
             ConfigManager.SaveConfig();
         }
 
+        private void sadikCheckbox1_CheckedChanged_1(object sender)
+        {
+            if (sadikCheckbox1.Checked)
+            {
+                PlaceTimer.Interval = 10000;
+                PlaceTimer.Start();
+            }
+            else
+            {
+                PlaceTimer.Stop();
+            }
+        }
 
+        private void sadikButton3_Click(object sender, EventArgs e)
+        {
+            
+                        ExchangeRequestOnShopStockMessage packetshop = new ExchangeRequestOnShopStockMessage();
+                        SocketManager.Send(packetshop);
+                    
+        }
 
+        public void addItemToShop()
+        {
+            if (LVItemBag.InvokeRequired)
+            {
+                Invoke(new Callback(addItemToShop));
+                return;
+            }
+            for (int i = 0; i < LVItemBag.Items.Count; i++)
+            {
+                if (LVItemBag.Items[i].Selected)
+                {
+                    try
+                    {
+            //Inventory.SendItemToShop(Inventory.GetItemFromName(LVItemBag.Items[i].SubItems[2].Text).UID, Inventory.GetItemFromName(LVItemBag.Items[i].SubItems[2].Text).Quantity, Convert.ToInt32(numericUpDown1.Value));
+            ExchangeObjectMovePricedMessage msg = new ExchangeObjectMovePricedMessage();
+            //BlueSheep.Core.Inventory.Item item = new BlueSheep.Core.Inventory.Item(null, 0, 0, msg.quantity, msg.objectUID, this);
+            msg.objectUID = Inventory.GetItemFromName(LVItemBag.Items[i].SubItems[2].Text).UID;
+            msg.quantity = Inventory.GetItemFromName(LVItemBag.Items[i].SubItems[2].Text).Quantity;
+            msg.price = Convert.ToInt32(numericUpDown1.Value);
+            SocketManager.Send(msg);
+            Log(new ActionTextInformation("Ajout de " + Inventory.GetItemFromName(LVItemBag.Items[i].SubItems[2].Text).Name + "(x " + Inventory.GetItemFromName(LVItemBag.Items[i].SubItems[2].Text).Quantity + ") dans le magasin au prix de : " + msg.price + " Kamas"), 2);
+            LeaveDialogRequestMessage packetleave = new LeaveDialogRequestMessage();
+            Wait(2000, 2000);
+            SocketManager.Send(packetleave);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString());
+                    }
+                }
+            }
+        }
+        private void PlaceTimer_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+                if (state == Status.Fighting)
+                {
+                    Log(new ErrorTextInformation("Impossible de se mettre en mode marchand en combat >.<"), 2);
+                }
+                if (this.SocketManager.State == SocketState.Connected)
+                {
+                    ExchangeShowVendorTaxMessage taxpacket = new ExchangeShowVendorTaxMessage();
+                    SocketManager.Send(taxpacket);
+                    ExchangeStartAsVendorMessage ventepacket = new ExchangeStartAsVendorMessage();
+                    SocketManager.Send(ventepacket);
+                    //Thread.Sleep(500);
+                    Log(new BotTextInformation("Essai de l'activation du mode marchand"), 1);
+                    if (this.SocketManager.State == SocketState.Closed)
+                    {
+                        this.SocketManager.DisconnectFromGUI();
+                        PlaceTimer.Stop();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
 
+        public bool NeedToAddItem()
+        {
+            if (LVItemBag.InvokeRequired)
+                return (bool)Invoke(new BoolCallback(NeedToAddItem));
+            else
+                return (LVItemBag.SelectedItems != null);
+        }
 
-      
+        private void BtnActualize_Click(object sender, EventArgs e)
+        {
+            ExchangeRequestOnShopStockMessage packetshop = new ExchangeRequestOnShopStockMessage();
+            SocketManager.Send(packetshop);
+            LeaveDialogRequestMessage packetleave = new LeaveDialogRequestMessage();
+            SocketManager.Send(packetleave);
+        }
 
-       
-    
-        
+        public void actualizeshop(List<ObjectItemToSell>sell)
+        {
+            this.BeginInvoke(new MethodInvoker(LVItemShop.Items.Clear));
 
-        
+            foreach (ObjectItemToSell i in sell)
+            {
+                BlueSheep.Core.Inventory.Item item = new BlueSheep.Core.Inventory.Item(i.effects.ToList(), i.objectGID,0,i.quantity, i.objectUID, this);
+                string[] row1 = { item.GID.ToString(), item.UID.ToString(), item.Name, item.Quantity.ToString(), item.Type, i.objectPrice.ToString() };
+                System.Windows.Forms.ListViewItem li = new System.Windows.Forms.ListViewItem(row1);
+                li.ToolTipText = item.Description;
+                AddItem(li, LVItemShop);
+            }  
+        }
 
+        private void client_shoprequest(){
 
-
-
-
-
-
-        
-
-        
-
- 
-
-
-
-
-
-        
+        }
     }
 }
 
